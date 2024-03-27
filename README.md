@@ -1,4 +1,4 @@
-# Instamint Project Documentation
+# Instamint Project
 
 ## Overview
 
@@ -82,5 +82,3 @@ Instamint is an innovative social sharing platform specifically designed for NFT
 
 - **Keycloak Interface:**
    - The Keycloak administration console is available at `localhost:8081`, sharing the same network for user and access management.
-
-This professional documentation is designed to guide developers and project managers through setting up, developing, and launching the Instamint project, ensuring a seamless workflow and high-quality output.
