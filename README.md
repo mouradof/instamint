@@ -1,5 +1,3 @@
-Bien sûr, voici une version avec plus d'emojis :
-
 # Instamint
 
 ## Description
