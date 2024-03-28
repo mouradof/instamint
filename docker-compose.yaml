@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+
+  instamint-frontend:
+    build: .
+    ports:
+      - "3000:3000"
+
+  keycloak:
+    image: quay.io/keycloak/keycloak
+    command: start-dev
+    environment:
+      KC_DB: postgres
+      KC_DB_URL_HOST: postgres-db
+      KC_DB_URL_DATABASE: instamintdb 
+      KC_DB_USER: keycloak
+      KC_DB_PASSWORD: password
+      KC_DB_SCHEMA: public
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: password
+    ports:
+      - 8081:8080
+    depends_on:
+      - postgres-db
+    networks:
+      - keycloak_demo
+
+  postgres-db:
+    image: postgres:15
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: instamintdb
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./initdb:/docker-entrypoint-initdb.d
+    networks:
+      - keycloak_demo
+
+  pgadmin:
+    image: dpage/pgadmin4
+    ports:
+      - "5050:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    depends_on:
+      - postgres-db
+    networks:
+      - keycloak_demo
+
+volumes:
+  postgres-data:
+
+networks:
+  keycloak_demo:
+    driver: bridge
+
