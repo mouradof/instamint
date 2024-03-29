@@ -47,19 +47,24 @@ Instamint is an innovative social sharing platform specifically designed for NFT
 ### Preparing for Development
 
 1. **Update Main Branch:**
+
    - Ensure you're on the main branch with `git checkout main` and then update it with `git pull`.
 
 2. **Branch Creation:**
+
    - Follow the naming conventions for branches: `feature/`, `release/`, or `hotfix/`.
    - Create a new branch with `git checkout -b branch-name`.
 
 3. **Committing Changes:**
+
    - After making changes, use `git add filename [filename ...]` and `git commit` to commit your changes.
 
 4. **Pushing Changes:**
+
    - Push your changes with `git push branch-name`.
 
 5. **Creating a Pull Request:**
+
    - Go to the GitHub repository, select your branch, and initiate a pull request with a descriptive title.
 
 6. **Updating Pull Requests:**
@@ -68,17 +73,18 @@ Instamint is an innovative social sharing platform specifically designed for NFT
 ### Launching the Project
 
 - **Docker Command:**
-   - Execute `docker compose up -d --build` to build and start the project containers in detached mode.
+  - Execute `docker compose up -d --build` to build and start the project containers in detached mode.
 
 ### Accessing Project Interfaces
 
 - **pgAdmin Interface:**
-   - Accessible at `localhost:5050` for database management.
-   - Use credentials `user: admin@admin.com` and `password: admin` for login.
-   - To connect to the PostgreSQL database, create a server with the following details:
-     - Host: `postgres-db`
-     - User: `user`
-     - Password: `password`
+
+  - Accessible at `localhost:5050` for database management.
+  - Use credentials `user: admin@admin.com` and `password: admin` for login.
+  - To connect to the PostgreSQL database, create a server with the following details:
+    - Host: `postgres-db`
+    - User: `user`
+    - Password: `password`
 
 - **Keycloak Interface:**
-   - The Keycloak administration console is available at `localhost:8081`, sharing the same network for user and access management.
+  - The Keycloak administration console is available at `localhost:8081`, sharing the same network for user and access management.

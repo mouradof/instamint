@@ -1,7 +1,6 @@
-version: '3.8'
+version: "3.8"
 
 services:
-
   instamint-frontend:
     build: .
     ports:
@@ -13,7 +12,7 @@ services:
     environment:
       KC_DB: postgres
       KC_DB_URL_HOST: postgres-db
-      KC_DB_URL_DATABASE: instamintdb 
+      KC_DB_URL_DATABASE: instamintdb
       KC_DB_USER: keycloak
       KC_DB_PASSWORD: password
       KC_DB_SCHEMA: public
@@ -58,4 +57,3 @@ volumes:
 networks:
   keycloak_demo:
     driver: bridge
-

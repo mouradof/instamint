@@ -4,19 +4,19 @@ import knexfile from "../../knexfile"
 dotenv.config({ path: resolve(".env.local") })
 
 interface SecurityConfig {
-  saltlen: number;
-  keylen: number;
-  iterations: number;
-  digest: string;
-  pepper: string | undefined;
+  saltlen: number
+  keylen: number
+  iterations: number
+  digest: string
+  pepper: string | undefined
 }
 
 interface Config {
-  port: number;
-  db: unknown;
+  port: number
+  db: unknown
   security: {
-    password: SecurityConfig;
-  };
+    password: SecurityConfig
+  }
 }
 
 const config: Config = {

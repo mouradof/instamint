@@ -29,9 +29,11 @@ The `docker-compose.yml` file orchestrates the configuration of the following se
 ### Deployment Instructions
 
 1. **Building and starting services**:
+
    - Run `docker compose up -d --build` in the project's root directory.
 
 2. **Accessing services**:
+
    - **Frontend**: `http://localhost:3000`
    - **Keycloak Admin Console**: `http://localhost:8081`
    - **pgAdmin**: `http://localhost:5050`

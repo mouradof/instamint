@@ -46,7 +46,9 @@
     "typescript": "^5.4.3"
   },
   "ts-node": {
-    "require": ["tsconfig-paths/register"],
+    "require": [
+      "tsconfig-paths/register"
+    ],
     "transpileOnly": true
   }
 }
