@@ -5,9 +5,9 @@ export const up = async (knex: Knex): Promise<void> => {
     table.increments("id").primary()
     table.string("title", 255).notNullable()
     table.text("description").notNullable()
-    table.text("image_url").notNullable()
+    table.text("imageurl").notNullable()
     table
-      .integer("owner_id")
+      .integer("ownerid")
       .unsigned()
       .references("id")
       .inTable("users")
