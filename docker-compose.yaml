@@ -6,6 +6,41 @@ services:
     ports:
       - "3000:3000"
 
+  api-user:
+    build: ./src/api-user
+    ports:
+      - "4000:4000"
+    environment:
+      DATABASE_URL: postgresql://user:password@postgres-db/instamintdb
+
+  api-relation:
+    build: ./src/api-relation
+    ports:
+      - "4001:4000"
+    environment:
+      DATABASE_URL: postgresql://user:password@postgres-db/instamintdb
+
+  api-post:
+    build: ./src/api-post
+    ports:
+      - "4002:4000"
+    environment:
+      DATABASE_URL: postgresql://user:password@postgres-db/instamintdb
+
+  api-notification:
+    build: ./src/api-user
+    ports:
+      - "4003:4000"
+    environment:
+      DATABASE_URL: postgresql://user:password@postgres-db/instamintdb  
+      
+  api-nft:
+    build: ./src/api-nft
+    ports:
+      - "4004:4000"
+    environment:
+      DATABASE_URL: postgresql://user:password@postgres-db/instamintdb
+
   keycloak:
     image: quay.io/keycloak/keycloak
     command: start-dev
@@ -22,8 +57,6 @@ services:
       - 8081:8080
     depends_on:
       - postgres-db
-    networks:
-      - keycloak_demo
 
   postgres-db:
     image: postgres:15
@@ -36,8 +69,6 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data
       - ./initdb:/docker-entrypoint-initdb.d
-    networks:
-      - keycloak_demo
 
   pgadmin:
     image: dpage/pgadmin4
@@ -48,12 +79,6 @@ services:
       PGADMIN_DEFAULT_PASSWORD: admin
     depends_on:
       - postgres-db
-    networks:
-      - keycloak_demo
 
 volumes:
   postgres-data:
-
-networks:
-  keycloak_demo:
-    driver: bridge
