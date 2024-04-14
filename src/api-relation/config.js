@@ -3,7 +3,7 @@ import { resolve } from "node:path"
 import { Sequelize } from "sequelize"
 import sequelizeConfig from "./sequelizeConfig"
 
-dotenv.config({ path: resolve(".env.local") })
+dotenv.config({ path: resolve(".env") })
 const sequelize = new Sequelize(sequelizeConfig.development)
 
 const config = {
