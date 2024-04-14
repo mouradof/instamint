@@ -2,17 +2,18 @@
     "name": "api-relation",
     "version": "1.0.0",
     "description": "",
-    "main": "index.js",
     "type": "module",
+    "main": "index.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "author": "",
     "license": "ISC",
+    "devDependencies": {
+        "@faker-js/faker": "^8.4.1"
+    },
     "dependencies": {
-        "express": "^4.19.2",
-        "keycloak-admin": "^1.14.22",
-        "sequelize": "^6.37.3",
-        "sequelize-cli": "^6.6.2"
+        "knex": "^3.1.0",
+        "objection": "^3.1.4"
     }
 }
