@@ -11,7 +11,7 @@ export const seed = async (knex) => {
       description: faker.lorem.sentence(),
       createDate: faker.date.past(),
       updatedDate: faker.date.recent(),
-      private: faker.datatype.boolean(), // Utilisation de faker.datatype.boolean() pour générer une valeur booléenne aléatoire
+      private: faker.datatype.boolean(),
     })
   }
 
