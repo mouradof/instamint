@@ -1,11 +1,11 @@
 import knexfile from "./knexfile.js"
 import dotenv from "dotenv"
-import { resolve } from "node:path"
+import { resolve } from "path"
 
-dotenv.config({ path: resolve(".env.local") })
+dotenv.config({ path: resolve(".env") })
 
 const config = {
-  port: 3000,
+  port: 3030,
   db: knexfile
 }
 
