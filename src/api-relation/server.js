@@ -14,10 +14,7 @@ const server = (async config => {
     )
   
     prepareRoutes({ app, db })
-  
-    // eslint-disable-next-line no-console
-    console.log(`Server is running on port ${config.port}`)
-  
+    
     return app
   }
 )
