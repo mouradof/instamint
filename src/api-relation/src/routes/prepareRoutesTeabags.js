@@ -6,7 +6,6 @@ const prepareRoutesTeabags = ({ app }) => {
 
   teabagsData.get("/teabagsTest", async (c)=> {
     const teabagsData = await TeabagModel.query()
-    console.log(teabagsData)
     c.status(200)
     
     return c.body(teabagsData)
