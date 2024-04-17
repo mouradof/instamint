@@ -1,8 +1,9 @@
 import { Hono } from "hono"
-import TeabagModel from "../db/models/TeabagModel.js"
+import GroupMemberModel from "../db/models/GroupMemberModel.js"
 import { zValidator } from "@hono/zod-validator"
 import { z } from "zod"
 import { idValidator } from "../validators.js"
+import TeabagModel from "../db/models/TeabagModel.js"
 
 const prepareRoutesTeabags = ({ app }) => {
   const teabagsData = new Hono()
@@ -10,19 +11,21 @@ const prepareRoutesTeabags = ({ app }) => {
   const teabagSchema = z.object({
     userId: idValidator,
   })
-  // I GUESS WE WILL GET USERID FROM JWT BUT ATM I AM DOING IT WITHOUT TOKEN
-  teabagsData.get("/teabags/:userId",
+
+  teabagsData.get("/:userId/teabags",
     zValidator("param", teabagSchema),
     async (c) => {
       try {
         const userId = c.req.valid("param").userId
-        const teabagsData = await TeabagModel.query().where("ownerId", userId)
+        const groupMemberships = await GroupMemberModel.query().where("userId", userId)
+        const teabagIds = groupMemberships.map(group => group.teabagId)
+        const teabagsData = await TeabagModel.query().findByIds(teabagIds)
         c.status(200)
-
+                
         return c.json({
+          result: teabagsData,
           success: true,
-          ...teabagsData,
-          message: `done`,
+          message: `Data fetched`,
         })
       } catch (error) {
         c.status(500).send({ error: "Internal server error" })

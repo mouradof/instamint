@@ -1,5 +1,6 @@
 import { serve } from "@hono/node-server"
 import { Hono } from "hono"
+import { cors } from "hono/cors"
 import { logger } from "hono/logger" 
 import knex from "knex"
 import BaseModel from "./src/db/models/BaseModel.js"
@@ -11,16 +12,18 @@ BaseModel.knex(db)
 
 const app = new Hono()
 app.use(logger())
+app.use(cors({
+  origin: "http://localhost:3001",
+  allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], 
+  allowHeaders: ["*"], 
+  credentials: true,
+}))
 
 prepareRoutesTeabags({ app, db })
 
 serve({
   fetch: app.fetch,
   port: config.port,
-})
-
-app.use((c) => {
-  c.status(404).send({ error: "Not found" })
 })
 
 // eslint-disable-next-line no-console
