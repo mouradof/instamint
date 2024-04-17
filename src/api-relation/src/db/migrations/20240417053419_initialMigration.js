@@ -44,5 +44,5 @@ export const up = async (knex) => {
 export const down = async (knex) => {
     await knex.schema.dropTableIfExists("teabags")
     await knex.schema.dropTableIfExists("users")
-    await knex.schema.dropTableIfExists("groupMember")
+    await knex.schema.dropTableIfExists("groupMembers")
 }
