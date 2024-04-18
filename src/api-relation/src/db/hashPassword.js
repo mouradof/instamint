@@ -1,12 +1,12 @@
-import { pbkdf2 as pbkdf2Callback, randomBytes } from "crypto"
-import { promisify } from "util"
-import config from "../../config.js"
+import { pbkdf2 as pbkdf2Callback, randomBytes } from 'crypto'
+import { promisify } from 'util'
+import config from '../../config.js'
 
 const pbkdf2 = promisify(pbkdf2Callback)
 
 const hashPassword = async (
   password,
-  salt = randomBytes(config.security.password.saltlen).toString("hex")
+  salt = randomBytes(config.security.password.saltlen).toString('hex')
 ) => [
   (
     await pbkdf2(
@@ -16,8 +16,8 @@ const hashPassword = async (
       config.security.password.keylen,
       config.security.password.digest
     )
-  ).toString("hex"),
-  salt,
+  ).toString('hex'),
+  salt
 ]
 
 export default hashPassword

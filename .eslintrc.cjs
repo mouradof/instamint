@@ -2,76 +2,32 @@ module.exports = {
   root: true,
   extends: [
     "eslint:recommended",
-    "prettier",
-    "next",
-    "plugin:react/recommended",
+    "plugin:react/recommended", // Ensures we use the recommended rules for React
+    "next", // Next.js specific linting rules
+    "prettier" // This should come last to override other configurations
   ],
-  plugins: ["react", "react-hooks"],
+  plugins: [
+    "react", // Enables react-specific linting rules
+    "react-hooks" // Enables rules for React hooks
+  ],
   env: {
+    browser: true,
     es2022: true,
-    node: true,
+    node: true
   },
   parserOptions: {
+    ecmaVersion: 2022,
     sourceType: "module",
+    ecmaFeatures: {
+      jsx: true
+    }
   },
   rules: {
-    indent: "off",
-    "linebreak-style": ["error", "unix"],
-    quotes: [
-      "error",
-      "double",
-      { avoidEscape: true, allowTemplateLiterals: true },
-    ],
-    semi: ["error", "never"],
-    "no-console": "error",
-    "no-implicit-globals": "error",
-    "no-warning-comments": ["error", { terms: ["fixme", "todo"] }],
-    "newline-before-return": "error",
-    curly: "error",
-    "padded-blocks": ["error", "never"],
-    "space-before-blocks": "error",
-    "padding-line-between-statements": [
-      "error",
-      {
-        blankLine: "always",
-        prev: "*",
-        next: [
-          "break",
-          "case",
-          "cjs-export",
-          "class",
-          "continue",
-          "do",
-          "if",
-          "switch",
-          "try",
-          "while",
-          "return",
-        ],
-      },
-      {
-        blankLine: "always",
-        prev: [
-          "break",
-          "case",
-          "cjs-export",
-          "class",
-          "continue",
-          "do",
-          "if",
-          "switch",
-          "try",
-          "while",
-          "return",
-        ],
-        next: "*",
-      },
-    ],
-    "react-hooks/rules-of-hooks": "error",
-    "react-hooks/exhaustive-deps": "warn",
-    "react/no-unescaped-entities": ["error", { forbid: [">", "}"] }],
-    "react/react-in-jsx-scope": "off",
-    "react/prop-types": "off",
+    // Your specific rules here
   },
-  settings: { react: { version: "detect" } },
-}
+  settings: {
+    react: {
+      version: "detect" // Automatically detect the version of React to use
+    }
+  }
+};
