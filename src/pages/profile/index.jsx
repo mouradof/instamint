@@ -4,7 +4,7 @@ import { faHeart, faComments, faRetweet, faBars, faTrash } from "@fortawesome/fr
 
 
 const ProfileHeader = () => (
-  <div className="w-full h-56 bg-cover bg-center" style={{ backgroundImage: "url('/images/cover.png')" }}>
+  <div className="w-full h-56 bg-cover bg-center" style={{ backgroundImage: `url("/images/cover.png")` }}>
   </div>
 )
 
@@ -36,7 +36,7 @@ const ProfileContent = () => (
         Follow
       </button>
       <button className="bg-transparent text-customGreen font-bold py-2 px-4 rounded-full border-2 border-customGreen hover:bg-customGreen hover:text-white transition duration-300 ease-in-out">
-        NFT's
+        NFT"s
       </button>
     </div>
   </div>
@@ -94,7 +94,7 @@ const ProfilePosts = () => {
           )}
         </div>
       </div>
-      <div className="text-gray-600 text-sm mb-4">It's a new day in Cyprus...</div>
+      <div className="text-gray-600 text-sm mb-4">It"s a new day in Cyprus...</div>
       <div className="mt-4 mb-8 cursor-pointer">
         <img
           src="/images/default-profile-picture.jpg"

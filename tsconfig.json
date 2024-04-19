@@ -28,7 +28,7 @@
     ".next/types/**/*.ts",
     "**/*.ts",
     "**/*.tsx"
-, "src/pages/profile/editProfile.jsx", "src/pages/profile/index.jsx"  ],
+, "src/pages/profile/editProfile.jsx", "src/pages/profile/index.jsx", "src/pages/index.jsx", "src/pages/_app.jsx"  ],
   "exclude": [
     "node_modules"
   ]

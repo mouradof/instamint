@@ -22,7 +22,7 @@ const ListTeabags = () => {
 
   return (
     <div>
-      {error && <p>Une erreur s'est produite : {error}</p>}
+      {error && <p>Une erreur s"est produite : {error}</p>}
       <ul>
         {teabags.map(teabag => (
           <li key={teabag.id}>
