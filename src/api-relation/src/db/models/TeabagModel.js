@@ -1,3 +1,5 @@
+// api-relation/src/db/models/TeabagModel.js
+
 import BaseModel from "./BaseModel.js"
 import UserModel from "./UserModel.js"
 import GroupMemberModel from "./GroupMemberModel.js"

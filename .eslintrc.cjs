@@ -73,5 +73,9 @@ module.exports = {
     "react/react-in-jsx-scope": "off",
     "react/prop-types": "off",
   },
-  settings: { react: { version: "detect" } },
+  settings: { 
+    react: {
+      version: '^18.2.0'
+    }
+   },
 }

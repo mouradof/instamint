@@ -1,3 +1,5 @@
+// api-relation/src/db/models/UserModel.js
+
 import BaseModel from "./BaseModel.js"
 import UserModel from "./UserModel.js"
 import TeabagModel from "./TeabagModel.js"

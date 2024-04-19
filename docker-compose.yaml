@@ -9,11 +9,14 @@ services:
   api-user:
     build: ./src/api-user
     ports:
-      - "4000:4000"
+      - "4000:4002"
     environment:
       DATABASE_URL: postgresql://user:password@postgres-db:5432/instamintdb
+      SMTP_HOST: mailhog  # Add this to use MailHog for sending emails
+      SMTP_PORT: 1025      # MailHog SMTP port
     volumes:
       - ./src/api-user:/usr/src/app
+      - /usr/src/app/node_modules
 
   api-relation:
     build: ./src/api-relation
@@ -63,6 +66,12 @@ services:
       PGADMIN_DEFAULT_PASSWORD: admin
     depends_on:
       - postgres-db
+
+  mailhog:
+    image: mailhog/mailhog
+    ports:
+      - "8025:8025"  # Web interface
+      - "1025:1025"  # SMTP server
 
 volumes:
   postgres-data: 

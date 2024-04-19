@@ -1,3 +1,5 @@
+// api-relation/src/db/migrations/20240417053419_initialMigration.js
+
 export const up = async (knex) => {
     await knex.schema.createTable("users", (table) => {
         table.increments("id").primary()
