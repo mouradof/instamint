@@ -12,14 +12,55 @@ const prepareRoutesTeabags = ({ app }) => {
     userId: idValidator,
   })
 
+  //Assuming that i'm doing this request with a flat data. I'm waiting for tokken
   teabagsData.get("/:userId/teabags",
     zValidator("param", teabagSchema),
     async (c) => {
       try {
         const userId = c.req.valid("param").userId
         const groupMemberships = await GroupMemberModel.query().where("userId", userId)
+
+        if(!groupMemberships) {
+          c.status(404)
+
+          return c.json({
+            success: false,
+            message: `User has no group`,
+          })
+        }
+
         const teabagIds = groupMemberships.map(group => group.teabagId)
+        
+        if(!teabagIds) {
+          c.status(404)
+
+          return c.json({
+            success: false,
+            message: `404 Not found`,
+          })
+        }
+
         const teabagsData = await TeabagModel.query().findByIds(teabagIds)
+
+
+        
+        if(!teabagsData) {
+          c.status(404)
+
+          return c.json({
+            success: false,
+            message: `404 Not found`,
+          })
+        }
+
+        for (const teabag of teabagsData) {
+          const userCount = await GroupMemberModel.query()
+            .where("teabagId", teabag.id)
+            .count("userId as userCount")
+            .first()
+          teabag.userCount = userCount.userCount || 0
+        }
+
         c.status(200)
                 
         return c.json({
@@ -32,7 +73,7 @@ const prepareRoutesTeabags = ({ app }) => {
 
         return c.json({
           result: error,
-          succes: false,
+          success: false,
           message: `INTERNAL SERVER ERROR: ${error}`
         })
       }

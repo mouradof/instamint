@@ -21,6 +21,7 @@ export const up = async (knex) => {
         table.dateTime("createDate").defaultTo(knex.fn.now())
         table.dateTime("updatedDate").defaultTo(knex.fn.now())
         table.boolean("private").defaultTo(false)
+        table.string("image")
     })
 
     await knex.schema.createTable("groupMembers", (table) => {
@@ -42,7 +43,7 @@ export const up = async (knex) => {
 }
 
 export const down = async (knex) => {
+    await knex.schema.dropTableIfExists("groupMembers")
     await knex.schema.dropTableIfExists("teabags")
     await knex.schema.dropTableIfExists("users")
-    await knex.schema.dropTableIfExists("groupMembers")
 }

@@ -17,6 +17,7 @@ export const seed = async (knex) => {
       updatedDate: faker.date.recent(),
       private: faker.datatype.boolean(),
       ownerId: ownerId,
+      image: faker.image.avatarLegacy(),
     })
   }
 

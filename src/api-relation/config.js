@@ -5,7 +5,7 @@ import { resolve } from "path"
 dotenv.config({ path: resolve(".env") })
 
 const config = {
-  port: 4002 ,
+  port: 4001 ,
   db: knexfile,
   security: {
     password: {
