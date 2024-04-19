@@ -7,6 +7,8 @@ import { authMiddleware } from "./src/middleware/auth.js"
 import BaseModel from "./src/db/models/BaseModel.js"
 import config from "./config.js"
 import prepareAuthRoutes from "./src/routes/auth-routes.js" 
+import userRoutes from './src/routes/user-routes.js';
+
 
 const db = knex(config.db)
 BaseModel.knex(db)
@@ -24,6 +26,8 @@ app.use(cors({
 
 // Set up authentication routes
 prepareAuthRoutes({ app, db })
+
+app.route('/api', userRoutes);
 
 // Use authentication middleware on routes that require authentication
 app.use("/api/protected", authMiddleware)
