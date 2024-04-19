@@ -8,7 +8,7 @@ const ListTeabags = () => {
   useEffect(() => {
     const fetchTeabags = async () => {
       try {
-        const response = await axios.get("http://localhost:4002/10/teabags")
+        const response = await axios.get("http://localhost:4001/10/teabags")
         const teabagsArray = Object.values(response.data.result)
         
         setTeabags(teabagsArray)

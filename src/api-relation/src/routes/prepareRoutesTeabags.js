@@ -28,7 +28,13 @@ const prepareRoutesTeabags = ({ app }) => {
           message: `Data fetched`,
         })
       } catch (error) {
-        c.status(500).send({ error: "Internal server error" })
+        c.status(500) 
+
+        return c.json({
+          result: error,
+          succes: false,
+          message: `INTERNAL SERVER ERROR: ${error}`
+        })
       }
     }
   )
