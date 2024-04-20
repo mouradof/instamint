@@ -1,122 +1,125 @@
-import React, { useState, useRef } from "react"
-import Link from "next/link"
+import React, { useState, useEffect } from "react";
 
 const EditProfilePage = () => {
-  const [profile, setProfile] = useState({
-    firstName: "",
-    lastName: "",
-    phoneNumber: "",
-    email: "",
-    address: "",
-    profileImage: "/images/default-profile-picture.jpg",
-    coverImage: "/images/default-cover-picture.jpg",
-  })
+  const [userData, setUserData] = useState({
+    username: '',
+    email: '',
+    bio: ''
+  });
+  const [alert, setAlert] = useState({ message: '', type: '', show: false });
 
-  const fileInputRef = useRef(null)
-  const coverInputRef = useRef(null)
+  useEffect(() => {
+    fetch('http://localhost:4002/api/user/2') // Utiliser l'ID de l'utilisateur connecté
+      .then(response => response.json())
+      .then(data => setUserData({
+        username: data.username,
+        email: data.email,
+        bio: data.bio
+      }))
+      .catch(error => {
+        console.error('Failed to load user data', error);
+        showAlert('Failed to load user data. Please try again.', 'error');
+      });
+  }, []);
 
-  // Handles changes to inputs including files for images
-  const handleChange = (e) => {
-    const { name, value, files } = e.target
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    setUserData(prev => ({ ...prev, [name]: value }));
+  };
 
-    if (name === "profileImage" || name === "coverImage") {
-      if (files) {
-        const file = files[0]
-        const reader = new FileReader()
-        reader.onloadend = () => {
-          setProfile({ ...profile, [name]: reader.result })
-        }
-        reader.readAsDataURL(file)
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    fetch(`http://localhost:4002/api/user/2`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        username: userData.username,
+        bio: userData.bio
+      })
+    })
+    .then(response => {
+      if (response.ok) {
+        showAlert('Profile updated successfully!', 'success');
+      } else {
+        return response.json().then(data => {
+          throw new Error(data.message || 'Error updating profile');
+        });
       }
-    } else {
-      setProfile({ ...profile, [name]: value })
-    }
-  }
+    })
+    .catch(error => {
+      console.error('Failed to update profile', error);
+      showAlert(error.message, 'error');
+    });
+  };
 
-  // Handle clicking on image input fields
-  const handleImageClick = (ref) => {
-    ref.current?.click()
-  }
-
-  const handleSubmit = (e) => {
-    e.preventDefault()
-  }
+  const showAlert = (message, type) => {
+    setAlert({ message, type, show: true });
+    setTimeout(() => {
+      setAlert(prevAlert => ({ ...prevAlert, show: false }));
+    }, 3000); // Correctly update alert state after 3 seconds
+  };
 
   return (
-    <div className="flex flex-col items-center w-full">
-      <div className="w-3/4 mt-4 bg-white shadow rounded-lg p-4">
-        <form onSubmit={handleSubmit} className="flex flex-col">
-          <div className="flex flex-col items-center w-full">
-            <div className="relative w-full h-64 mb-4">
-              <div className="absolute inset-0 w-full h-full overflow-hidden rounded-lg cursor-pointer">
-                <img
-                  src={profile.coverImage}
-                  alt="Cover"
-                  className="w-full h-full object-cover transition duration-300 ease-in-out hover:opacity-90"
-                  onClick={() => handleImageClick(coverInputRef)}
-                />
-                <input
-                  type="file"
-                  name="coverImage"
-                  ref={coverInputRef}
-                  onChange={handleChange}
-                  className="hidden"
-                />
-              </div>
-              <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/4 w-32 h-32">
-                <div className="relative w-full h-full border-4 border-white rounded-full shadow-lg overflow-hidden cursor-pointer">
-                  <img
-                    src={profile.profileImage}
-                    alt="Profile"
-                    className="w-full h-full object-cover transition duration-300 ease-in-out hover:opacity-90"
-                    onClick={() => handleImageClick(fileInputRef)}
-                  />
-                  <input
-                    type="file"
-                    name="profileImage"
-                    ref={fileInputRef}
-                    onChange={handleChange}
-                    className="hidden"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-          {/* Add a margin-top here to create space */}
-          <div className="flex flex-wrap -mx-2 mt-8">
-            {["firstName", "lastName", "email", "phoneNumber", "address"].map((field) => (
-              <div key={field} className="px-2 w-full md:w-1/2">
-                <label className="block text-gray-700 text-sm font-bold mb-2">
-                  {field.replace(/([A-Z])/g, " $1").trim()}
-                </label>
-                <input
-                  type={field === "email" ? "email" : "text"}
-                  name={field}
-                  value={profile[field]}
-                  onChange={handleChange}
-                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                  placeholder={`Enter your ${field}`}
-                />
-              </div>
-            ))}
-          </div>
-          <div className="flex justify-center gap-4 mt-4">
-            <button
-              type="submit"
-              className="bg-customGreen text-white font-bold py-2 px-4 rounded-full hover:bg-customGreenDarker transition duration-300 ease-in-out"
-            >
-              Update
-            </button>
-            <Link href="/profile" passHref>
-              <button className="bg-transparent text-customGreen font-bold py-2 px-4 rounded-full border-2 border-customGreen hover:bg-customGreen hover:text-white transition duration-300 ease-in-out">
-                Cancel
-              </button>
-            </Link>
-          </div>
-        </form>
-      </div>
+    <div className="w-full max-w-md mx-auto mt-10">
+      {alert.show && (
+        <div className={`fixed bottom-5 left-1/2 transform -translate-x-1/2 px-4 py-3 border rounded-md shadow-lg text-white ${alert.type === 'error' ? 'bg-red-500' : 'bg-green-500'}`}>
+          {alert.message}
+        </div>
+      )}
+      <form className="bg-white shadow-lg rounded-lg px-8 pt-6 pb-8 mb-4" onSubmit={handleSubmit}>
+        <div className="mb-4">
+          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="username">
+            Username
+          </label>
+          <input
+            id="username"
+            name="username"
+            type="text"
+            placeholder="Username"
+            value={userData.username}
+            onChange={handleInputChange}
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
+            Email (not editable)
+          </label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            placeholder="Email"
+            value={userData.email}
+            onChange={handleInputChange}
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            readOnly
+          />
+        </div>
+        <div className="mb-6">
+          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="bio">
+            Bio
+          </label>
+          <textarea
+            id="bio"
+            name="bio"
+            placeholder="Bio"
+            value={userData.bio}
+            onChange={handleInputChange}
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          />
+        </div>
+        <div className="flex items-center justify-between">
+          <button
+            type="submit"
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+          >
+            Update Profile
+          </button>
+        </div>
+      </form>
     </div>
-  )
-}
+  );
+};
 
-export default EditProfilePage
+export default EditProfilePage;
