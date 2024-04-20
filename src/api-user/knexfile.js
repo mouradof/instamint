@@ -6,7 +6,7 @@ config()
 const knexfile = {
   client: "pg",
   connection: {
-    host: "localhost",
+    host: "postgres-db",
     port: 5432,
     user: "user", 
     password: "password",

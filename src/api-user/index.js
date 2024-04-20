@@ -7,7 +7,7 @@ import { authMiddleware } from "./src/middleware/auth.js"
 import BaseModel from "./src/db/models/BaseModel.js"
 import config from "./config.js"
 import prepareAuthRoutes from "./src/routes/auth-routes.js" 
-import dotenv from 'dotenv';
+import dotenv from "dotenv"
 
 const db = knex(config.db)
 BaseModel.knex(db)
@@ -30,7 +30,7 @@ serve({
   port: config.port,
 })
 
-dotenv.config();
+dotenv.config()
 
 // eslint-disable-next-line no-console
 console.log(`Listening on : ${config.port}`)

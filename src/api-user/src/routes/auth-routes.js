@@ -71,11 +71,9 @@ const prepareAuthRoutes = ({ app }) => {
   })
 
   auth.get("/verify", async (c) => {
-    const token = c.req.query('token');
-    console.log("Token:", token);
+    const token = c.req.query("token")
 
     try {
-      console.log(token)
       const user = await UserModel.query().where({ verifyToken: token }).first()
 
       if (!user) {

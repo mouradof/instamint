@@ -7,7 +7,7 @@ async function sendVerificationEmail(userEmail, token) {
         secure: false,
     })
 
-    const verificationUrl = `http://localhost:4002/auth/verify?token=${token}`
+    const verificationUrl = `http://localhost:4000/auth/verify?token=${token}`
 
     await transporter.sendMail({
         from: "no-reply@yourapi.com",
