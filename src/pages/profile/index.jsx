@@ -1,12 +1,46 @@
-import React, { useState, useEffect } from "react"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faHeart, faComments, faRetweet, faBars, faTrash } from "@fortawesome/free-solid-svg-icons"
+import React, { useState, useEffect } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faHeart, faComments, faRetweet, faBars, faTrash } from "@fortawesome/free-solid-svg-icons";
 
+const ProfileHeader = () => {
+  const [showMenu, setShowMenu] = useState(false);
 
-const ProfileHeader = () => (
-  <div className="w-full h-56 bg-cover bg-center" style={{ backgroundImage: `url("/images/cover.png")` }}>
-  </div>
-)
+  const toggleMenu = () => {
+    setShowMenu(!showMenu);
+  };
+
+  return (
+    <div className="w-full h-56 bg-cover bg-center relative" style={{ backgroundImage: `url("/images/cover.png")` }}>
+      <div className="absolute top-4 left-4">
+        <img
+          src="/images/logo-Instamint.png" 
+          alt="Company Logo"
+          className="h-29 w-14"
+        />
+      </div>
+      <div className="absolute top-4 right-4">
+        <button 
+          onClick={toggleMenu}
+          className="p-2 text-white bg-gray-800 bg-opacity-75 rounded-full hover:bg-opacity-100 transition-opacity duration-300"
+        >
+          <FontAwesomeIcon icon={faBars} size="lg" />
+        </button>
+        {showMenu && (
+          <div className="absolute right-0 mt-12 bg-white rounded shadow-lg w-48">
+            <ul className="text-gray-700">
+              <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={() => window.location.href = 'profile/editProfile'}>
+                Edit Profile
+              </li>
+              <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={() => window.location.href = 'profile/deleteAccount'}>
+                Delete Account
+              </li>
+            </ul>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
 
 const ProfileContent = ({ userData }) => (
   <div className="w-3/4 mt-4 px-4 flex flex-col items-center">
@@ -34,43 +68,26 @@ const ProfileContent = ({ userData }) => (
   </div>
 );
 
-
 const ProfilePosts = () => {
-  const [isDropdownVisible, setDropdownVisible] = useState(false)
-  const [isImageFullscreen, setImageFullscreen] = useState(false)
-  const [liked, setLiked] = useState(false)
+  const [isDropdownVisible, setDropdownVisible] = useState(false);
+  const [isImageFullscreen, setImageFullscreen] = useState(false);
+  const [liked, setLiked] = useState(false);
 
-  const toggleDropdown = () => {
-    setDropdownVisible(!isDropdownVisible)
-  }
-
+  const toggleDropdown = () => setDropdownVisible(!isDropdownVisible);
   const handleDeletePost = () => {
-    alert("Post has been deleted (simulation).")
-    setDropdownVisible(false)
-  }
-
-  const toggleImageFullscreen = () => {
-    setImageFullscreen(!isImageFullscreen)
-  }
-
-  const toggleLike = () => {
-    setLiked(!liked)
-  }
+    alert("Post has been deleted (simulation).");
+    setDropdownVisible(false);
+  };
+  const toggleImageFullscreen = () => setImageFullscreen(!isImageFullscreen);
+  const toggleLike = () => setLiked(!liked);
 
   return (
     <div className="w-3/4 mx-auto bg-white shadow rounded-lg p-4">
       <div className="flex items-center mb-2">
-        <img
-          className="w-10 h-10 rounded-full mr-4"
-          src="/images/default-profile-picture.jpg"
-          alt="User avatar"
-        />
+        <img className="w-10 h-10 rounded-full mr-4" src="/images/default-profile-picture.jpg" alt="User avatar" />
         <span className="font-bold text-md">Darrell asidddd</span>
         <div className="ml-auto relative">
-          <button
-            onClick={toggleDropdown}
-            className="p-2 rounded hover:bg-gray-200 transition duration-200"
-          >
+          <button onClick={toggleDropdown} className="p-2 rounded hover:bg-gray-200 transition duration-200">
             <FontAwesomeIcon icon={faBars} />
           </button>
           {isDropdownVisible && (
@@ -87,7 +104,7 @@ const ProfilePosts = () => {
           )}
         </div>
       </div>
-      <div className="text-gray-600 text-sm mb-4">It"s a new day in Cyprus...</div>
+      <div className="text-gray-600 text-sm mb-4">It's a new day in Cyprus...</div>
       <div className="mt-4 mb-8 cursor-pointer">
         <img
           src="/images/default-profile-picture.jpg"
@@ -98,7 +115,7 @@ const ProfilePosts = () => {
         {isImageFullscreen && (
           <div className="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50">
             <button onClick={toggleImageFullscreen} className="absolute top-3 right-3 text-white text-xl">
-              &times 
+              &times;
             </button>
             <img
               src="/images/default-profile-picture.jpg"
@@ -110,15 +127,15 @@ const ProfilePosts = () => {
       </div>
       <div className="flex justify-around w-full">
         <div className="flex items-center cursor-pointer" onClick={toggleLike}>
-          <FontAwesomeIcon icon={faHeart} className={`text-gray-600 h-4 w-4 mr-1 ${liked ? "text-red-500" : "text-gray-600"}`} />
+          <FontAwesomeIcon icon={faHeart} className={`h-4 w-4 mr-1 ${liked ? "text-red-500" : "text-gray-600"}`} />
           <span className="text-xs text-gray-600">10k</span>
         </div>
         <div className="flex items-center cursor-pointer" onClick={() => alert("Comment feature coming soon!")}>
-          <FontAwesomeIcon icon={faComments} className="text-gray-600 h-4 w-4 mr-1" />
+          <FontAwesomeIcon icon={faComments} className="h-4 w-4 mr-1" />
           <span className="text-xs text-gray-600">500</span>
         </div>
         <div className="flex items-center cursor-pointer" onClick={() => alert("You retweeted this post!")}>
-          <FontAwesomeIcon icon={faRetweet} className="text-gray-600 h-4 w-4 mr-1" />
+          <FontAwesomeIcon icon={faRetweet} className="h-4 w-4 mr-1" />
           <span className="text-xs text-gray-600">1.3k</span>
         </div>
       </div>
