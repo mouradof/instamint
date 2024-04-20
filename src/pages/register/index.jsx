@@ -1,5 +1,6 @@
 import React, { useState } from "react"
 import { useRouter } from "next/router"
+import Link from "next/link"
 
 const Register = () => {
   const [username, setUsername] = useState("")
@@ -23,7 +24,7 @@ const Register = () => {
         alert("Inscription réussie. Veuillez vérifier votre e-mail.")
         router.push("/login")
       } else {
-        alert("Erreur d\"inscription")
+        alert("Erreur d'inscription")
       }
     } catch (error) {
       alert("Erreur réseau")
@@ -71,7 +72,7 @@ const Register = () => {
         </div>
       </form>
       <div style={{ textAlign: "center" }}>
-        Already have an account? <a href="/login" style={{ color: "blue" }}>Login here</a>
+        Already have an account? <Link href="/login"><a style={{ color: "blue" }}>Login here</a></Link>
       </div>
     </div>
   )

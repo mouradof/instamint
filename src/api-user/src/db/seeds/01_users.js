@@ -22,12 +22,8 @@ export const seed = async (knex) => {
   await knex("users").del()
   await knex.raw("ALTER SEQUENCE users_id_seq RESTART WITH 1")
 
-  const fakeUsers = []
-
-  for (let i = 1; i <= 10; i += 1) {
-    const fakeUser = await createFakeUser()
-    fakeUsers.push(fakeUser)
-  }
+  const promises = Array.from({ length: 10 }, createFakeUser)
+  const fakeUsers = await Promise.all(promises)
 
   await knex("users").insert(fakeUsers)
 }
