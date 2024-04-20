@@ -98,7 +98,7 @@ const ProfilePosts = () => {
         {isImageFullscreen && (
           <div className="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50">
             <button onClick={toggleImageFullscreen} className="absolute top-3 right-3 text-white text-xl">
-              &times {/* Close button */}
+              &times 
             </button>
             <img
               src="/images/default-profile-picture.jpg"

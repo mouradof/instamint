@@ -9,7 +9,7 @@ const EditProfilePage = () => {
   const [alert, setAlert] = useState({ message: '', type: '', show: false });
 
   useEffect(() => {
-    fetch('http://localhost:4002/api/user/2') // Utiliser l'ID de l'utilisateur connecté
+    fetch('http://localhost:4002/api/user/2') 
       .then(response => response.json())
       .then(data => setUserData({
         username: data.username,
@@ -56,7 +56,7 @@ const EditProfilePage = () => {
     setAlert({ message, type, show: true });
     setTimeout(() => {
       setAlert(prevAlert => ({ ...prevAlert, show: false }));
-    }, 3000); // Correctly update alert state after 3 seconds
+    }, 3000); 
   };
 
   return (
