@@ -1,5 +1,5 @@
 import { faker } from "@faker-js/faker"
-import hashPassword from "../hashPassword.js"  // Corrected import statement
+import hashPassword from "../hashPassword.js"
 import crypto from "crypto"
 
 const createFakeUser = async () => {

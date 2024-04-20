@@ -12,8 +12,8 @@ services:
       - "4000:4002"
     environment:
       DATABASE_URL: postgresql://user:password@postgres-db:5432/instamintdb
-      SMTP_HOST: mailhog  # Add this to use MailHog for sending emails
-      SMTP_PORT: 1025      # MailHog SMTP port
+      SMTP_HOST: mailhog
+      SMTP_PORT: 1025
     volumes:
       - ./src/api-user:/usr/src/app
       - /usr/src/app/node_modules
@@ -70,8 +70,8 @@ services:
   mailhog:
     image: mailhog/mailhog
     ports:
-      - "8025:8025"  # Web interface
-      - "1025:1025"  # SMTP server
+      - "8025:8025"
+      - "1025:1025"
 
 volumes:
   postgres-data: 

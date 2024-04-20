@@ -1,5 +1,3 @@
-// api-relation/src/validators.js
-
 import { z } from "zod"
 
 // generic

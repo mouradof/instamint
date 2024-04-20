@@ -1,5 +1,3 @@
-// api-relation/src/db/seeds/02_initalTeabags.js
-
 import { faker } from "@faker-js/faker"
 import UserModel from "../models/UserModel.js"
 

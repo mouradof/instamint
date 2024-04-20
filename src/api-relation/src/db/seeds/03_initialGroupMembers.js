@@ -1,5 +1,3 @@
-// api-relation/src/db/seeds/03_initialGroupMembers.js
-
 import { faker } from "@faker-js/faker"
 import UserModel from "../models/UserModel.js"
 import TeabagModel from "../models/TeabagModel.js"

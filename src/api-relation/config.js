@@ -1,5 +1,3 @@
-// api-relation/src/config.js
-
 import knexfile from "./knexfile.js"
 import dotenv from "dotenv"
 import { resolve } from "path"

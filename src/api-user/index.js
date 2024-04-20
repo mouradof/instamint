@@ -7,13 +7,13 @@ import { authMiddleware } from "./src/middleware/auth.js"
 import BaseModel from "./src/db/models/BaseModel.js"
 import config from "./config.js"
 import prepareAuthRoutes from "./src/routes/auth-routes.js" 
+import dotenv from 'dotenv';
 
 const db = knex(config.db)
 BaseModel.knex(db)
 
 const app = new Hono()
 
-// Middleware for logging and CORS
 app.use(logger())
 app.use(cors({
   origin: "*",
@@ -21,18 +21,16 @@ app.use(cors({
   allowHeaders: ["*"],
   credentials: true,
 }))
-
-// Set up authentication routes
-prepareAuthRoutes({ app, db })
-
-// Use authentication middleware on routes that require authentication
 app.use("/api/protected", authMiddleware)
 
-// Start the server
+prepareAuthRoutes({ app, db })
+
 serve({
   fetch: app.fetch,
   port: config.port,
 })
+
+dotenv.config();
 
 // eslint-disable-next-line no-console
 console.log(`Listening on : ${config.port}`)

@@ -6,8 +6,8 @@ export const up = async (knex) => {
       table.text("passwordHash").notNullable()
       table.text("passwordSalt").notNullable()
       table.boolean("emailVerified").defaultTo(false)
-      table.text("verifyToken").nullable() // Reflects the nullable "verifyToken" field for email verification
-      table.text("bio").nullable().defaultTo(null) // Reflects the optional bio, which can be null
+      table.text("verifyToken").nullable()
+      table.text("bio").nullable().defaultTo(null)
   })
 }
 

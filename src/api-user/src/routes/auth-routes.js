@@ -25,7 +25,7 @@ const prepareAuthRoutes = ({ app }) => {
         username,
         email,
         passwordHash: hashedPassword,
-        passwordSalt: salt, // Storing salt as well
+        passwordSalt: salt,
         verifyToken: UserModel.generateVerifyToken(),
       })
 
@@ -38,7 +38,7 @@ const prepareAuthRoutes = ({ app }) => {
   })
 
   auth.post("/login", async (c) => {
-    const body = await c.req.json() // Manually parse JSON from the request
+    const body = await c.req.json()
     const { email, password } = body
 
     try {
@@ -71,7 +71,7 @@ const prepareAuthRoutes = ({ app }) => {
   })
 
   auth.get("/verify", async (c) => {
-    const token = c.req.query('token');  // Try using a method call if c.req.query as an object fails
+    const token = c.req.query('token');
     console.log("Token:", token);
 
     try {

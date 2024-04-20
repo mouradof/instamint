@@ -21,8 +21,8 @@ class UserModel extends BaseModel {
         passwordHash: { type: "string", minLength: 1 },
         passwordSalt: { type: "string", minLength: 1 },
         bio: { type: ["string", "null"], maxLength: 1024 },
-        verifyToken: { type: ["string", "null"], maxLength: 255 },  // Optional for email verification
-        emailVerified: { type: "boolean", default: false },  // Tracks verification status
+        verifyToken: { type: ["string", "null"], maxLength: 255 },
+        emailVerified: { type: "boolean", default: false },
       }
     }
   }

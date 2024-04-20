@@ -1,5 +1,3 @@
-// api-relation/src/db/seeds/01_initialUsers.js
-
 import { faker } from "@faker-js/faker"
 import hashPassword from "../hashPassword.js"
 
