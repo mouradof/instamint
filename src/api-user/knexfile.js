@@ -6,11 +6,11 @@ config()
 const knexfile = {
   client: "pg",
   connection: {
-    host: "localhost",
-    port: 5432,
-    user: "user", 
-    password: "password",
-    database: "instamintdb",
+    host: process.env.DB_HOST || "localhost",
+    port: process.env.DB_PORT || 5432,
+    user: process.env.DB_USER || "user", 
+    password: process.env.DB_PASSWORD || "password",
+    database: process.env.DB_NAME || "instamintdb",
   },
   migrations: {
     directory: resolve("src/db/migrations"),

@@ -4,7 +4,7 @@ const DeleteAccountPage = () => {
   const [alert, setAlert] = useState({ message: '', type: '', show: false });
 
   const handleDeleteAccount = () => {
-    fetch('http://localhost:4002/api/user/3', {
+    fetch('http://localhost:4002/api/user/1', {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',

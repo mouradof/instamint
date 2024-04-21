@@ -9,7 +9,7 @@ const EditProfilePage = () => {
   const [alert, setAlert] = useState({ message: '', type: '', show: false });
 
   useEffect(() => {
-    fetch('http://localhost:4002/api/user/2') 
+    fetch('http://localhost:4002/api/user/1') 
       .then(response => response.json())
       .then(data => setUserData({
         username: data.username,
@@ -29,7 +29,7 @@ const EditProfilePage = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    fetch(`http://localhost:4002/api/user/2`, {
+    fetch(`http://localhost:4002/api/user/1`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

@@ -153,9 +153,26 @@ const ProfilePage = () => {
   });
 
   useEffect(() => {
-    fetch('http://localhost:4002/api/user/3')
-      .then(response => response.json())
-      .then(data => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      // Si aucun token, rediriger vers la page de connexion
+      window.location.href = '/login';
+    }
+
+    const fetchData = async () => {
+      try {
+        const response = await fetch('http://localhost:4002/api/user/1', {
+          headers: new Headers({
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch user data');
+        }
+
+        const data = await response.json();
         setUserData({
           username: data.username,
           followers: data.followers,
@@ -163,8 +180,13 @@ const ProfilePage = () => {
           bio: data.bio,
           profilePicture: data.profilePicture || '/images/default-profile-picture.jpg'
         });
-      })
-      .catch(error => console.error('Error loading the user data:', error));
+      } catch (error) {
+        console.error('Error loading the user data:', error);
+        window.location.href = '/login';
+      }
+    };
+    
+    fetchData();
   }, []);
 
   return (
