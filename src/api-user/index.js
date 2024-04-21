@@ -6,13 +6,8 @@ import knex from "knex"
 import { authMiddleware } from "./src/middleware/auth.js"
 import BaseModel from "./src/db/models/BaseModel.js"
 import config from "./config.js"
-import prepareRouteRegister from "./src/routes/register-route.js"
-import prepareRouteLogin from "./src/routes/login-route.js"
-import prepareRouteVerify from "./src/routes/verify-route.js"
-import dotenv from "dotenv"
 import userRoutes from './src/routes/user-routes.js';
 
-dotenv.config()
 
 const db = knex(config.db)
 BaseModel.knex(db)
@@ -26,17 +21,15 @@ app.use(cors({
   allowHeaders: ["*"],
   credentials: true,
 }))
-app.use("/api/protected", authMiddleware)
+
+
 app.route('/api', userRoutes);
 
-prepareRouteRegister({ app, db })
-prepareRouteLogin({ app, db })
-prepareRouteVerify({ app, db })
+app.use("/api/protected", authMiddleware)
 
 serve({
   fetch: app.fetch,
   port: config.port,
 })
 
-// eslint-disable-next-line no-console
-console.log(`Server listening on port ${config.port}`)
+console.log(`Listening on : ${config.port}`)
