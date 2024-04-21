@@ -1,0 +1,34 @@
+name: Docker CI
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Build the Docker image
+      run: docker-compose up -d --build
+
+    - name: Docker Security Scan (Trivy)
+      uses: aquasecurity/trivy-action@master
+      with:
+        image-ref: 'your-image-name-here'
+        format: 'table'
+        exit-code: '1'
+        ignore-unfixed: true
+        vuln-type: 'os,library'
+        severity: 'CRITICAL,HIGH'
+
+    - name: Cleanup
+      run: docker-compose down
