@@ -1,32 +1,21 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import Link from 'next/link';
 
-function EditUserProfile() {
+export default function EditUserProfile() {
   const [user, setUser] = useState({
     username: '',
-    bio: '',
-    profileImage: '',
-    coverImage: ''
+    bio: ''
   });
-  const fileInputRef = useRef(null);
-  const coverInputRef = useRef(null);
   const [isLoading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     setLoading(true);
-    fetch('http://localhost:4000/api/user/1')
+    axios.get('http://localhost:4000/api/user/1')
       .then(response => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return response.json();
-      })
-      .then(data => {
-        setUser({
-          ...data,
-          profileImage: data.profileImage || '/images/default-profile-picture.jpg',
-          coverImage: data.coverImage || '/images/default-cover-picture.jpg'
-        });
+        setUser(response.data);
       })
       .catch(error => {
         console.error('Error fetching data:', error);
@@ -43,76 +32,66 @@ function EditUserProfile() {
     }));
   };
 
-  const handleFileChange = event => {
-    const { name, files } = event.target;
-    if (files && files[0]) {
-      const fileReader = new FileReader();
-      fileReader.readAsDataURL(files[0]);
-      fileReader.onload = () => {
-        setUser(prevState => ({
-          ...prevState,
-          [name]: fileReader.result
-        }));
-      };
+  const handleSubmit = async event => {
+    event.preventDefault();
+    setLoading(true);
+
+    try {
+      const response = await axios.put('http://localhost:4000/api/user/1', user);
+      if (response.status === 200) {
+        setSuccess(true); 
+        setTimeout(() => {
+          setSuccess(false);
+        }, 3000);
+      } else {
+        setSuccess(false);
+        throw new Error('Failed to update user');
+      }
+    } catch (error) {
+      console.error('Error updating user:', error);
+      setError(error);
+      setSuccess(false);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleSubmit = event => {
-    event.preventDefault();
-    setLoading(true);
-    const formData = new FormData();
-    Object.entries(user).forEach(([key, value]) => {
-      formData.append(key, value);
-    });
-
-    fetch('http://localhost:4000/api/user/1', {
-      method: 'PUT',
-      body: formData,
-    })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      return response.json();
-    })
-    .then(data => {
-      alert('User updated successfully!');
-    })
-    .catch(error => {
-      console.error('Error updating user:', error);
-      setError(error);
-    })
-    .finally(() => setLoading(false));
-  };
-
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error.message}</div>;
-
   return (
-    <div className="flex flex-col items-center w-full">
-      <div className="w-3/4 mt-4 bg-white shadow rounded-lg p-4">
-        <form onSubmit={handleSubmit} className="flex flex-col">
-          <input type="text" name="username" value={user.username} onChange={handleChange} placeholder="Username" />
-          <textarea name="bio" value={user.bio} onChange={handleChange} placeholder="Bio" />
-          <div>
-            <label>
-              Profile Image (click to change):
-              <img src={user.profileImage} alt="Profile" onClick={() => fileInputRef.current.click()} />
-              <input type="file" name="profileImage" ref={fileInputRef} onChange={handleFileChange} className="hidden" />
-            </label>
+    <div className="flex justify-center items-center h-screen bg-gray-100">
+      <div className="w-full max-w-md p-4">
+        <div className="bg-white shadow-md rounded-lg p-6">
+          <div className="flex items-center mb-4">
+            <img src="/images/logo-Instamint.png" alt="Logo" className="mr-2 w-14 h-14" /> 
+            <h2 className="text-xl font-semibold">Edit User Profile</h2>
           </div>
-          <div>
-            <label>
-              Cover Image (click to change):
-              <img src={user.coverImage} alt="Cover" onClick={() => coverInputRef.current.click()} />
-              <input type="file" name="coverImage" ref={coverInputRef} onChange={handleFileChange} className="hidden" />
-            </label>
-          </div>
-          <button type="submit" disabled={isLoading} className="btn btn-primary">Save Changes</button>
-        </form>
+          {success && (
+            <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded-lg mb-4">
+              User updated successfully!
+            </div>
+          )}
+          {error && (
+            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded-lg mb-4">
+              Failed to update user. Please try again later.
+            </div>
+          )}
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="flex flex-col">
+              <label htmlFor="username" className="text-gray-800 font-semibold">Username</label>
+              <input type="text" id="username" name="username" value={user.username} onChange={handleChange} placeholder="Username" className="border border-gray-300 rounded-lg p-3 w-full focus:outline-none focus:border-blue-500" />
+            </div>
+            <div className="flex flex-col">
+              <label htmlFor="bio" className="text-gray-800 font-semibold">Bio</label>
+              <textarea id="bio" name="bio" value={user.bio} onChange={handleChange} placeholder="Bio" className="border border-gray-300 rounded-lg p-3 w-full focus:outline-none focus:border-blue-500"></textarea>
+            </div>
+            <div className="flex justify-between">
+              <Link href="/profile" className="inline-block bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded-lg">Cancel</Link>
+              <button type="submit" disabled={isLoading} className="inline-block bg-blue-500 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg">
+                Save Changes
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );
 }
-
-export default EditUserProfile;

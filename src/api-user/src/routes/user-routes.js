@@ -19,28 +19,21 @@ userRoutes.get('/user/:id', async (c) => {
 userRoutes.put('/user/:id', async (c) => {
     const id = c.req.param('id');
     try {
-        console.log('Received body:', c.req.body);
-
         const body = await c.req.json();
         if (!body.username || !body.bio) {
             return c.json({ message: "Username and bio fields are required and cannot be empty" }, 400);
         }
-
-        console.log('Updating user with ID:', id);
-
         const existingUser = await UserModel.query()
             .where('id', '!=', id)
             .andWhere('username', body.username)
             .first();
-        console.log('Existing user check:', existingUser);
 
         if (existingUser) {
             return c.json({ message: "Username already exists" }, 409);
         }
 
         const updatedUser = await UserModel.query().patchAndFetchById(id, body);
-        console.log('Updated user:', updatedUser);
-        console.log('FormData:', formData);
+
         if (!updatedUser) {
             return c.json({ message: 'User not found' }, 404);
         }
