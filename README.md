@@ -85,6 +85,3 @@ Instamint is an innovative social sharing platform specifically designed for NFT
     - Host: `postgres-db`
     - User: `user`
     - Password: `password`
-
-- **Keycloak Interface:**
-  - The Keycloak administration console is available at `localhost:8081`, sharing the same network for user and access management.
