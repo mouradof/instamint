@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react"
 import axios from "axios"
 import Image from "next/image"
 import { UsersIcon, UserPlusIcon } from "@heroicons/react/24/solid"
-import Header from "./header"
 
 const ListTeabags = () => {
   const [teabags, setTeabags] = useState([])
@@ -63,7 +62,6 @@ const ListTeabags = () => {
             </div>
           ))}
         </div>
-        <Header></Header>
       </div>
     </div>
   )
