@@ -1,53 +1,52 @@
-# Revue de Sprint
+# Sprint Review
 
-## Informations de base
+## Basic Information
 
-- **Sprint :** 1
-- **Date de la revue :** 21/04
-- **Participants :** Haouili Yani
-- **Scrum Master :** *Nom du Scrum Master si applicable*
+- **Sprint:** 1
+- **Review Date:** 04/21
+- **Participants:** Haouili Yani
 
-## Objectifs du Sprint
+## Sprint Goals
 
-- Avoir une page de profil
-- Récupérer les données d'un utilisateur pour les afficher dans la page profil
-- Permettre la modification des données d'un utilisateur
-- Supprimer un utilisateur
+- Have a profile page
+- Retrieve a user's data to display on the profile page
+- Allow modification of a user's data
+- Delete a user
 
-## Délivrables
+## Deliverables
 
-### Fonctionnalités terminées
+### Completed Features
 
-1. **Afficher la page profil**
-   - **Description :** Afficher la page profil avec les données d'un utilisateur random pour l'instant car la partie login token n'était pas à ma disposition
-2. **Modifier les données d'un utilisateur**
-   - **Description :** Avoir un formulaire d'édition et une API pour modifier les données d'un utilisateur
-3. **Suppression d'un utilisateur**
-   - **Description :** Permettre aux utilisateurs de supprimer leur compte
+1. **Display the Profile Page**
+   - **Description:** Display the profile page with data from a random user since the login token part was not available
+2. **Modify User Data**
+   - **Description:** Have an edit form and an API to modify a user's data
+3. **User Deletion**
+   - **Description:** Enable users to delete their accounts
 
-### Fonctionnalités non terminées
+### Unfinished Features
 
-- **Validation de la suppression du compte via email**
-  - **Description :** Implementer la validation de la suppression du compte par email n'a pas été réalisée
+- **Account Deletion Verification via Email**
+  - **Description:** Implementation of account deletion verification via email was not completed
 
-## Défis et blocages
+## Challenges and Blockages
 
-- **Défis :**
-  - Mettre les utilisateurs en dur car le login se fait en même temps que la section profil
-- **Blocages :**
-  - Incapacité de faire ma partie avec mon TOKEN
+- **Challenges:**
+  - Use hardcoded users because the login is done at the same time as the profile section
+- **Blockages:**
+  - Unable to perform my part with my TOKEN
 
-## Retours et discussion
+## Feedback and Discussion
 
-- **Discussion générale sur les réalisations et les défis**
-  - Les participants discuteront des solutions potentielles aux blocages rencontrés, notamment en ce qui concerne l'authentification et la gestion des TOKEN.
+- **General Discussion on Achievements and Challenges**
+  - Participants will discuss potential solutions to the encountered blockages, particularly regarding authentication and TOKEN management.
 
-## Plan d'action
+## Action Plan
 
-- Résoudre les problèmes liés à l'authentification pour intégrer les TOKEN dans la prochaine phase du projet
-- Implémenter la validation de suppression de compte via email dans le prochain sprint
+- Resolve authentication issues to integrate TOKENs in the next phase of the project
+- Implement account deletion verification via email in the next sprint
 
 ## Conclusion
 
-- Ce sprint a permis de mettre en place des fonctionnalités clés de la gestion de profil tout en identifiant des défis importants relatifs à l'intégration du système d'authentification. Les actions futures doivent cibler ces défis pour une meilleure cohérence du projet.
+- This sprint has established key functionalities for profile management while identifying significant challenges related to the integration of the authentication system. Future actions must target these challenges for improved project coherence.
 
