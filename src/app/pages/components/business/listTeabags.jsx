@@ -2,13 +2,23 @@ import React, { useState, useEffect } from "react"
 import axios from "axios"
 import Image from "next/image"
 import { UsersIcon, UserPlusIcon } from "@heroicons/react/24/solid"
-import Header from "./header"
+import Modal from "../common/Modal.jsx"
+import AddTeabagForm from "../form/addTeabag.jsx"
 
 const ListTeabags = () => {
   const [teabags, setTeabags] = useState([])
   const [error, setError] = useState(null)
   const [isUserPlusHovered, setIsUserPlusHovered] = useState(false)
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
+  const openModal = () => {
+    setIsModalOpen(true)
+  }
+
+  const closeModal = () => {
+    setIsModalOpen(false)
+  }
+  
   useEffect(() => {
     const fetchTeabags = async () => {
       try {
@@ -36,8 +46,12 @@ const ListTeabags = () => {
             className={isUserPlusHovered ? "text-green-500" : "text-gray-500"}
             onMouseEnter={() => setIsUserPlusHovered(true)}
             onMouseLeave={() => setIsUserPlusHovered(false)}
+            onClick={openModal}
           />
         </div>
+        <Modal isOpen={isModalOpen} onClose={closeModal} title={"Add teabag"}>
+          <AddTeabagForm  />
+        </Modal>
         <div className="space-y-4">
           {teabags.map((teabag) => (
             <div key={teabag.id} className="w-full mb-4">
@@ -63,7 +77,6 @@ const ListTeabags = () => {
             </div>
           ))}
         </div>
-        <Header></Header>
       </div>
     </div>
   )

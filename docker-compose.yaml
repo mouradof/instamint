@@ -47,9 +47,9 @@ services:
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: instamintdb
+      POSTGRES_USER: $DB_USER
+      POSTGRES_PASSWORD: $DB_PASSWORD
+      POSTGRES_DB: $DB_NAME
       POSTGRES_HOST: postgres-db
     volumes:
       - postgres-data:/var/lib/postgresql/data
