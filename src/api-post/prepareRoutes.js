@@ -1,7 +1,7 @@
-import prepareRoutesTeabags from "./src/routes/prepareRoutesTeabags.js"
+import prepareRoutesPost from "./src/routes/prepareRoutesPost.js"
 
 const prepareRoutes = (ctx) => {
-  prepareRoutesTeabags(ctx)
+  prepareRoutesPost(ctx)
 }
 
 export default prepareRoutes

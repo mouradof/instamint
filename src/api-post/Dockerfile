@@ -1,4 +1,3 @@
-# api-auth/Dockerfile
 FROM node:latest
 
 WORKDIR /usr/src/app
@@ -9,4 +8,4 @@ RUN npm install
 
 COPY . .
 
-CMD ["node", "src/index.js"]
+CMD ["npm", "start"]
