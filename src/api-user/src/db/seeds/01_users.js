@@ -15,8 +15,8 @@ const createFakeUser = async () => {
     bio: faker.lorem.sentence(),
     emailVerified: false,
     verifyToken,
-    profileImage: `https://source.unsplash.com/random/400x400?sig=${Math.floor(Math.random() * 1000)}`, // Random profile image
-    coverImage: `https://source.unsplash.com/random/1200x400?sig=${Math.floor(Math.random() * 1000)}`, // Random cover image
+    profileImage: `https://source.unsplash.com/random/400x400?sig=${Math.floor(Math.random() * 1000)}`,
+    coverImage: `https://source.unsplash.com/random/1200x400?sig=${Math.floor(Math.random() * 1000)}`,
     followers: faker.datatype.number({ min: 0, max: 10000 }),
     following: faker.datatype.number({ min: 0, max: 1000 })
   };

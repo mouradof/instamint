@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from 'react';
-import Link from 'next/link';
 
 function EditUserProfile() {
   const [user, setUser] = useState({
@@ -13,7 +12,6 @@ function EditUserProfile() {
   const [isLoading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Fetch user data
   useEffect(() => {
     setLoading(true);
     fetch('http://localhost:4000/api/user/1')
@@ -37,7 +35,6 @@ function EditUserProfile() {
       .finally(() => setLoading(false));
   }, []);
 
-  // Handle changes in text inputs
   const handleChange = event => {
     const { name, value } = event.target;
     setUser(prevState => ({
@@ -46,7 +43,6 @@ function EditUserProfile() {
     }));
   };
 
-  // Handle file changes for images
   const handleFileChange = event => {
     const { name, files } = event.target;
     if (files && files[0]) {
@@ -61,7 +57,6 @@ function EditUserProfile() {
     }
   };
 
-  // Handle form submission
   const handleSubmit = event => {
     event.preventDefault();
     setLoading(true);

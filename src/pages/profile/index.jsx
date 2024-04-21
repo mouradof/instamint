@@ -28,7 +28,6 @@ const ProfileHeader = () => {
   };
 
   const handleDeleteAccount = () => {
-    // Implement the delete account logic here
     axios.delete('http://localhost:4000/api/user/7')
       .then(response => {
         alert('User deleted successfully!');
@@ -69,7 +68,6 @@ const ProfileHeader = () => {
           </div>
         )}
       </div>
-      {/* Confirmation modal */}
       {showConfirmation && (
         <div className="fixed inset-0 z-10 overflow-y-auto flex justify-center items-center bg-black bg-opacity-50">
           <div className="bg-white rounded-lg p-8">
@@ -124,7 +122,7 @@ const ProfileContent = ({ user }) => (
 const ProfilePosts = () => {
   const [isDropdownVisible, setDropdownVisible] = useState(false)
   const [isImageFullscreen, setImageFullscreen] = useState(false)
-  const [liked, setLiked] = useState(false) // State to track if the post is liked
+  const [liked, setLiked] = useState(false) 
 
   const toggleDropdown = () => {
     setDropdownVisible(!isDropdownVisible)
@@ -140,7 +138,7 @@ const ProfilePosts = () => {
   }
 
   const toggleLike = () => {
-    setLiked(!liked) // Toggle the liked state
+    setLiked(!liked) 
   }
 
   return (
@@ -184,7 +182,7 @@ const ProfilePosts = () => {
         {isImageFullscreen && (
           <div className="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50">
             <button onClick={toggleImageFullscreen} className="absolute top-3 right-3 text-white text-xl">
-              &times {/* Close button */}
+              &times 
             </button>
             <img
               src="/images/default-profile-picture.jpg"
