@@ -25,8 +25,7 @@ const usePostInteractions = (
         setLikeCount((prev) => (isLiked ? prev - 1 : prev + 1))
       }
     } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error("Error toggling like:", error)
+      /* empty */
     }
   }, [isLiked, postId])
 
@@ -42,8 +41,7 @@ const usePostInteractions = (
         setRepostCount((prev) => (isReposted ? prev - 1 : prev + 1))
       }
     } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error("Error toggling repost:", error)
+      /* empty */
     }
   }, [isReposted, postId])
 
