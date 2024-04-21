@@ -3,7 +3,7 @@ import UserModel from './UserModel.js'
 import GroupMemberModel from './GroupMemberModel.js'
 
 class TeabagModel extends BaseModel {
-  static tableName = 'teabags'
+  static tableName = "teabags"
 
   static get relationMappings () {
     return {

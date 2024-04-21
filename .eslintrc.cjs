@@ -80,16 +80,9 @@ module.exports = {
     'react/react-in-jsx-scope': 'off',
     'react/prop-types': 'off'
   },
-  settings: {
+  settings: { 
     react: {
-      version: "detect" 
+      version: '^18.2.0'
     }
-  },
-  overrides: [
-    {
-      files: ['**/*.jsx'],
-      extends: [
-      ]
-    }
-  ]
+   },
 }
