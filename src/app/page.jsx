@@ -1,5 +1,5 @@
 "use client"
-import ListTeabags from "./pages/components/business/listTeabags"
+import ListTeabags from "./pages/components/business/ListTeabags.jsx"
 
 export default function Home() {
   return (

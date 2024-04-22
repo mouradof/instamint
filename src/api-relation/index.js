@@ -4,8 +4,8 @@ import { cors } from "hono/cors"
 import { logger } from "hono/logger" 
 import knex from "knex"
 import BaseModel from "./src/db/models/BaseModel.js"
-import prepareRoutesTeabags from "./src/routes/prepareRoutesTeabags.js"
 import config from "./config.js"
+import prepareRoutes from "./prepareRoutes.js"
 
 const db = knex(config.db)
 BaseModel.knex(db)
@@ -19,7 +19,7 @@ app.use(cors({
   credentials: true,
 }))
 
-prepareRoutesTeabags({ app, db })
+prepareRoutes({ app, db})
 
 serve({
   fetch: app.fetch,
