@@ -1,25 +1,40 @@
 import React, { useState } from "react"
-import { Formik, Form, FieldArray, Field } from "formik"
+import { Formik, Form } from "formik"
 import axios from "axios"
 import { z, ZodError } from "zod"
+import InputField from "../common/InputField"
+import TextAreaField from "../common/TextAreaField"
+import FileInputField from "../common/FileInputField"
+import CheckboxField from "../common/CheckboxField"
+import FormButton from "../common/FormButton"
+import Button from "../common/Button"
+import UserList from "../common/UserList"
+import Toast from "../common/Toast"
 
 const validationSchema = z.object({
   name: z.string().nonempty("Teabag name is required"),
   description: z.string(),
-  newEmail: z.string().email("Invalid email format"),
+  newEmail: z.string().email("Invalid email format")
 })
 
 const AddTeabagForm = ({ onSubmit, closeModal }) => {
   const [userEmails, setUserEmails] = useState([])
+  const [selectedImage, setSelectedImage] = useState(null)
+  const [error, setError] = useState(null)
 
-  const handleAddUser = (email) => {
-    setUserEmails((prevEmails) => [...prevEmails, email])
+  const handleAddUser = email => {
+    setUserEmails(prevEmails => [...prevEmails, email])
   }
 
-  const handleRemoveUser = (index) => {
-    setUserEmails((prevEmails) => prevEmails.filter((_, i) => i !== index))
+  const handleRemoveUser = index => {
+    setUserEmails(prevEmails => prevEmails.filter((_, i) => i !== index))
   }
-  const validateForm = (values) => {
+
+  const handleImageChange = event => {
+    setSelectedImage(event.target.files[0])
+  }
+
+  const validateForm = values => {
     try {
       validationSchema.parse(values)
     } catch (error) {
@@ -31,7 +46,7 @@ const AddTeabagForm = ({ onSubmit, closeModal }) => {
 
           return {
             ...acc,
-            [curr.path[0]]: curr.message,
+            [curr.path[0]]: curr.message
           }
         }, {})
       }
@@ -39,128 +54,81 @@ const AddTeabagForm = ({ onSubmit, closeModal }) => {
   }
 
   const handleSubmit = async (values, { resetForm }) => {
-    const response = await axios.post(`http://localhost:4001/10/createTeabag`, {
-      ...values,
-      userEmails: userEmails,
-    })
-    onSubmit(response.data)
-    resetForm()
-    setUserEmails([])
-    closeModal()
-}
-  
+    try {
+      const formData = new FormData()
+      formData.append("name", values.name)
+      formData.append("description", values.description)
+      formData.append("private", String(values.private))
+      formData.append("invitedEmailsUsers", JSON.stringify(userEmails))
+
+      if (selectedImage) {
+        formData.append("image", selectedImage)
+      }
+
+      const response = await axios.post(`http://localhost:4001/10/createTeabag`, formData)
+      onSubmit(response.data)
+      resetForm()
+      setUserEmails([])
+      setSelectedImage(null)
+      closeModal()
+    } catch (error) {
+      setError(error)
+    }
+  }
 
   return (
-    <Formik
-      initialValues={{
-        name: "",
-        description: "",
-        private: false,
-        newEmail: "",
-      }}
-      validate={validateForm}
-      onSubmit={handleSubmit}
-    >
-      {({ values, errors, touched }) => (
-        <Form className="w-full">
-          <div className="mb-4">
-            <label htmlFor="name" className="block text-gray-700 font-bold mb-2">
-              Group name
-            </label>
-            <Field
-              type="text"
-              id="name"
+    <div>
+      {error && <Toast message={error.message} isSuccess={false} />}
+      <Formik
+        initialValues={{
+          name: "",
+          description: "",
+          private: false,
+          newEmail: ""
+        }}
+        validate={validateForm}
+        onSubmit={handleSubmit}
+      >
+        {({ values, errors, touched }) => (
+          <Form className="w-full">
+            <InputField
               name="name"
               placeholder="Group name"
-              className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
-                errors.name && touched.name ? "border-red-500" : ""
-              }`}
+              type="text"
+              errors={errors}
+              touched={touched}
+              label="Group name"
             />
-            {errors.name && touched.name && <div className="text-red-500">{errors.name}</div>}
-          </div>
-          <div className="mb-4">
-            <label htmlFor="description" className="block text-gray-700 font-bold mb-2">
-              Description
-            </label>
-            <Field
-              component="textarea"
-              id="description"
-              name="description"
-              placeholder="Description group"
-              className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
-                errors.description && touched.description ? "border-red-500" : ""
-              }`}
-            />
-            {errors.description && touched.description && (
-              <div className="text-red-500">{errors.description}</div>
-            )}
-          </div>
-          <div className="mb-4">
-            <label htmlFor="newEmail" className="block text-gray-700 font-bold mb-2">
-              Add Email
-            </label>
-            <div className="flex items-center mb-2">
-              <Field
-                type="email"
+            <TextAreaField name="description" placeholder="Description group" errors={errors} touched={touched} />
+            <div className="flex items-center justify-between">
+              <InputField
                 name="newEmail"
                 placeholder="Enter email"
-                className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
-                  errors.newEmail && touched.newEmail ? "border-red-500" : ""
-                }`}
+                type="email"
+                errors={errors}
+                touched={touched}
+                label="Invite friends"
               />
-              <button
+              <Button
+                text="Add"
                 type="button"
                 onClick={() => {
                   if (values.newEmail) {
                     handleAddUser(values.newEmail)
                   }
                 }}
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline ml-2"
-              >
-                Add
-              </button>
+                className="mt-6"
+              />
             </div>
+            {userEmails.length > 0 && <UserList userEmails={userEmails} handleRemoveUser={handleRemoveUser} />}
             {errors.newEmail && touched.newEmail && <div className="text-red-500">{errors.newEmail}</div>}
-          </div>
-          {userEmails.length > 0 && (
-            <div className="mb-4 border rounded p-2 max-h-20 overflow-y-auto">
-              <FieldArray name="userEmails">
-                {() => (
-                  <div>
-                    {userEmails.map((email, index) => (
-                      <div key={index} className="flex items-center mb-2">
-                        <div className="text-gray-700 mr-2">{email}</div>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            handleRemoveUser(index)
-                          }}
-                          className="text-red-500 font-bold"
-                        >
-                          &#10006;
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </FieldArray>
-            </div>
-          )}
-          <div className="mb-4 flex items-center">
-            <label htmlFor="private" className="block text-gray-700 font-bold mr-2">
-              Private
-            </label>
-            <Field type="checkbox" id="private" name="private" className="leading-tight" />
-          </div>
-          <button
-            type="submit"
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-          >
-            Add Teabag
-          </button>
-        </Form>
-      )}
-    </Formik>
+            <FileInputField name="image" handleImageChange={handleImageChange} />
+            <CheckboxField id="private" name="private" label="Private" />
+            <FormButton text="Add Teabag" />
+          </Form>
+        )}
+      </Formik>
+    </div>
   )
 }
 

@@ -1,7 +1,9 @@
 import React from "react"
 
 const Modal = ({ isOpen, onClose, title, children }) => {
-  if (!isOpen) {return null}
+  if (!isOpen) {
+    return null
+  }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto outline-none focus:outline-none">
@@ -16,9 +18,7 @@ const Modal = ({ isOpen, onClose, title, children }) => {
               <span className="text-black h-6 w-6 text-2xl block outline-none focus:outline-none">×</span>
             </button>
           </div>
-          <div className="p-6">
-            {children}
-          </div>
+          <div className="p-6">{children}</div>
         </div>
       </div>
     </div>

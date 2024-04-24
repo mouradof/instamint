@@ -3,7 +3,7 @@ import TeabagModel from "./TeabagModel.js"
 import GroupMemberModel from "./GroupMemberModel.js"
 
 class UserModel extends BaseModel {
-  static tableName = "users";
+  static tableName = "users"
 
   static get relationMappings() {
     return {
@@ -12,17 +12,17 @@ class UserModel extends BaseModel {
         modelClass: TeabagModel,
         join: {
           from: "users.id",
-          to: "teabags.ownerId",
-        },
+          to: "teabags.ownerId"
+        }
       },
-      groupMemberships: { 
+      groupMemberships: {
         relation: BaseModel.HasManyRelation,
         modelClass: GroupMemberModel,
         join: {
           from: "users.id",
-          to: "groupMembers.userId",
-        },
-      },
+          to: "groupMembers.userId"
+        }
+      }
     }
   }
 }

@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react"
 import axios from "axios"
-import { UsersIcon, UserPlusIcon } from "@heroicons/react/24/solid"
+import { UserPlusIcon } from "@heroicons/react/24/solid"
 import Modal from "../common/Modal.jsx"
 import AddTeabagForm from "../form/AddTeabag.jsx"
-import Image from "next/image"
 import Toast from "../common/Toast.jsx"
+import TeabagCard from "./TeabagCard.jsx"
 
 const ListTeabags = () => {
   const [teabags, setTeabags] = useState([])
@@ -35,13 +35,13 @@ const ListTeabags = () => {
     fetchTeabags()
   }, [])
 
-  const onSubmitTeabag = async (teabagData) => {
+  const onSubmitTeabag = async teabagData => {
     try {
       const newTeabag = teabagData.result
       const numberOfUsers = teabagData.numberOfUsers
       newTeabag.userCount = numberOfUsers
-      setTeabags((prevTeabags) => [...prevTeabags, newTeabag])
-      closeModal()
+      setTeabags(prevTeabags => [...prevTeabags, newTeabag])
+      await fetchTeabags()
       setToastMessage("Teabag created with success !")
       setIsSuccessToast(true)
     } catch (error) {
@@ -63,7 +63,7 @@ const ListTeabags = () => {
 
   return (
     <div className="relative flex flex-col items-center w-full">
-      {error && <p>ERROR: {error}</p>}
+      {error && <p className="text-red-500">ERROR: {error}</p>}
       <div className="w-full mb-4 flex justify-center items-center px-8">
         <h1 className="text-4xl font-bold">Teabags</h1>
       </div>
@@ -77,45 +77,17 @@ const ListTeabags = () => {
             onClick={openModal}
           />
         </div>
-        {isModalOpen && (
-          <div className="fixed top-0 left-0 w-full h-full bg-black opacity-50 z-50" />
-        )}
+        {isModalOpen && <div className="fixed top-0 left-0 w-full h-full bg-black opacity-50 z-50" />}
         <Modal isOpen={isModalOpen} onClose={closeModal} title={"Add teabag"}>
           <AddTeabagForm onSubmit={onSubmitTeabag} closeModal={closeModal} />
         </Modal>
         <div className="space-y-4 overflow-y-auto max-h-[70vh]">
-          {teabags.map((teabag) => (
-            <div key={teabag.id} className="w-full mb-4">
-              <div className="bg-slate-100 flex rounded-lg p-4 items-center hover:bg-slate-200 transition duration-300 px-6 lg:px-10">
-                {teabag.image ? (
-                  <Image
-                    width={42}
-                    height={42}
-                    src={teabag.image}
-                    alt="logo"
-                    className="rounded-md"
-                  />
-                ) : (
-                  <div className="w-10 h-10 bg-gray-300 rounded-md"></div>
-                )}
-                <div className="ml-3 flex-grow">
-                  <div className="flex justify-between items-center">
-                    <a className="text-black font-bold">{teabag.name}</a>
-                    <div className="flex items-center">
-                      <a className="text-gray-600 text-md mr-1">{teabag.userCount}</a>
-                      <UsersIcon width={16} />
-                    </div>
-                  </div>
-                  <a className="text-gray-600">{teabag.description}</a>
-                </div>
-              </div>
-            </div>
+          {teabags.map(teabag => (
+            <TeabagCard key={teabag.id} teabag={teabag} />
           ))}
         </div>
       </div>
-      {toastMessage && (
-        <Toast message={toastMessage} isSuccess={isSuccessToast} />
-      )}
+      {toastMessage && <Toast message={toastMessage} isSuccess={isSuccessToast} />}
     </div>
   )
 }

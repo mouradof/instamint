@@ -1,102 +1,125 @@
 import { Hono } from "hono"
-import { validator } from "hono/validator"
+import pkg from "../../configAWS.cjs"
 import UserModel from "../db/models/UserModel.js"
 import TeabagModel from "../db/models/TeabagModel.js"
-import GroupMemberModel from "../db/models/GroupMemberModel.js" 
-import { stringValidator, booleanValidator } from "../validators.js"
+import GroupMemberModel from "../db/models/GroupMemberModel.js"
+import { v4 as uuidv4 } from "uuid"
 import { z } from "zod"
+import { zValidator } from "@hono/zod-validator"
+import { booleanValidator, numberValidator, stringValidator } from "../validators.js"
+
+const generateUniqueFileName = originalFileName => {
+  const uniqueId = uuidv4()
+  const fileExtension = originalFileName.split(".").pop()
+
+  return `${uniqueId}.${fileExtension}`
+}
 
 const prepareRoutesCreateTeabag = ({ app }) => {
-    const createTeabag = new Hono()
+  const createTeabag = new Hono()
 
-    const teaBagSchema = z.object({
+  const teabagSchema = z.object({
+    name: stringValidator,
+    description: stringValidator.optional(),
+    isPrivate: booleanValidator.optional(),
+    userEmails: z.array(stringValidator).optional(),
+    image: z
+      .object({
         name: stringValidator,
-        description: stringValidator.optional(),
-        isPrivate: booleanValidator.optional(),
-        userEmails: z.array(stringValidator).optional(),
-    })
+        lastModified: numberValidator,
+        size: numberValidator,
+        type: stringValidator
+      })
+      .optional()
+  })
 
-    createTeabag.post("/:userId/createTeabag",
-        validator("json", (value, c) => {
-            const validatedData = teaBagSchema.safeParse(value)
+  createTeabag.post("/:userId/createTeabag", zValidator("form", teabagSchema), async c => {
+    try {
+      const userId = c.req.param("userId")
+      const userExists = await UserModel.query().findById(userId)
 
-            if (!validatedData.success) {
-                c.status(400)
+      if (!userExists) {
+        c.status(404)
 
-                return c.json({
-                    success: false,
-                    message: "Invalid teabag data",
-                    errors: validatedData.error.errors,
-                })
-            }
+        return c.json({
+          success: false,
+          message: `User not found`
+        })
+      }
 
-            return validatedData.data
-        }),
-        async (c) => {
-            try {
-                const userId = c.req.param("userId")
-                const { name, description, isPrivate, userEmails } = c.req.valid("json")
+      const body = await c.req.parseBody({ all: true })
+      const { image, name, description, isPrivate, invitedEmailsUsers } = body
 
-                const userExists = await UserModel.query().findById(userId)
+      const invitedEmails = JSON.parse(invitedEmailsUsers)
+      let uniqueImagename = null
 
-                if (!userExists) {
-                    c.status(404)
+      if (image) {
+        uniqueImagename = generateUniqueFileName(image.name)
 
-                    return c.json({
-                        success: false,
-                        message: `User not found`,
-                    })
-                }
-
-                const newTeabag = await TeabagModel.query().insert({
-                    ownerId: userId,
-                    name,
-                    description: description || null,
-                    private: isPrivate || false,
-                })
-
-                let groupMembers = []
-
-                groupMembers.push({
-                    userId: userId,
-                    teabagId: newTeabag.id,
-                })
-
-                if (userEmails && userEmails.length > 0) {
-                    const users = await UserModel.query().whereIn("email", userEmails)
-                    const additionalGroupMembers = users.map((user) => ({
-                        userId: user.id,
-                        teabagId: newTeabag.id,
-                    }))
-                    groupMembers = groupMembers.concat(additionalGroupMembers)
-                }
-
-                await GroupMemberModel.query().insert(groupMembers)
-                                
-                const userCount = await GroupMemberModel.query().count("userId").where("teabagId", newTeabag.id).first()
-                const numberOfUsers = userCount ? userCount.count : 1
-
-                c.status(201)
-
-                return c.json({
-                    result: newTeabag,
-                    numberOfUsers,
-                    success: true,
-                    message: `Teabag created successfully`,
-                })
-            } catch (error) {
-                c.status(500)
-
-                return c.json({
-                    result: error,
-                    success: false,
-                    message: `INTERNAL SERVER ERROR: ${error}`,
-                })
-            }
+        const fileBuffer = await image.arrayBuffer()
+        const buffer = Buffer.from(fileBuffer)
+        const params = {
+          Bucket: "instamint-laym-bucket",
+          Key: uniqueImagename,
+          Body: buffer,
+          ContentType: "image/png"
         }
-    )
 
-    app.route("/", createTeabag)
+        await pkg.upload(params).promise()
+      }
+
+      const newTeabag = await TeabagModel.query().insert({
+        ownerId: userId,
+        name: name,
+        description: description || null,
+        private: isPrivate || false,
+        image: uniqueImagename
+      })
+
+      let groupMembers = [
+        {
+          userId: userId,
+          teabagId: newTeabag.id
+        }
+      ]
+
+      if (invitedEmails && invitedEmails.length > 0) {
+        const users = await UserModel.query().whereIn("email", invitedEmails)
+        const additionalGroupMembers = users.map(user => ({
+          userId: user.id,
+          teabagId: newTeabag.id
+        }))
+        groupMembers = groupMembers.concat(additionalGroupMembers)
+      }
+
+      await GroupMemberModel.query().insert(groupMembers)
+
+      const userCount = await GroupMemberModel.query()
+        .where("teabagId", newTeabag.id)
+        .count("userId as userCount")
+        .first()
+      const numberOfUsers = userCount ? userCount.count : 1
+
+      c.status(200)
+
+      return c.json({
+        result: newTeabag,
+        numberOfUsers,
+        success: true,
+        message: `Teabag created successfully`
+      })
+    } catch (error) {
+      c.status(500)
+
+      return c.json({
+        result: error,
+        success: false,
+        message: `INTERNAL SERVER ERROR: ${error}`
+      })
+    }
+  })
+
+  app.route("/", createTeabag)
 }
 
 export default prepareRoutesCreateTeabag
