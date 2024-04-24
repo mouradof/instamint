@@ -5,7 +5,7 @@ import { resolve } from "path"
 dotenv.config({ path: resolve(".env") })
 
 const config = {
-  port: 4002 ,
+  port: 4002,
   db: knexfile,
   security: {
     password: {
@@ -13,8 +13,8 @@ const config = {
       keylen: 512,
       iterations: 100000,
       digest: "sha512",
-      pepper: process.env.SECURITY__PASSWORD__PEPPER,
-    },
-  },
+      pepper: process.env.SECURITY__PASSWORD__PEPPER
+    }
+  }
 }
 export default config

@@ -4,10 +4,7 @@ import config from "../../config.js"
 
 const pbkdf2 = promisify(pbkdf2Callback)
 
-const hashPassword = async (
-  password,
-  salt = randomBytes(config.security.password.saltlen).toString("hex")
-) => [
+const hashPassword = async (password, salt = randomBytes(config.security.password.saltlen).toString("hex")) => [
   (
     await pbkdf2(
       `${password}${config.security.password.pepper}`,
@@ -17,7 +14,7 @@ const hashPassword = async (
       config.security.password.digest
     )
   ).toString("hex"),
-  salt,
+  salt
 ]
 
 export default hashPassword

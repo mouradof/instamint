@@ -1,7 +1,7 @@
 import { faker } from "@faker-js/faker"
 import UserModel from "../models/UserModel.js"
 
-export const seed = async (knex) => {
+export const seed = async knex => {
   UserModel.knex(knex)
   const users = await UserModel.query().select("id")
   const numUsers = parseInt(users.length)
@@ -17,7 +17,7 @@ export const seed = async (knex) => {
       updatedDate: faker.date.recent(),
       private: faker.datatype.boolean(),
       ownerId: ownerId,
-      image: faker.image.avatarLegacy(),
+      image: faker.image.avatarLegacy()
     })
   }
 
