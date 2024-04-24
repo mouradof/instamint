@@ -13,11 +13,11 @@ const knexfile = {
     database: process.env.DB_DATABASE
   },
   migrations: {
-    directory: resolve('src/db/migrations'),
-    stub: resolve('src/db/migration.stub')
+    directory: resolve("src/db/migrations"),
+    stub: resolve("src/db/migration.stub")
   },
   seeds: {
-    directory: resolve('src/db/seeds')
+    directory: resolve("src/db/seeds")
   }
 }
 

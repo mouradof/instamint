@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker'
 import hashPassword from '../hashPassword.js'
 
-export const seed = async (knex) => {
+export const seed = async knex => {
   const users = []
   for (let i = 1; i <= 10; i += 1) {
     const [passwordHash, passwordSalt] = await hashPassword('Password123?')
@@ -16,5 +16,5 @@ export const seed = async (knex) => {
       bio
     })
   }
-  await knex('users').insert(users)
+  await knex("users").insert(users)
 }

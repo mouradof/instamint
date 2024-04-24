@@ -16,3 +16,4 @@ export default [
   ...compat.extends('standard'),
   pluginReactConfig
 ]
+

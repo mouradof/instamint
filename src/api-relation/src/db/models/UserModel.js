@@ -11,16 +11,16 @@ class UserModel extends BaseModel {
         relation: BaseModel.HasManyRelation,
         modelClass: TeabagModel,
         join: {
-          from: 'users.id',
-          to: 'teabags.ownerId'
+          from: "users.id",
+          to: "teabags.ownerId"
         }
       },
       groupMemberships: {
         relation: BaseModel.HasManyRelation,
         modelClass: GroupMemberModel,
         join: {
-          from: 'users.id',
-          to: 'groupMembers.userId'
+          from: "users.id",
+          to: "groupMembers.userId"
         }
       }
     }

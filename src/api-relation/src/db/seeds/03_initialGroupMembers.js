@@ -3,7 +3,7 @@ import UserModel from '../models/UserModel.js'
 import TeabagModel from '../models/TeabagModel.js'
 import GroupMemberModel from '../models/GroupMemberModel.js'
 
-export const seed = async (knex) => {
+export const seed = async knex => {
   UserModel.knex(knex)
   TeabagModel.knex(knex)
   GroupMemberModel.knex(knex)
