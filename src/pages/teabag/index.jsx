@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react"
 import axios from "axios"
 import { UserPlusIcon } from "@heroicons/react/24/solid"
-import Modal from "../common/Modal.jsx"
-import AddTeabagForm from "../form/AddTeabag.jsx"
-import Toast from "../common/Toast.jsx"
-import TeabagCard from "./TeabagCard.jsx"
+import Modal from "../../app/components/common/Modal.jsx"
+import AddTeabagForm from "../../app/components/form/AddTeabag.jsx"
+import Toast from "../../app/components/common/Toast.jsx"
+import TeabagCard from "../../app/components/business/TeabagCard.jsx"
 
 const ListTeabags = () => {
   const [teabags, setTeabags] = useState([])
@@ -24,7 +24,7 @@ const ListTeabags = () => {
 
   const fetchTeabags = async () => {
     try {
-      const response = await axios.get("http://localhost:4001/10/teabags")
+      const response = await axios.get("http://localhost:4001/teabags/10")
       setTeabags(response.data.result)
     } catch (error) {
       setError(error.message)

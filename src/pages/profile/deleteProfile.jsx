@@ -1,34 +1,34 @@
-import React, { useState } from 'react';
-import { useRouter } from 'next/router';
+import React, { useState } from "react"
+import { useRouter } from "next/router"
 
 function DeleteUserButton() {
-  const [isLoading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [showConfirmation, setShowConfirmation] = useState(false);
-  const router = useRouter();
+  const [isLoading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
+  const [showConfirmation, setShowConfirmation] = useState(false)
+  const router = useRouter()
 
   const handleDelete = () => {
-    setLoading(true);
-    fetch('http://localhost:4000/api/user/1', {
-      method: 'DELETE',
+    setLoading(true)
+    fetch("http://localhost:4000/api/user/1", {
+      method: "DELETE"
     })
       .then(response => {
         if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+          throw new Error(`HTTP error! status: ${response.status}`)
         }
-        return response.json();
+        return response.json()
       })
       .then(data => {
-        alert('User deleted successfully!');
-        setShowConfirmation(false);
-        router.push('/profile'); 
+        alert("User deleted successfully!")
+        setShowConfirmation(false)
+        router.push("/profile")
       })
       .catch(error => {
-        console.error('Error deleting user:', error);
-        setError(error);
+        console.error("Error deleting user:", error)
+        setError(error)
       })
-      .finally(() => setLoading(false));
-  };
+      .finally(() => setLoading(false))
+  }
 
   return (
     <div>
@@ -37,7 +37,7 @@ function DeleteUserButton() {
         disabled={isLoading}
         className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
       >
-        {isLoading ? 'Deleting...' : 'Delete User'}
+        {isLoading ? "Deleting..." : "Delete User"}
       </button>
       {showConfirmation && (
         <div className="fixed z-50 inset-0 flex items-center justify-center">
@@ -63,7 +63,7 @@ function DeleteUserButton() {
       )}
       {error && <div>Error: {error.message}</div>}
     </div>
-  );
+  )
 }
 
-export default DeleteUserButton;
+export default DeleteUserButton

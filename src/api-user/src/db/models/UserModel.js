@@ -26,8 +26,7 @@ class UserModel extends BaseModel {
         followers: { type: "integer" },
         following: { type: "integer" },
         profileImage: { type: "string", minLength: 1, maxLength: 255 },
-        coverImage: { type: "string", minLength: 1, maxLength: 255 },
-        
+        coverImage: { type: "string", minLength: 1, maxLength: 255 }
       }
     }
   }

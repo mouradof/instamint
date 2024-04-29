@@ -1,8 +1,8 @@
-import knexfile from './knexfile.js'
-import dotenv from 'dotenv'
-import { resolve } from 'path'
+import knexfile from "./knexfile.js"
+import dotenv from "dotenv"
+import { resolve } from "path"
 
-dotenv.config({ path: resolve('.env') })
+dotenv.config({ path: resolve(".env") })
 
 const config = {
   port: 4002,

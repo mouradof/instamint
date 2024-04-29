@@ -1,10 +1,10 @@
-import { config } from 'dotenv'
-import { resolve } from 'path'
+import { config } from "dotenv"
+import { resolve } from "path"
 
 config()
 
 const knexfile = {
-  client: 'pg',
+  client: "pg",
   connection: {
     host: process.env.DB_HOST,
     port: parseInt(process.env.DB_PORT, 10),

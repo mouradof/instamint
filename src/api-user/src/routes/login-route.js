@@ -6,7 +6,7 @@ import UserModel from "../db/models/UserModel.js"
 const prepareRouteLogin = ({ app }) => {
   const auth = new Hono()
 
-  auth.post("/login", async (c) => {
+  auth.post("/login", async c => {
     const body = await c.req.json()
     const { email, password } = body
 
@@ -18,7 +18,7 @@ const prepareRouteLogin = ({ app }) => {
       }
 
       const match = await bcrypt.compare(password, user.passwordHash)
-      
+
       if (!match) {
         return c.json({ message: "Email or password is incorrect" }, 401)
       }
@@ -27,11 +27,15 @@ const prepareRouteLogin = ({ app }) => {
         return c.json({ message: "Please verify your email address first" }, 401)
       }
 
-      const token = jwt.sign({
-        id: user.id,
-        username: user.username,
-        email: user.email,
-      }, process.env.JWT_SECRET, { expiresIn: "1h" })
+      const token = jwt.sign(
+        {
+          id: user.id,
+          username: user.username,
+          email: user.email
+        },
+        process.env.JWT_SECRET,
+        { expiresIn: "1h" }
+      )
 
       return c.json({ message: "Auth successful", token }, 200)
     } catch (error) {

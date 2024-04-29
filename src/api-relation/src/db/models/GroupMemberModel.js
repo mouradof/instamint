@@ -1,11 +1,11 @@
-import BaseModel from './BaseModel.js'
-import UserModel from './UserModel.js'
-import TeabagModel from './TeabagModel.js'
+import BaseModel from "./BaseModel.js"
+import UserModel from "./UserModel.js"
+import TeabagModel from "./TeabagModel.js"
 
 class GroupMemberModel extends BaseModel {
   static tableName = "groupMembers"
 
-  static get relationMappings () {
+  static get relationMappings() {
     return {
       user: {
         relation: BaseModel.BelongsToOneRelation,

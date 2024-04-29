@@ -50,8 +50,7 @@
 
 - This sprint has established key functionalities for profile management while identifying significant challenges related to the integration of the authentication system. Future actions must target these challenges for improved project coherence.
 
-
-____________________________________________________________________________________________________________________________________
+---
 
 ## Basic Information
 
@@ -71,12 +70,15 @@ ________________________________________________________________________________
 ### Completed Features
 
 1. **Project Setup and Dockerisation**
+
    - **Description:** Configured Docker for database, frontend, and admin db page. Added scripts for initializing users and tables for development purposes. Populated development database with fake data. Updated README and added Docker documentation.
 
 2. **Documentation Enhancements**
+
    - **Description:** Added image mockups for UI concepts. Outlined the microservice architecture and system interactions through use case diagrams. Documented Docker setup and configurations and conducted a risk analysis for security and operational challenges.
 
 3. **User Authentication Features**
+
    - **Description:** Implemented and tested user registration API with email verification. Added database migrations and seed data. Integrated SMTP service for email handling in Docker. Developed and tested user login and registration frontend interfaces.
 
 4. **Continuous Integration (CI) Workflow**
@@ -109,4 +111,4 @@ ________________________________________________________________________________
 
 - The sprint successfully enhanced project setup, documentation, and user authentication features, laying a solid foundation for further development. The introduction of a CI workflow marks a significant step towards ensuring code quality and security, setting the stage for future enhancements.
 
-____________________________________________________________________________________________________________________________________
+---

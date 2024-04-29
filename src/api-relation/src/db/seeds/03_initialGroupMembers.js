@@ -1,7 +1,7 @@
-import { faker } from '@faker-js/faker'
-import UserModel from '../models/UserModel.js'
-import TeabagModel from '../models/TeabagModel.js'
-import GroupMemberModel from '../models/GroupMemberModel.js'
+import { faker } from "@faker-js/faker"
+import UserModel from "../models/UserModel.js"
+import TeabagModel from "../models/TeabagModel.js"
+import GroupMemberModel from "../models/GroupMemberModel.js"
 
 export const seed = async knex => {
   UserModel.knex(knex)
