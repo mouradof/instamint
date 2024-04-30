@@ -6,7 +6,7 @@ import sendVerificationEmail from "../helpers/emailHelper.js"
 const prepareRouteRegister = ({ app }) => {
   const auth = new Hono()
 
-  auth.post("/register", async (c) => {
+  auth.post("/register", async c => {
     const body = await c.req.json()
     const { username, email, password } = body
 
@@ -26,7 +26,7 @@ const prepareRouteRegister = ({ app }) => {
         passwordHash: hashedPassword,
         passwordSalt: salt,
         verifyToken: UserModel.generateVerifyToken(),
-        emailVerified: false,
+        emailVerified: false
       })
 
       await sendVerificationEmail(newUser.email, newUser.verifyToken)

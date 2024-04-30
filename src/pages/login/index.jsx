@@ -8,7 +8,7 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = async event => {
     event.preventDefault()
     setIsLoading(true)
 
@@ -16,9 +16,9 @@ const Login = () => {
       const response = await fetch("http://localhost:4000/auth/login", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application/json"
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password })
       })
 
       if (response.ok) {
@@ -46,7 +46,7 @@ const Login = () => {
             required
             style={{ width: "100%", padding: "10px" }}
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={e => setEmail(e.target.value)}
           />
         </div>
         <div style={{ marginBottom: "20px" }}>
@@ -56,17 +56,31 @@ const Login = () => {
             required
             style={{ width: "100%", padding: "10px" }}
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={e => setPassword(e.target.value)}
           />
         </div>
         <div style={{ textAlign: "center", marginBottom: "20px" }}>
-          <button type="submit" disabled={isLoading} style={{ width: "100%", padding: "10px", backgroundColor: "green", color: "white", border: "none", borderRadius: "5px" }}>
+          <button
+            type="submit"
+            disabled={isLoading}
+            style={{
+              width: "100%",
+              padding: "10px",
+              backgroundColor: "green",
+              color: "white",
+              border: "none",
+              borderRadius: "5px"
+            }}
+          >
             {isLoading ? "Loading..." : "Login"}
           </button>
         </div>
       </form>
       <div style={{ textAlign: "center" }}>
-        Not have an account? <Link href="/register"><a style={{ color: "blue" }}>Register now</a></Link>
+        Not have an account?{" "}
+        <Link href="/register">
+          <a style={{ color: "blue" }}>Register now</a>
+        </Link>
       </div>
     </div>
   )

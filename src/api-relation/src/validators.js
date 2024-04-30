@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import { z } from "zod"
 
 // generic
 export const stringValidator = z.string()

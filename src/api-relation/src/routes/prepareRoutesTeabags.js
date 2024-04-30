@@ -14,7 +14,7 @@ const prepareRoutesTeabags = ({ app }) => {
   })
 
   //Assuming that i'm doing this request with a flat data. I'm waiting for tokken
-  teabagsData.get("/:userId/teabags", zValidator("param", teabagSchema), async c => {
+  teabagsData.get("/teabags/:userId", zValidator("param", teabagSchema), async c => {
     try {
       const userId = c.req.valid("param").userId
       const groupMemberships = await GroupMemberModel.query().where("userId", userId)
@@ -87,7 +87,7 @@ const prepareRoutesTeabags = ({ app }) => {
     }
   })
 
-  app.route('/', teabagsData)
+  app.route("/", teabagsData)
 }
 
 export default prepareRoutesTeabags

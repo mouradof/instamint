@@ -6,7 +6,7 @@ import knex from "knex"
 import { authMiddleware } from "./src/middleware/auth.js"
 import BaseModel from "./src/db/models/BaseModel.js"
 import config from "./config.js"
-import userRoutes from './src/routes/user-routes.js';
+import userRoutes from "./src/routes/user-routes.js"
 
 import prepareRouteRegister from "./src/routes/register-route.js"
 import prepareRouteLogin from "./src/routes/login-route.js"
@@ -21,16 +21,16 @@ BaseModel.knex(db)
 const app = new Hono()
 
 app.use(logger())
-app.use(cors({
-  origin: "*",
-  allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowHeaders: ["*"],
-  credentials: true,
-}))
+app.use(
+  cors({
+    origin: "*",
+    allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowHeaders: ["*"],
+    credentials: true
+  })
+)
 
-
-app.route('/api', userRoutes);
-
+app.route("/api", userRoutes)
 
 app.use("/api/protected", authMiddleware)
 
@@ -40,7 +40,7 @@ prepareRouteVerify({ app, db })
 
 serve({
   fetch: app.fetch,
-  port: config.port,
+  port: config.port
 })
 
 // eslint-disable-next-line no-console

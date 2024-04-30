@@ -8,16 +8,16 @@ const Register = () => {
   const [password, setPassword] = useState("")
   const router = useRouter()
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = async event => {
     event.preventDefault()
 
     try {
       const response = await fetch("http://localhost:4000/auth/register", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application/json"
         },
-        body: JSON.stringify({ username, email, password }),
+        body: JSON.stringify({ username, email, password })
       })
 
       if (response.ok) {
@@ -41,7 +41,7 @@ const Register = () => {
             placeholder="Username"
             style={{ width: "100%", padding: "10px" }}
             value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            onChange={e => setUsername(e.target.value)}
           />
         </div>
         <div style={{ marginBottom: "20px" }}>
@@ -50,7 +50,7 @@ const Register = () => {
             placeholder="Email"
             style={{ width: "100%", padding: "10px" }}
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={e => setEmail(e.target.value)}
           />
         </div>
         <div style={{ marginBottom: "20px" }}>
@@ -59,20 +59,30 @@ const Register = () => {
             placeholder="Password"
             style={{ width: "100%", padding: "10px" }}
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={e => setPassword(e.target.value)}
           />
         </div>
         <div style={{ textAlign: "center", marginBottom: "20px" }}>
           <button
             type="submit"
-            style={{ width: "100%", padding: "10px", backgroundColor: "green", color: "white", border: "none", borderRadius: "5px" }}
+            style={{
+              width: "100%",
+              padding: "10px",
+              backgroundColor: "green",
+              color: "white",
+              border: "none",
+              borderRadius: "5px"
+            }}
           >
             Register
           </button>
         </div>
       </form>
       <div style={{ textAlign: "center" }}>
-        Already have an account? <Link href="/login"><a style={{ color: "blue" }}>Login here</a></Link>
+        Already have an account?{" "}
+        <Link href="/login">
+          <a style={{ color: "blue" }}>Login here</a>
+        </Link>
       </div>
     </div>
   )

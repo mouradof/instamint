@@ -1,30 +1,30 @@
 # PESTEL Analysis
 
-| Factor         | Influence on Instamint                                             | Color Indicator   |
-| -------------- | ------------------------------------------------------------------ | ----------------- |
-| **Political**  | Increasing regulation of NFTs and cryptocurrencies                  | 🟥 High Alert     |
-| **Economic**   | Fluctuations in cryptocurrency markets affecting NFT transactions   | 🟨 Moderate Alert |
-| **Social**     | Shifting attitudes towards NFTs and digital art                     | 🟩 Low Alert      |
-| **Technological** | Blockchain innovations offering new opportunities                | 🟩 Low Alert      |
-| **Environmental** | Impact of cryptocurrency mining on the environment              | 🟥 High Alert     |
-| **Legal**      | Potential new laws impacting NFT-related operations                 | 🟥 High Alert     |
+| Factor            | Influence on Instamint                                            | Color Indicator   |
+| ----------------- | ----------------------------------------------------------------- | ----------------- |
+| **Political**     | Increasing regulation of NFTs and cryptocurrencies                | 🟥 High Alert     |
+| **Economic**      | Fluctuations in cryptocurrency markets affecting NFT transactions | 🟨 Moderate Alert |
+| **Social**        | Shifting attitudes towards NFTs and digital art                   | 🟩 Low Alert      |
+| **Technological** | Blockchain innovations offering new opportunities                 | 🟩 Low Alert      |
+| **Environmental** | Impact of cryptocurrency mining on the environment                | 🟥 High Alert     |
+| **Legal**         | Potential new laws impacting NFT-related operations               | 🟥 High Alert     |
 
 # Risk Matrix
 
-| Risk          | Risk Type  | Probability | Impact |              Color Indicator   |
-| ------------- | ---------- | ----------- | ------ | ----------------- |
-| **Technological** | Medium    | High       | Strengthen platform security and resilience        | 🟨 Moderate Alert |
-| **Market**    | Medium     | Medium     | Diversify offerings and intensify marketing efforts | 🟨 Moderate Alert |
-| **Regulatory** | High      | High       | Proactive regulatory monitoring and adaptation      | 🟥 High Alert     |
-| **Operational** | Medium   | Medium     | Optimize operational processes and customer support | 🟨 Moderate Alert |
-| **Reputational** | Low      | High       | Actively manage reputation and public relations     | 🟨 Moderate Alert |
+| Risk              | Risk Type | Probability | Impact                                              | Color Indicator   |
+| ----------------- | --------- | ----------- | --------------------------------------------------- | ----------------- |
+| **Technological** | Medium    | High        | Strengthen platform security and resilience         | 🟨 Moderate Alert |
+| **Market**        | Medium    | Medium      | Diversify offerings and intensify marketing efforts | 🟨 Moderate Alert |
+| **Regulatory**    | High      | High        | Proactive regulatory monitoring and adaptation      | 🟥 High Alert     |
+| **Operational**   | Medium    | Medium      | Optimize operational processes and customer support | 🟨 Moderate Alert |
+| **Reputational**  | Low       | High        | Actively manage reputation and public relations     | 🟨 Moderate Alert |
 
 # SWOT Analysis
 
-| SWOT           | Strengths                             | Weaknesses                            | Opportunities                         | Threats                                 |
-| -------------- | ------------------------------------- | ------------------------------------- | ------------------------------------- | --------------------------------------- |
-| **Technological innovation** | Immersive user experience              | Dependence on blockchain technologies | Growth in the NFT market               | Changing regulations                    |
-| **Market presence** | Partnerships with artists              | Challenges in market adoption          | Increased competition                  |
+| SWOT                         | Strengths                 | Weaknesses                            | Opportunities            | Threats              |
+| ---------------------------- | ------------------------- | ------------------------------------- | ------------------------ | -------------------- |
+| **Technological innovation** | Immersive user experience | Dependence on blockchain technologies | Growth in the NFT market | Changing regulations |
+| **Market presence**          | Partnerships with artists | Challenges in market adoption         | Increased competition    |
 
 # Interpretations
 

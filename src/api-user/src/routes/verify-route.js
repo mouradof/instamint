@@ -4,7 +4,7 @@ import UserModel from "../db/models/UserModel.js"
 const prepareRouteVerify = ({ app }) => {
   const auth = new Hono()
 
-  auth.get("/verify", async (c) => {
+  auth.get("/verify", async c => {
     const token = c.req.query("token")
 
     if (!token) {
@@ -18,10 +18,12 @@ const prepareRouteVerify = ({ app }) => {
         return c.json({ message: "Invalid or expired verification token" }, 404)
       }
 
-      await UserModel.query().patch({
-        emailVerified: true,
-        verifyToken: null
-      }).where({ id: user.id })
+      await UserModel.query()
+        .patch({
+          emailVerified: true,
+          verifyToken: null
+        })
+        .where({ id: user.id })
 
       return c.json({ message: "Email verified successfully" }, 200)
     } catch (error) {

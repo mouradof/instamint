@@ -4,7 +4,7 @@ async function sendVerificationEmail(userEmail, token) {
   const transporter = nodemailer.createTransport({
     host: process.env.SMTP_HOST || "localhost",
     port: process.env.SMTP_PORT || 1025,
-    secure: false,
+    secure: false
   })
 
   const verificationUrl = `http://localhost:4000/auth/verify?token=${token}`
@@ -13,7 +13,7 @@ async function sendVerificationEmail(userEmail, token) {
     from: "no-reply@yourapi.com",
     to: userEmail,
     subject: "Verify Your Email",
-    html: `<p>Click here to verify your email: <a href="${verificationUrl}">${verificationUrl}</a></p>`,
+    html: `<p>Click here to verify your email: <a href="${verificationUrl}">${verificationUrl}</a></p>`
   }
 
   await transporter.sendMail(mailOptions)

@@ -1,55 +1,52 @@
-import React, { useState, useEffect } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHeart, faComments, faRetweet, faBars, faTrash } from "@fortawesome/free-solid-svg-icons";
-import axios from 'axios';
-
+import React, { useState, useEffect } from "react"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faHeart, faComments, faRetweet, faBars, faTrash } from "@fortawesome/free-solid-svg-icons"
+import axios from "axios"
 
 const ProfileHeader = () => {
-  const [showMenu, setShowMenu] = useState(false);
-  const [showConfirmation, setShowConfirmation] = useState(false);
-  const [coverImage, setCoverImage] = useState('');
+  const [showMenu, setShowMenu] = useState(false)
+  const [showConfirmation, setShowConfirmation] = useState(false)
+  const [coverImage, setCoverImage] = useState("")
 
   useEffect(() => {
-    axios.get('http://localhost:4000/api/user/7')
+    axios
+      .get("http://localhost:4000/api/user/7")
       .then(response => {
-        setCoverImage(response.data.coverImage);
+        setCoverImage(response.data.coverImage)
       })
       .catch(error => {
-        console.error('Error fetching cover image:', error);
-      });
-  }, []);
+        console.error("Error fetching cover image:", error)
+      })
+  }, [])
 
   const toggleMenu = () => {
-    setShowMenu(!showMenu);
-  };
+    setShowMenu(!showMenu)
+  }
 
   const toggleConfirmation = () => {
-    setShowConfirmation(!showConfirmation);
-  };
+    setShowConfirmation(!showConfirmation)
+  }
 
   const handleDeleteAccount = () => {
-    axios.delete('http://localhost:4000/api/user/7')
+    axios
+      .delete("http://localhost:4000/api/user/7")
       .then(response => {
-        alert('User deleted successfully!');
-        window.location.href = '/profile/deleted'; 
+        alert("User deleted successfully!")
+        window.location.href = "/profile/deleted"
       })
       .catch(error => {
-        console.error('Error deleting user:', error);
-        alert('Error deleting user. Please try again later.');
-      });
-  };
+        console.error("Error deleting user:", error)
+        alert("Error deleting user. Please try again later.")
+      })
+  }
 
   return (
     <div className="w-full h-56 bg-cover bg-center relative" style={{ backgroundImage: `url(${coverImage})` }}>
       <div className="absolute top-4 left-4">
-        <img
-          src="/images/logo-Instamint.png" 
-          alt="Company Logo"
-          className="h-29 w-14"
-        />
+        <img src="/images/logo-Instamint.png" alt="Company Logo" className="h-29 w-14" />
       </div>
       <div className="absolute top-4 right-4">
-        <button 
+        <button
           onClick={toggleMenu}
           className="p-2 text-white bg-gray-800 bg-opacity-75 rounded-full hover:bg-opacity-100 transition-opacity duration-300"
         >
@@ -58,7 +55,10 @@ const ProfileHeader = () => {
         {showMenu && (
           <div className="absolute right-0 mt-12 bg-white rounded shadow-lg w-48">
             <ul className="text-gray-700">
-              <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={() => window.location.href = 'profile/editProfile'}>
+              <li
+                className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                onClick={() => (window.location.href = "profile/editProfile")}
+              >
                 Edit Profile
               </li>
               <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={toggleConfirmation}>
@@ -73,17 +73,19 @@ const ProfileHeader = () => {
           <div className="bg-white rounded-lg p-8">
             <p className="text-xl font-semibold">Are you sure you want to delete your account?</p>
             <div className="flex justify-end mt-4">
-              <button className="bg-red-500 text-white px-4 py-2 rounded mr-4" onClick={handleDeleteAccount}>Delete</button>
-              <button className="bg-gray-200 text-gray-700 px-4 py-2 rounded" onClick={toggleConfirmation}>Cancel</button>
+              <button className="bg-red-500 text-white px-4 py-2 rounded mr-4" onClick={handleDeleteAccount}>
+                Delete
+              </button>
+              <button className="bg-gray-200 text-gray-700 px-4 py-2 rounded" onClick={toggleConfirmation}>
+                Cancel
+              </button>
             </div>
           </div>
         </div>
       )}
     </div>
-  );
-};
-
-
+  )
+}
 
 const ProfileContent = ({ user }) => (
   <div className="w-3/4 mt-4 px-4 flex flex-col items-center">
@@ -117,12 +119,12 @@ const ProfileContent = ({ user }) => (
       </button>
     </div>
   </div>
-);
+)
 
 const ProfilePosts = () => {
   const [isDropdownVisible, setDropdownVisible] = useState(false)
   const [isImageFullscreen, setImageFullscreen] = useState(false)
-  const [liked, setLiked] = useState(false) 
+  const [liked, setLiked] = useState(false)
 
   const toggleDropdown = () => {
     setDropdownVisible(!isDropdownVisible)
@@ -138,23 +140,16 @@ const ProfilePosts = () => {
   }
 
   const toggleLike = () => {
-    setLiked(!liked) 
+    setLiked(!liked)
   }
 
   return (
     <div className="w-3/4 mx-auto bg-white shadow rounded-lg p-4">
       <div className="flex items-center mb-2">
-        <img
-          className="w-10 h-10 rounded-full mr-4"
-          src="/images/default-profile-picture.jpg"
-          alt="User avatar"
-        />
+        <img className="w-10 h-10 rounded-full mr-4" src="/images/default-profile-picture.jpg" alt="User avatar" />
         <span className="font-bold text-md">Darrell asidddd</span>
         <div className="ml-auto relative">
-          <button
-            onClick={toggleDropdown}
-            className="p-2 rounded hover:bg-gray-200 transition duration-200"
-          >
+          <button onClick={toggleDropdown} className="p-2 rounded hover:bg-gray-200 transition duration-200">
             <FontAwesomeIcon icon={faBars} />
           </button>
           {isDropdownVisible && (
@@ -176,13 +171,13 @@ const ProfilePosts = () => {
         <img
           src="/images/default-profile-picture.jpg"
           alt="Post visual content"
-          className="w-1/2 h-auto object-cover rounded-lg shadow" 
+          className="w-1/2 h-auto object-cover rounded-lg shadow"
           onClick={toggleImageFullscreen}
         />
         {isImageFullscreen && (
           <div className="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50">
             <button onClick={toggleImageFullscreen} className="absolute top-3 right-3 text-white text-xl">
-              &times 
+              &times
             </button>
             <img
               src="/images/default-profile-picture.jpg"
@@ -194,7 +189,10 @@ const ProfilePosts = () => {
       </div>
       <div className="flex justify-around w-full">
         <div className="flex items-center cursor-pointer" onClick={toggleLike}>
-          <FontAwesomeIcon icon={faHeart} className={`text-gray-600 h-4 w-4 mr-1 ${liked ? "text-red-500" : "text-gray-600"}`} />
+          <FontAwesomeIcon
+            icon={faHeart}
+            className={`text-gray-600 h-4 w-4 mr-1 ${liked ? "text-red-500" : "text-gray-600"}`}
+          />
           <span className="text-xs text-gray-600">10k</span>
         </div>
         <div className="flex items-center cursor-pointer" onClick={() => alert("Comment feature coming soon!")}>
@@ -218,20 +216,21 @@ const ProfilePage = () => {
     bio: "",
     profileImage: "/images/default-profile-picture.jpg",
     coverImage: "/images/default-cover-picture.jpg"
-  });
+  })
 
   useEffect(() => {
-    axios.get('http://localhost:4000/api/user/7')
+    axios
+      .get("http://localhost:4000/api/user/7")
       .then(response => {
         setUser({
           ...user,
           ...response.data
-        });
+        })
       })
       .catch(error => {
-        console.error('Error fetching user data:', error);
-      });
-  }, []);
+        console.error("Error fetching user data:", error)
+      })
+  }, [])
 
   return (
     <div className="flex flex-col items-center w-full">
@@ -239,7 +238,7 @@ const ProfilePage = () => {
       <ProfileContent user={user} />
       <ProfilePosts />
     </div>
-  );
-};
+  )
+}
 
-export default ProfilePage;
+export default ProfilePage

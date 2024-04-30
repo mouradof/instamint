@@ -1,9 +1,9 @@
-import { faker } from '@faker-js/faker'
-import UserModel from '../models/UserModel.js'
+import { faker } from "@faker-js/faker"
+import UserModel from "../models/UserModel.js"
 
 export const seed = async knex => {
   UserModel.knex(knex)
-  const users = await UserModel.query().select('id')
+  const users = await UserModel.query().select("id")
   const numUsers = parseInt(users.length)
   const teabagsData = []
   const numTeabags = 10
@@ -21,5 +21,5 @@ export const seed = async knex => {
     })
   }
 
-  await knex('teabags').insert(teabagsData)
+  await knex("teabags").insert(teabagsData)
 }
