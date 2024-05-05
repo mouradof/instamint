@@ -1,10 +1,10 @@
 "use client"
-import Homepage from "./homepage/homepage"
+import Home from "./home/home"
 
-export default function Home() {
+export default function HomePage() {
   return (
     <>
-      <Homepage />
+      <Home />
     </>
   )
 }

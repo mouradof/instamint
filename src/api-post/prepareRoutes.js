@@ -1,7 +1,5 @@
-import prepareRoutesPost from "./src/routes/prepareRoutesPost.js"
+import prepareRoutesPosts from "./src/routes/prepareRoutesPosts.js"
 
-const prepareRoutes = (ctx) => {
-  prepareRoutesPost(ctx)
+export default function prepareRoutes(app, db) {
+  prepareRoutesPosts(app, db)
 }
-
-export default prepareRoutes

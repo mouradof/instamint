@@ -1,57 +1,80 @@
+import { useState, useCallback, useEffect } from "react"
 import axios from "axios"
-import { useCallback, useState } from "react"
 
-const usePostInteractions = (
-  postId,
-  initialLikes,
-  initialReposts,
-  isInitiallyLiked,
-  isInitiallyReposted,
-) => {
+const usePostInteractions = (postId, initialLikes, isInitiallyLiked) => {
   const [isLiked, setIsLiked] = useState(isInitiallyLiked)
-  const [likeCount, setLikeCount] = useState(initialLikes)
-  const [isReposted, setIsReposted] = useState(isInitiallyReposted)
-  const [repostCount, setRepostCount] = useState(initialReposts)
+  const [likeCount, setLikeCount] = useState(
+    initialLikes > 0 ? initialLikes : null,
+  )
+
+  const [toast, setToast] = useState({ message: "", isSuccess: true })
+
+  const showError = (error) => {
+    setToast({ message: error, isSuccess: false })
+  }
+
+  const fetchLikes = useCallback(async () => {
+    try {
+      const response = await axios.get(
+        `http://localhost:4002/post/likes/${postId}`,
+      )
+
+      if (response.data.success) {
+        setLikeCount(
+          response.data.likeCount > 0 ? response.data.likeCount : null,
+        )
+      }
+    } catch (error) {
+      showError("Failed to fetch likes")
+    }
+  }, [postId])
+
+  useEffect(() => {
+    const checkLikeStatus = async () => {
+      const response = await axios.get(
+        `http://localhost:4002/post/liked/${postId}`,
+      )
+      setIsLiked(response.data.isLiked)
+    }
+
+    checkLikeStatus()
+    fetchLikes()
+  }, [postId, fetchLikes])
 
   const toggleLike = useCallback(async () => {
-    try {
-      const method = isLiked ? "DELETE" : "POST"
-      const response = await axios[method](
-        `http://localhost:4000/post/like/${postId}`,
-      )
+    const url = `http://localhost:4002/post/like/${postId}`
 
-      if (response.status === 200) {
-        setIsLiked(!isLiked)
-        setLikeCount((prev) => (isLiked ? prev - 1 : prev + 1))
+    if (isLiked) {
+      try {
+        const response = await axios.delete(url)
+
+        if (response.data.success) {
+          setIsLiked(false)
+          setLikeCount((prev) => (prev > 1 ? parseInt(prev) - 1 : null))
+        }
+      } catch (error) {
+        showError("Failed to remove like")
       }
-    } catch (error) {
-      /* empty */
+    } else {
+      try {
+        const response = await axios.post(url)
+
+        if (response.data.success) {
+          setIsLiked(true)
+          setLikeCount((prev) => (prev != null ? parseInt(prev) + 1 : 1))
+        }
+      } catch (error) {
+        showError("Failed to add like")
+      }
     }
   }, [isLiked, postId])
-
-  const toggleRepost = useCallback(async () => {
-    try {
-      const method = isReposted ? "DELETE" : "POST"
-      const response = await axios[method](
-        `http://localhost:4000/post/repost/${postId}`,
-      )
-
-      if (response.status === 200) {
-        setIsReposted(!isReposted)
-        setRepostCount((prev) => (isReposted ? prev - 1 : prev + 1))
-      }
-    } catch (error) {
-      /* empty */
-    }
-  }, [isReposted, postId])
 
   return {
     isLiked,
     likeCount,
-    isReposted,
-    repostCount,
     toggleLike,
-    toggleRepost,
+    fetchLikes,
+    toast,
   }
 }
 

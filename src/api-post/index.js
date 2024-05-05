@@ -5,6 +5,7 @@ import { logger } from "hono/logger"
 import knex from "knex"
 import BaseModel from "./src/db/models/BaseModel.js"
 import config from "./config.js"
+import prepareRoutes from "./prepareRoutes.js"
 
 const db = knex(config.db)
 BaseModel.knex(db)
@@ -19,6 +20,8 @@ app.use(
     credentials: true,
   }),
 )
+
+prepareRoutes(app, db)
 
 serve({
   fetch: app.fetch,

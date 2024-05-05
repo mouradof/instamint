@@ -12,22 +12,19 @@ import {
   UserCircleIcon as UserCircleIconSolid,
 } from "@heroicons/react/24/solid"
 import { useRouter } from "next/router"
-import { useNavigation } from "../context/navigationContext"
 
 const BottomNav = () => {
-  const { setActivePage } = useNavigation()
   const router = useRouter()
 
   const navigate = (page) => {
-    setActivePage(page)
     router.push(`/${page}`)
   }
 
   return (
     <div className="fixed inset-x-0 bottom-0 bg-white border-t border-gray-200">
       <div className="flex justify-evenly items-center max-w-2xl mx-auto p-5">
-        <button onClick={() => navigate("homepage")}>
-          {router.pathname === "/homepage" ? (
+        <button onClick={() => navigate("home")}>
+          {router.pathname === "/home" ? (
             <HomeIconSolid className="h-7 w-7 text-green-500" />
           ) : (
             <HomeIcon className="h-7 w-7 text-gray-500" />
