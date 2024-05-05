@@ -1,33 +1,31 @@
+import globals from "globals"
+import pluginReactConfig from "eslint-plugin-react/configs/recommended.js"
+import { FlatCompat } from "@eslint/eslintrc"
+import pluginJs from "@eslint/js"
+
+const compat = new FlatCompat({ baseDirectory: __dirname, recommendedConfig: pluginJs.configs.recommended })
+
 module.exports = {
   root: true,
-  extends: [
-    "eslint:recommended",
-    "prettier",
-    "next",
-    "plugin:react/recommended",
-  ],
+  extends: ["eslint:recommended", "plugin:react/recommended", "plugin:prettier/recommended"],
   plugins: ["react", "react-hooks"],
   env: {
     es2022: true,
-    node: true,
+    node: true
   },
   parserOptions: {
-    sourceType: "module",
+    sourceType: "module"
   },
   rules: {
-    "indent": "off",
+    indent: "off",
     "linebreak-style": ["error", "unix"],
-    "quotes": [
-      "error",
-      "double",
-      { avoidEscape: true, allowTemplateLiterals: true },
-    ],
-    "semi": ["error", "never"],
+    quotes: ["error", "double", { avoidEscape: true, allowTemplateLiterals: true }],
+    semi: ["error", "never"],
     "no-console": "error",
     "no-implicit-globals": "error",
     "no-warning-comments": ["error", { terms: ["fixme", "todo"] }],
     "newline-before-return": "error",
-    "curly": "error",
+    curly: "error",
     "padded-blocks": ["error", "never"],
     "space-before-blocks": "error",
     "padding-line-between-statements": [
@@ -35,43 +33,19 @@ module.exports = {
       {
         blankLine: "always",
         prev: "*",
-        next: [
-          "break",
-          "case",
-          "cjs-export",
-          "class",
-          "continue",
-          "do",
-          "if",
-          "switch",
-          "try",
-          "while",
-          "return",
-        ],
+        next: ["break", "case", "cjs-export", "class", "continue", "do", "if", "switch", "try", "while", "return"]
       },
       {
         blankLine: "always",
-        prev: [
-          "break",
-          "case",
-          "cjs-export",
-          "class",
-          "continue",
-          "do",
-          "if",
-          "switch",
-          "try",
-          "while",
-          "return",
-        ],
-        next: "*",
-      },
+        prev: ["break", "case", "cjs-export", "class", "continue", "do", "if", "switch", "try", "while", "return"],
+        next: "*"
+      }
     ],
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "warn",
     "react/no-unescaped-entities": ["error", { forbid: [">", "}"] }],
     "react/react-in-jsx-scope": "off",
-    "react/prop-types": "off",
+    "react/prop-types": "off"
   },
-  settings: { react: { version: "detect" } },
+  settings: { react: { version: "detect" } }
 }
