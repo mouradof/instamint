@@ -1,20 +1,20 @@
-import React, { useState, useEffect } from "react";
-import { useRouter } from 'next/router';
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHeart, faComments, faRetweet, faBars, faTrash } from "@fortawesome/free-solid-svg-icons";
-import axios from "axios";
+import React, { useState, useEffect } from "react"
+import { useRouter } from "next/router"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faHeart, faComments, faRetweet, faBars, faTrash } from "@fortawesome/free-solid-svg-icons"
+import axios from "axios"
 
 const ProfileHeader = ({ user, handleDeleteAccount }) => {
-  const [showMenu, setShowMenu] = useState(false);
-  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [showMenu, setShowMenu] = useState(false)
+  const [showConfirmation, setShowConfirmation] = useState(false)
 
   const toggleMenu = () => {
-    setShowMenu(!showMenu);
-  };
+    setShowMenu(!showMenu)
+  }
 
   const toggleConfirmation = () => {
-    setShowConfirmation(!showConfirmation);
-  };
+    setShowConfirmation(!showConfirmation)
+  }
 
   return (
     <div className="w-full h-56 bg-cover bg-center relative" style={{ backgroundImage: `url(${user.coverImage})` }}>
@@ -22,14 +22,26 @@ const ProfileHeader = ({ user, handleDeleteAccount }) => {
         <img src="/images/logo-Instamint.png" alt="Company Logo" className="h-29 w-14" />
       </div>
       <div className="absolute top-4 right-4">
-        <button onClick={toggleMenu} className="p-2 text-white bg-gray-800 bg-opacity-75 rounded-full hover:bg-opacity-100 transition-opacity duration-300">
+        <button
+          onClick={toggleMenu}
+          className="p-2 text-white bg-gray-800 bg-opacity-75 rounded-full hover:bg-opacity-100 transition-opacity duration-300"
+        >
           <FontAwesomeIcon icon={faBars} size="lg" />
         </button>
         {showMenu && (
           <div className="absolute right-0 mt-12 bg-white rounded shadow-lg w-48">
             <ul className="text-gray-700">
-              <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={() => alert("Edit profile feature coming soon!")}>
+              <li
+                className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                onClick={() => (window.location.href = "editProfile")}
+              >
                 Edit Profile
+              </li>
+              <li
+                className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                onClick={() => (window.location.href = "changePassword")}
+              >
+                Change Password
               </li>
               <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={toggleConfirmation}>
                 Delete Account
@@ -54,9 +66,8 @@ const ProfileHeader = ({ user, handleDeleteAccount }) => {
         </div>
       )}
     </div>
-  );
-};
-
+  )
+}
 const ProfileContent = ({ user }) => (
   <div className="w-3/4 mt-4 px-4 flex flex-col items-start">
     <div className="flex w-full">
@@ -75,58 +86,47 @@ const ProfileContent = ({ user }) => (
       </div>
     </div>
     <div className="flex flex-col items-start mr-8">
-        <div className="mt-2">
-          <div className="text-xl font-bold">{user.username}</div>
-          <div className="text-sm text-gray-600">{user.bio || "No bio provided."}</div>
-        </div>
+      <div className="mt-2">
+        <div className="text-xl font-bold">{user.username}</div>
+        <div className="text-sm text-gray-600">{user.bio || "No bio provided."}</div>
       </div>
-
-    <div className="flex w-full justify-center gap-12 mt-4"> 
-      <button className="bg-customGreen text-white font-bold py-2 px-4 rounded-full hover:bg-customGreenDarker transition duration-300 ease-in-out">
-        Follow
-      </button>
-      <button className="bg-transparent text-customGreen font-bold py-2 px-4 rounded-full border-2 border-customGreen hover:bg-customGreen hover:text-white transition duration-300 ease-in-out">
-        NFT's
-      </button>
     </div>
+    <hr className="w-full mt-4" />
   </div>
-);
-
-
-
+)
 
 const ProfilePage = () => {
-  const [user, setUser] = useState(null);
-  const router = useRouter();
+  const [user, setUser] = useState(null)
+  const router = useRouter()
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const userData = localStorage.getItem('user');
+      const userData = localStorage.getItem("user")
       if (userData) {
-        const storedUser = JSON.parse(userData);
+        const storedUser = JSON.parse(userData)
         if (storedUser) {
-          setUser(storedUser);
+          setUser(storedUser)
         }
       } else {
-        console.error("No user data available. User might not be logged in.");
-        router.push('/login');
+        console.error("No user data available. User might not be logged in.")
+        router.push("/login")
       }
     }
-  }, [router]);
+  }, [router])
 
   const handleDeleteAccount = () => {
     axios
       .delete(`http://localhost:4000/api/user/${user.id}`)
       .then(response => {
-        alert("User deleted successfully!");
-        localStorage.removeItem('user'); 
-        router.push('/login');
+        alert("User deleted successfully!")
+        localStorage.removeItem("user")
+        router.push("/login")
       })
       .catch(error => {
-        console.error("Error deleting user:", error);
-        alert("Error deleting user. Please try again later.");
-      });
-  };
+        console.error("Error deleting user:", error)
+        alert("Error deleting user. Please try again later.")
+      })
+  }
 
   return (
     <div className="flex flex-col items-center w-full">
@@ -139,7 +139,7 @@ const ProfilePage = () => {
         <p>Loading user data...</p>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default ProfilePage;
+export default ProfilePage

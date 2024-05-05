@@ -1,5 +1,6 @@
 import { Hono } from "hono"
 import UserModel from "../db/models/UserModel.js"
+import bcrypt from "bcrypt"
 
 const userRoutes = new Hono()
 
@@ -15,6 +16,33 @@ userRoutes.get("/user/:id", async c => {
     return c.json({ message: "Error fetching user", error: error.message }, 500)
   }
 })
+
+userRoutes.put("/user/:id/change-password", async c => {
+  const id = c.req.param("id");
+  const { oldPassword, newPassword } = await c.req.json();
+
+  try {
+    const user = await UserModel.query().findById(id);
+    if (!user) {
+      return c.json({ message: "User not found" }, 404);
+    }
+
+    const validPassword = await bcrypt.compare(oldPassword, user.passwordHash);
+    if (!validPassword) {
+      return c.json({ message: "Old password is incorrect" }, 403);
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    await UserModel.query().patchAndFetchById(id, { passwordHash: hashedPassword });
+
+    return c.json({ message: "Password updated successfully" }, 200);
+  } catch (error) {
+    console.error("Error updating password:", error);
+    return c.json({ message: "Error updating password", error: error.message }, 500);
+  }
+});
 
 userRoutes.put("/user/:id", async c => {
   const id = c.req.param("id")

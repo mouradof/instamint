@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import Link from "next/link"
 
 const Navigation = () => {
   return (
@@ -10,7 +10,7 @@ const Navigation = () => {
       <Link href="/register">Register</Link>&nbsp;&nbsp;&nbsp;&nbsp;
       <Link href="/home">home</Link>&nbsp;&nbsp;&nbsp;&nbsp;
     </nav>
-  );
-};
+  )
+}
 
-export default Navigation;
+export default Navigation

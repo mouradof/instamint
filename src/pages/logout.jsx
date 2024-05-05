@@ -1,20 +1,18 @@
 // pages/logout.jsx
-import { useEffect } from 'react';
-import { useRouter } from 'next/router';
+import { useEffect } from "react"
+import { useRouter } from "next/router"
 
 const Logout = () => {
-  const router = useRouter();
+  const router = useRouter()
 
   useEffect(() => {
-    localStorage.removeItem('user');
-    localStorage.removeItem('token');
+    localStorage.removeItem("user")
+    localStorage.removeItem("token")
 
-    router.push('/login');
-  }, [router]);
+    router.push("/login")
+  }, [router])
 
-  return (
-    <div>Logging out... Please wait.</div>
-  );
-};
+  return <div>Logging out... Please wait.</div>
+}
 
-export default Logout;
+export default Logout
