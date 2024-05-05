@@ -80,8 +80,7 @@ const Register = () => {
       </form>
       <div style={{ textAlign: "center" }}>
         Already have an account?{" "}
-        <Link href="/login">
-          <a style={{ color: "blue" }}>Login here</a>
+        <Link href="/login"style={{ color: "blue" }}>Login here
         </Link>
       </div>
     </div>

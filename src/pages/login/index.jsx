@@ -1,16 +1,16 @@
-import React, { useState } from "react"
-import { useRouter } from "next/router"
-import Link from "next/link"
+import React, { useState } from "react";
+import { useRouter } from "next/router";
+import Link from "next/link";
 
 const Login = () => {
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
-  const router = useRouter()
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
   const handleSubmit = async event => {
-    event.preventDefault()
-    setIsLoading(true)
+    event.preventDefault();
+    setIsLoading(true);
 
     try {
       const response = await fetch("http://localhost:4000/auth/login", {
@@ -19,21 +19,24 @@ const Login = () => {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({ email, password })
-      })
+      });
 
       if (response.ok) {
-        alert("Vous êtes connecté")
-        router.push("/home")
+        const data = await response.json();
+        alert("Vous êtes connecté");
+        localStorage.setItem('user', JSON.stringify(data.user));
+        localStorage.setItem('token', data.token);
+        router.push(`/profile/${data.user.id}`);
       } else {
-        const error = await response.json()
-        alert(error.message || "Erreur de connexion")
+        const error = await response.json();
+        alert(error.message || "Erreur de connexion");
       }
     } catch (error) {
-      alert("Erreur réseau")
+      alert("Erreur réseau");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <div style={{ maxWidth: "400px", margin: "auto", padding: "20px" }}>
@@ -78,12 +81,11 @@ const Login = () => {
       </form>
       <div style={{ textAlign: "center" }}>
         Not have an account?{" "}
-        <Link href="/register">
-          <a style={{ color: "blue" }}>Register now</a>
+        <Link href="/register" style={{ color: "blue" }}>Register now
         </Link>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Login
+export default Login;
