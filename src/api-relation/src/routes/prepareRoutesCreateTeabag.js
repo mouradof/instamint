@@ -33,7 +33,7 @@ const prepareRoutesCreateTeabag = ({ app }) => {
       .optional()
   })
 
-  createTeabag.post("/:userId/createTeabag", zValidator("form", teabagSchema), async c => {
+  createTeabag.post("teabags/:userId/createTeabag", zValidator("form", teabagSchema), async c => {
     try {
       const userId = c.req.param("userId")
       const userExists = await UserModel.query().findById(userId)
@@ -43,7 +43,7 @@ const prepareRoutesCreateTeabag = ({ app }) => {
 
         return c.json({
           success: false,
-          message: `User not found`
+          message: "User not found"
         })
       }
 
@@ -70,7 +70,7 @@ const prepareRoutesCreateTeabag = ({ app }) => {
 
       const newTeabag = await TeabagModel.query().insert({
         ownerId: userId,
-        name: name,
+        name,
         description: description || null,
         private: isPrivate || false,
         image: uniqueImagename
@@ -78,7 +78,7 @@ const prepareRoutesCreateTeabag = ({ app }) => {
 
       let groupMembers = [
         {
-          userId: userId,
+          userId,
           teabagId: newTeabag.id
         }
       ]
@@ -106,7 +106,7 @@ const prepareRoutesCreateTeabag = ({ app }) => {
         result: newTeabag,
         numberOfUsers,
         success: true,
-        message: `Teabag created successfully`
+        message: "Teabag created successfully"
       })
     } catch (error) {
       c.status(500)

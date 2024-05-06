@@ -12,8 +12,7 @@ const prepareRoutesTeabags = ({ app }) => {
   const teabagSchema = z.object({
     userId: idValidator
   })
-
-  //Assuming that i'm doing this request with a flat data. I'm waiting for tokken
+  // Assuming that i'm doing this request with a flat data. I'm waiting for tokken
   teabagsData.get("/teabags/:userId", zValidator("param", teabagSchema), async c => {
     try {
       const userId = c.req.valid("param").userId
@@ -24,7 +23,7 @@ const prepareRoutesTeabags = ({ app }) => {
 
         return c.json({
           success: false,
-          message: `User has no group`
+          message: "User has no group"
         })
       }
 
@@ -35,7 +34,7 @@ const prepareRoutesTeabags = ({ app }) => {
 
         return c.json({
           success: false,
-          message: `404 Not found`
+          message: "404 Not found"
         })
       }
 
@@ -46,7 +45,7 @@ const prepareRoutesTeabags = ({ app }) => {
 
         return c.json({
           success: false,
-          message: `404 Not found`
+          message: "404 Not found"
         })
       }
 
@@ -63,7 +62,10 @@ const prepareRoutesTeabags = ({ app }) => {
             "https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar"
           )
         ) {
-          teabag.imageBucket = pkg.getSignedUrl("getObject", { Bucket: "instamint-laym-bucket", Key: teabag.image })
+          teabag.imageBucket = pkg.getSignedUrl("getObject", {
+            Bucket: "instamint-laym-bucket",
+            Key: teabag.image
+          })
         } else {
           teabag.imageBucket = teabag.image
         }
@@ -74,7 +76,7 @@ const prepareRoutesTeabags = ({ app }) => {
       return c.json({
         result: teabagsData,
         success: true,
-        message: `Data fetched`
+        message: "Data fetched"
       })
     } catch (error) {
       c.status(500)

@@ -7,6 +7,7 @@ services:
       - "3000:3000"
     volumes:
       - ./src/pages:/app/src/pages
+      - ./src/app:/app/src/app
 
   api-user:
     build: ./src/api-user
@@ -14,7 +15,7 @@ services:
       - "4000:4002"
     environment:
       DATABASE_URL: ${DATABASE_URL}
-      SMTP_HOST : mailhog
+      SMTP_HOST: mailhog
       SMTP_PORT: 1025
       DB_HOST: postgres-db
       DB_PORT: 5432
@@ -34,7 +35,7 @@ services:
     volumes:
       - ./src/api-relation:/usr/src/app
       - /usr/src/app/node_modules
-      
+
   api-post:
     build: ./src/api-post
     ports:
