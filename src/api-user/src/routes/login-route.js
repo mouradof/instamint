@@ -1,6 +1,6 @@
 import { Hono } from "hono"
 import bcrypt from "bcrypt"
-import jwt from "jsonwebtoken"
+import { sign } from "hono/jwt"
 import UserModel from "../db/models/UserModel.js"
 
 const prepareRouteLogin = ({ app }) => {
@@ -27,15 +27,14 @@ const prepareRouteLogin = ({ app }) => {
         return c.json({ message: "Please verify your email address first" }, 401)
       }
 
-      const token = jwt.sign(
-        {
-          id: user.id,
-          username: user.username,
-          email: user.email
-        },
-        process.env.JWT_SECRET,
-        { expiresIn: "1h" }
-      )
+      const payload = {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        exp: Math.floor(Date.now() / 1000) + 60 * 5
+      }
+
+      const token = await sign(payload, process.env.JWT_SECRET)
 
       return c.json({ message: "Auth successful", token }, 200)
     } catch (error) {

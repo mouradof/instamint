@@ -80,12 +80,14 @@ const Register = () => {
       </form>
       <div style={{ textAlign: "center" }}>
         Already have an account?{" "}
-        <Link href="/login">
-          <a style={{ color: "blue" }}>Login here</a>
+        <Link className="text-blue-400" href="/login">
+          Login here
         </Link>
       </div>
     </div>
   )
 }
+
+Register.isPublicPage = true
 
 export default Register

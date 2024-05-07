@@ -22,7 +22,10 @@ const Login = () => {
       })
 
       if (response.ok) {
+        const data = await response.json()
+        const token = data.token
         alert("Vous êtes connecté")
+        localStorage.setItem("instamint", token)
         router.push("/home")
       } else {
         const error = await response.json()
@@ -78,12 +81,14 @@ const Login = () => {
       </form>
       <div style={{ textAlign: "center" }}>
         Not have an account?{" "}
-        <Link href="/register">
-          <a style={{ color: "blue" }}>Register now</a>
+        <Link className="text-blue-400" href="/register">
+          Register now
         </Link>
       </div>
     </div>
   )
 }
+
+Login.isPublicPage = true
 
 export default Login

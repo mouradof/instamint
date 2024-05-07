@@ -16,4 +16,6 @@ RUN apt-get update && \
     apt-get remove -y make gcc g++ python3 python3-pip && \
     apt-get autoremove -y
 
-CMD ["npm", "run", "start"]
+RUN npm install nodemon -g
+
+CMD ["npm", "run", "dev"]

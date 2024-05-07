@@ -9,14 +9,9 @@ const ProfileHeader = () => {
   const [coverImage, setCoverImage] = useState("")
 
   useEffect(() => {
-    axios
-      .get("http://localhost:4000/api/user/7")
-      .then(response => {
-        setCoverImage(response.data.coverImage)
-      })
-      .catch(error => {
-        console.error("Error fetching cover image:", error)
-      })
+    axios.get("http://localhost:4000/api/user/7").then(response => {
+      setCoverImage(response.data.coverImage)
+    })
   }, [])
 
   const toggleMenu = () => {
@@ -30,12 +25,11 @@ const ProfileHeader = () => {
   const handleDeleteAccount = () => {
     axios
       .delete("http://localhost:4000/api/user/7")
-      .then(response => {
+      .then(() => {
         alert("User deleted successfully!")
         window.location.href = "/profile/deleted"
       })
-      .catch(error => {
-        console.error("Error deleting user:", error)
+      .catch(() => {
         alert("Error deleting user. Please try again later.")
       })
   }
@@ -219,17 +213,12 @@ const ProfilePage = () => {
   })
 
   useEffect(() => {
-    axios
-      .get("http://localhost:4000/api/user/7")
-      .then(response => {
-        setUser({
-          ...user,
-          ...response.data
-        })
+    axios.get("http://localhost:4000/api/user/7").then(response => {
+      setUser({
+        ...user,
+        ...response.data
       })
-      .catch(error => {
-        console.error("Error fetching user data:", error)
-      })
+    })
   }, [])
 
   return (
