@@ -63,7 +63,7 @@ const prepareRoutesTeabags = ({ app }) => {
           )
         ) {
           teabag.imageBucket = pkg.getSignedUrl("getObject", {
-            Bucket: "instamint-laym-bucket",
+            Bucket: process.env.BUCKET_NAME_S3,
             Key: teabag.image
           })
         } else {

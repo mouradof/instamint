@@ -59,7 +59,7 @@ const prepareRoutesCreateTeabag = ({ app }) => {
         const fileBuffer = await image.arrayBuffer()
         const buffer = Buffer.from(fileBuffer)
         const params = {
-          Bucket: "instamint-laym-bucket",
+          Bucket: process.env.BUCKET_NAME_S3,
           Key: uniqueImagename,
           Body: buffer,
           ContentType: "image/png"
