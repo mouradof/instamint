@@ -19,13 +19,12 @@ function DeleteUserButton() {
 
         return response.json()
       })
-      .then(data => {
+      .then(() => {
         alert("User deleted successfully!")
         setShowConfirmation(false)
         router.push("/profile")
       })
       .catch(error => {
-        console.error("Error deleting user:", error)
         setError(error)
       })
       .finally(() => setLoading(false))

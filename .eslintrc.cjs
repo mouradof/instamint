@@ -42,7 +42,9 @@ module.exports = {
   },
   settings: { react: { version: "detect" } },
   globals: {
-    localStorage: "readonly"
+    localStorage: "readonly",
+    alert: "readonly",
+    window: "readonly"
   },
   overrides: [
     {

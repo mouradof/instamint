@@ -19,7 +19,6 @@ export default function EditUserProfile() {
         setUser(response.data)
       })
       .catch(error => {
-        console.error("Error fetching data:", error)
         setError(error)
       })
       .finally(() => setLoading(false))
@@ -50,7 +49,6 @@ export default function EditUserProfile() {
         throw new Error("Failed to update user")
       }
     } catch (error) {
-      console.error("Error updating user:", error)
       setError(error)
       setSuccess(false)
     } finally {
