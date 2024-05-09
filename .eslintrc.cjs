@@ -1,10 +1,3 @@
-import globals from "globals"
-import pluginReactConfig from "eslint-plugin-react/configs/recommended.js"
-import { FlatCompat } from "@eslint/eslintrc"
-import pluginJs from "@eslint/js"
-
-const compat = new FlatCompat({ baseDirectory: __dirname, recommendedConfig: pluginJs.configs.recommended })
-
 module.exports = {
   root: true,
   extends: ["eslint:recommended", "plugin:react/recommended", "plugin:prettier/recommended"],
@@ -47,5 +40,18 @@ module.exports = {
     "react/react-in-jsx-scope": "off",
     "react/prop-types": "off"
   },
-  settings: { react: { version: "detect" } }
+  settings: { react: { version: "detect" } },
+  globals: {
+    localStorage: "readonly",
+    alert: "readonly",
+    window: "readonly"
+  },
+  overrides: [
+    {
+      files: ["**/*.jsx", "**/*.cjs", "**/*.mjs", "**/*.js"], // Inclut tous les fichiers .jsx, .cjs, .mjs et .js
+      parserOptions: {
+        sourceType: "module"
+      }
+    }
+  ]
 }

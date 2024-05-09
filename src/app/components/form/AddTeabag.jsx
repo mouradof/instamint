@@ -1,6 +1,5 @@
 import React, { useState } from "react"
 import { Formik, Form } from "formik"
-import axios from "axios"
 import { z, ZodError } from "zod"
 import InputField from "../common/InputField"
 import TextAreaField from "../common/TextAreaField"
@@ -17,7 +16,7 @@ const validationSchema = z.object({
   newEmail: z.string().email("Invalid email format")
 })
 
-const AddTeabagForm = ({ onSubmit, closeModal }) => {
+const AddTeabagForm = ({ onSubmit, closeModal, idUser, createTeabagFunction }) => {
   const [userEmails, setUserEmails] = useState([])
   const [selectedImage, setSelectedImage] = useState(null)
   const [error, setError] = useState(null)
@@ -65,8 +64,15 @@ const AddTeabagForm = ({ onSubmit, closeModal }) => {
         formData.append("image", selectedImage)
       }
 
-      const response = await axios.post(`http://localhost:4001/10/createTeabag`, formData)
-      onSubmit(response.data)
+      const [error, data] = await createTeabagFunction({ idUser, formData })
+
+      if (error) {
+        setError(error)
+
+        return
+      }
+
+      onSubmit(data)
       resetForm()
       setUserEmails([])
       setSelectedImage(null)

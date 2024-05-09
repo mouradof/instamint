@@ -19,7 +19,6 @@ export default function EditUserProfile() {
         setUser(response.data)
       })
       .catch(error => {
-        console.error("Error fetching data:", error)
         setError(error)
       })
       .finally(() => setLoading(false))
@@ -39,6 +38,7 @@ export default function EditUserProfile() {
 
     try {
       const response = await axios.put("http://localhost:4000/api/user/1", user)
+
       if (response.status === 200) {
         setSuccess(true)
         setTimeout(() => {
@@ -49,7 +49,6 @@ export default function EditUserProfile() {
         throw new Error("Failed to update user")
       }
     } catch (error) {
-      console.error("Error updating user:", error)
       setError(error)
       setSuccess(false)
     } finally {

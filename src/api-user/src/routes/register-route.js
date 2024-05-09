@@ -31,7 +31,12 @@ const prepareRouteRegister = ({ app }) => {
 
       await sendVerificationEmail(newUser.email, newUser.verifyToken)
 
-      return c.json({ message: "User registered. Please check your email to verify your account." }, 201)
+      return c.json(
+        {
+          message: "User registered. Please check your email to verify your account."
+        },
+        201
+      )
     } catch (error) {
       return c.json({ message: "Error registering user", error: error.message }, 500)
     }
