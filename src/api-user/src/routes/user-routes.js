@@ -55,7 +55,12 @@ userRoutes.put("/user/:id", async c => {
     return c.json({ message: "Username already exists" }, 409)
   }
 
-  const updatedUser = await UserModel.query().patchAndFetchById(id, { username: body.username, bio: body.bio })
+  const updatedUser = await UserModel.query().patchAndFetchById(id, {
+    username: body.username,
+    bio: body.bio,
+    profileImage: body.profileImage,
+    coverImage: body.coverImage
+  })
   if (!updatedUser) {
     return c.json({ message: "User not found" }, 404)
   }

@@ -5,12 +5,16 @@ import axios from "axios"
 const EditProfile = () => {
   const [user, setUser] = useState({
     username: "",
-    bio: ""
+    bio: "",
+    profileImage: "",
+    coverImage: ""
   })
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState(null)
   const [success, setSuccess] = useState(false)
   const [countdown, setCountdown] = useState(5)
+  const [profileImageOption, setProfileImageOption] = useState("current")
+  const [coverImageOption, setCoverImageOption] = useState("current")
   const router = useRouter()
 
   useEffect(() => {
@@ -20,13 +24,53 @@ const EditProfile = () => {
         const userObj = JSON.parse(userData)
         setUser({
           username: userObj.username,
-          bio: userObj.bio
+          bio: userObj.bio,
+          profileImage: userObj.profileImage || "",
+          coverImage: userObj.coverImage || ""
         })
       } else {
         router.push("/login")
       }
     }
   }, [router])
+
+  useEffect(() => {
+    if (profileImageOption === "random") {
+      setUser(prev => ({
+        ...prev,
+        profileImage: `https://source.unsplash.com/random/400x400?sig=${Math.floor(Math.random() * 1000)}`
+      }))
+    } else if (profileImageOption === "default") {
+      setUser(prev => ({
+        ...prev,
+        profileImage: "/images/default-profile-picture.jpg"
+      }))
+    } else {
+      setUser(prev => ({
+        ...prev,
+        profileImage: JSON.parse(localStorage.getItem("user")).profileImage || ""
+      }))
+    }
+  }, [profileImageOption])
+
+  useEffect(() => {
+    if (coverImageOption === "random") {
+      setUser(prev => ({
+        ...prev,
+        coverImage: `https://source.unsplash.com/random/1200x400?sig=${Math.floor(Math.random() * 1000)}`
+      }))
+    } else if (coverImageOption === "default") {
+      setUser(prev => ({
+        ...prev,
+        coverImage: "/images/default-cover-picture.jpg"
+      }))
+    } else {
+      setUser(prev => ({
+        ...prev,
+        coverImage: JSON.parse(localStorage.getItem("user")).coverImage || ""
+      }))
+    }
+  }, [coverImageOption])
 
   const handleInputChange = e => {
     const { name, value } = e.target
@@ -47,7 +91,7 @@ const EditProfile = () => {
       )
       setMessage({ text: "Profile updated successfully!", type: "success" })
       setSuccess(true)
-      localStorage.setItem("user", JSON.stringify({ ...user, ...response.data }))
+      localStorage.setItem("user", JSON.stringify({ ...JSON.parse(localStorage.getItem("user")), ...response.data }))
 
       const countdownInterval = setInterval(() => {
         setCountdown(prevCountdown => prevCountdown - 1)
@@ -113,6 +157,78 @@ const EditProfile = () => {
                   className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                   required
                 />
+              </div>
+              <div className="flex flex-col mb-4">
+                <label className="text-sm font-medium text-gray-700 mb-2">Profile Image:</label>
+                <div className="flex items-center mb-2">
+                  <input
+                    type="radio"
+                    name="profileImageOption"
+                    value="current"
+                    checked={profileImageOption === "current"}
+                    onChange={() => setProfileImageOption("current")}
+                    className="mr-2"
+                  />
+                  <label className="text-sm text-gray-700">Current</label>
+                </div>
+                <div className="flex items-center mb-2">
+                  <input
+                    type="radio"
+                    name="profileImageOption"
+                    value="random"
+                    checked={profileImageOption === "random"}
+                    onChange={() => setProfileImageOption("random")}
+                    className="mr-2"
+                  />
+                  <label className="text-sm text-gray-700">Random</label>
+                </div>
+                <div className="flex items-center">
+                  <input
+                    type="radio"
+                    name="profileImageOption"
+                    value="default"
+                    checked={profileImageOption === "default"}
+                    onChange={() => setProfileImageOption("default")}
+                    className="mr-2"
+                  />
+                  <label className="text-sm text-gray-700">Default</label>
+                </div>
+              </div>
+              <div className="flex flex-col mb-4">
+                <label className="text-sm font-medium text-gray-700 mb-2">Cover Image:</label>
+                <div className="flex items-center mb-2">
+                  <input
+                    type="radio"
+                    name="coverImageOption"
+                    value="current"
+                    checked={coverImageOption === "current"}
+                    onChange={() => setCoverImageOption("current")}
+                    className="mr-2"
+                  />
+                  <label className="text-sm text-gray-700">Current</label>
+                </div>
+                <div className="flex items-center mb-2">
+                  <input
+                    type="radio"
+                    name="coverImageOption"
+                    value="random"
+                    checked={coverImageOption === "random"}
+                    onChange={() => setCoverImageOption("random")}
+                    className="mr-2"
+                  />
+                  <label className="text-sm text-gray-700">Random</label>
+                </div>
+                <div className="flex items-center">
+                  <input
+                    type="radio"
+                    name="coverImageOption"
+                    value="default"
+                    checked={coverImageOption === "default"}
+                    onChange={() => setCoverImageOption("default")}
+                    className="mr-2"
+                  />
+                  <label className="text-sm text-gray-700">Default</label>
+                </div>
               </div>
               <div className="flex justify-between">
                 <button
