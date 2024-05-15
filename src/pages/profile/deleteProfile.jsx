@@ -1,19 +1,19 @@
-import React, { useState } from "react";
-import { useRouter } from "next/router";
+import React, { useState } from "react"
+import { useRouter } from "next/router"
 
 const DeleteProfile = () => {
-  const [password, setPassword] = useState("");
-  const [isLoading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(false);
-  const [countdown, setCountdown] = useState(5);
-  const router = useRouter();
+  const [password, setPassword] = useState("")
+  const [isLoading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
+  const [success, setSuccess] = useState(false)
+  const [countdown, setCountdown] = useState(5)
+  const router = useRouter()
 
   const handleDelete = async () => {
-    setLoading(true);
-    setError(null);
+    setLoading(true)
+    setError(null)
 
-    const userId = JSON.parse(localStorage.getItem("user"))?.id;
+    const userId = JSON.parse(localStorage.getItem("user"))?.id
 
     try {
       const response = await fetch(`http://localhost:4000/api/user/${userId}`, {
@@ -23,35 +23,35 @@ const DeleteProfile = () => {
           Authorization: `Bearer ${localStorage.getItem("token")}`
         },
         body: JSON.stringify({ password })
-      });
+      })
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+        const errorData = await response.json()
+        throw new Error(errorData.message || `HTTP error! status: ${response.status}`)
       }
 
-      setSuccess(true);
-      localStorage.removeItem("user");
-      localStorage.removeItem("token");
+      setSuccess(true)
+      localStorage.removeItem("user")
+      localStorage.removeItem("token")
 
       const countdownInterval = setInterval(() => {
-        setCountdown((prevCountdown) => prevCountdown - 1);
-      }, 1000);
+        setCountdown(prevCountdown => prevCountdown - 1)
+      }, 1000)
 
       setTimeout(() => {
-        clearInterval(countdownInterval);
-        router.push("/register");
-      }, 5000);
+        clearInterval(countdownInterval)
+        router.push("/register")
+      }, 5000)
     } catch (error) {
-      console.error("Error deleting user:", error);
-      setError(error);
-      setLoading(false);
+      console.error("Error deleting user:", error)
+      setError(error)
+      setLoading(false)
     }
-  };
+  }
 
   const handleCancel = () => {
-    router.push(`/profile/${JSON.parse(localStorage.getItem("user"))?.id}`);
-  };
+    router.push(`/profile/${JSON.parse(localStorage.getItem("user"))?.id}`)
+  }
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
@@ -64,7 +64,7 @@ const DeleteProfile = () => {
               type="password"
               placeholder="Password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={e => setPassword(e.target.value)}
               className="mb-4 p-3 border border-gray-300 rounded w-full focus:outline-none focus:ring-2 focus:ring-red-600"
             />
             <div className="flex justify-between">
@@ -86,7 +86,9 @@ const DeleteProfile = () => {
           </>
         ) : (
           <>
-            <p className="mb-6 text-gray-700">Your account has been deleted. You will be redirected to the registration page in {countdown} seconds.</p>
+            <p className="mb-6 text-gray-700">
+              Your account has been deleted. You will be redirected to the registration page in {countdown} seconds.
+            </p>
             <div className="relative w-full h-4 bg-gray-200 rounded">
               <div
                 className="absolute top-0 left-0 h-4 bg-red-500 rounded transition-width duration-1000"
@@ -97,7 +99,7 @@ const DeleteProfile = () => {
         )}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default DeleteProfile;
+export default DeleteProfile

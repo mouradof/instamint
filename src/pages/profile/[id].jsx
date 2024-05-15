@@ -1,32 +1,31 @@
-import React, { useState, useEffect } from "react";
-import { useRouter } from "next/router";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHeart, faComments, faRetweet, faBars, faTrash } from "@fortawesome/free-solid-svg-icons";
-import axios from "axios";
+import React, { useState, useEffect } from "react"
+import { useRouter } from "next/router"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faBars } from "@fortawesome/free-solid-svg-icons"
+import axios from "axios"
 
-// Fonction pour formater les nombres
-const formatNumber = (num) => {
+const formatNumber = num => {
   if (num >= 1000000000) {
-    return (num / 1000000000).toFixed(1) + ' B';
+    return (num / 1000000000).toFixed(1) + " B"
   } else if (num >= 1000000) {
-    return (num / 1000000).toFixed(1) + ' M';
+    return (num / 1000000).toFixed(1) + " M"
   } else if (num >= 1000) {
-    return (num / 1000).toFixed(1) + ' K';
+    return (num / 1000).toFixed(1) + " K"
   }
-  return num.toString();
-};
+  return num.toString()
+}
 
 const ProfileHeader = ({ user }) => {
-  const [showMenu, setShowMenu] = useState(false);
-  const router = useRouter();
+  const [showMenu, setShowMenu] = useState(false)
+  const router = useRouter()
 
   const toggleMenu = () => {
-    setShowMenu(!showMenu);
-  };
+    setShowMenu(!showMenu)
+  }
 
   const handleDeleteAccountRedirect = () => {
-    router.push(`/profile/deleteProfile`);
-  };
+    router.push(`/profile/deleteProfile`)
+  }
 
   return (
     <div className="w-full h-56 bg-cover bg-center relative" style={{ backgroundImage: `url(${user.coverImage})` }}>
@@ -63,8 +62,8 @@ const ProfileHeader = ({ user }) => {
         )}
       </div>
     </div>
-  );
-};
+  )
+}
 
 const ProfileContent = ({ user }) => (
   <div className="w-3/4 mt-4 px-4 flex flex-col items-start">
@@ -74,11 +73,15 @@ const ProfileContent = ({ user }) => (
       </div>
       <div className="flex-grow flex justify-around">
         <div className="flex flex-col items-center">
-          <span className="font-bold text-lg" title={user.followers}>{formatNumber(user.followers)}</span>
+          <span className="font-bold text-lg" title={user.followers}>
+            {formatNumber(user.followers)}
+          </span>
           <span className="text-sm text-gray-600">Followers</span>
         </div>
         <div className="flex flex-col items-center">
-          <span className="font-bold text-lg" title={user.following}>{formatNumber(user.following)}</span>
+          <span className="font-bold text-lg" title={user.following}>
+            {formatNumber(user.following)}
+          </span>
           <span className="text-sm text-gray-600">Following</span>
         </div>
       </div>
@@ -91,38 +94,33 @@ const ProfileContent = ({ user }) => (
     </div>
     <hr className="w-full mt-4" />
   </div>
-);
+)
 
 const ProfilePage = () => {
-  const [user, setUser] = useState(null);
-  const router = useRouter();
+  const [user, setUser] = useState(null)
+  const router = useRouter()
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const userId = JSON.parse(localStorage.getItem("user"))?.id;
+        const userId = JSON.parse(localStorage.getItem("user"))?.id
         if (!userId) {
-          throw new Error("No user ID found");
+          throw new Error("No user ID found")
         }
 
-        const response = await axios.get(`http://localhost:4000/api/user/${userId}`);
-        setUser(response.data);
-        localStorage.setItem("user", JSON.stringify(response.data));
+        const response = await axios.get(`http://localhost:4000/api/user/${userId}`)
+        setUser(response.data)
+        localStorage.setItem("user", JSON.stringify(response.data))
       } catch (error) {
-        console.error("Error fetching user data:", error);
-        router.push("/login");
+        console.error("Error fetching user data:", error)
+        router.push("/login")
       }
-    };
+    }
 
-    // Fetch user data initially
-    fetchUserData();
-
-    // Set up polling to fetch user data every 10 seconds
-    const interval = setInterval(fetchUserData, 1000);
-
-    // Clear interval on component unmount
-    return () => clearInterval(interval);
-  }, [router]);
+    fetchUserData()
+    const interval = setInterval(fetchUserData, 1000)
+    return () => clearInterval(interval)
+  }, [router])
 
   return (
     <div className="flex flex-col items-center w-full">
@@ -135,7 +133,7 @@ const ProfilePage = () => {
         <p>Loading user data...</p>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default ProfilePage;
+export default ProfilePage
