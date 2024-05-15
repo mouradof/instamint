@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
-import { useRouter } from "next/router";
-import axios from "axios";
+import React, { useState, useEffect } from "react"
+import { useRouter } from "next/router"
+import axios from "axios"
 
 const EditProfile = () => {
   const [user, setUser] = useState({
@@ -8,114 +8,114 @@ const EditProfile = () => {
     bio: "",
     profileImage: "",
     coverImage: ""
-  });
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState(null);
-  const [success, setSuccess] = useState(false);
-  const [countdown, setCountdown] = useState(5);
-  const [profileImageOption, setProfileImageOption] = useState("current");
-  const [coverImageOption, setCoverImageOption] = useState("current");
-  const router = useRouter();
+  })
+  const [loading, setLoading] = useState(false)
+  const [message, setMessage] = useState(null)
+  const [success, setSuccess] = useState(false)
+  const [countdown, setCountdown] = useState(5)
+  const [profileImageOption, setProfileImageOption] = useState("current")
+  const [coverImageOption, setCoverImageOption] = useState("current")
+  const router = useRouter()
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const userData = localStorage.getItem("user");
+      const userData = localStorage.getItem("user")
       if (userData) {
-        const userObj = JSON.parse(userData);
+        const userObj = JSON.parse(userData)
         setUser({
           username: userObj.username,
           bio: userObj.bio,
           profileImage: userObj.profileImage || "",
           coverImage: userObj.coverImage || ""
-        });
+        })
       } else {
-        router.push("/login");
+        router.push("/login")
       }
     }
-  }, [router]);
+  }, [router])
 
   useEffect(() => {
     if (profileImageOption === "random") {
-      setUser((prev) => ({
+      setUser(prev => ({
         ...prev,
         profileImage: `https://source.unsplash.com/random/400x400?sig=${Math.floor(Math.random() * 1000)}`
-      }));
+      }))
     } else if (profileImageOption === "default") {
-      setUser((prev) => ({
+      setUser(prev => ({
         ...prev,
         profileImage: "/images/default-profile-picture.jpg"
-      }));
+      }))
     } else {
-      setUser((prev) => ({
+      setUser(prev => ({
         ...prev,
         profileImage: JSON.parse(localStorage.getItem("user")).profileImage || ""
-      }));
+      }))
     }
-  }, [profileImageOption]);
+  }, [profileImageOption])
 
   useEffect(() => {
     if (coverImageOption === "random") {
-      setUser((prev) => ({
+      setUser(prev => ({
         ...prev,
         coverImage: `https://source.unsplash.com/random/1200x400?sig=${Math.floor(Math.random() * 1000)}`
-      }));
+      }))
     } else if (coverImageOption === "default") {
-      setUser((prev) => ({
+      setUser(prev => ({
         ...prev,
         coverImage: "/images/default-cover-picture.jpg"
-      }));
+      }))
     } else {
-      setUser((prev) => ({
+      setUser(prev => ({
         ...prev,
         coverImage: JSON.parse(localStorage.getItem("user")).coverImage || ""
-      }));
+      }))
     }
-  }, [coverImageOption]);
+  }, [coverImageOption])
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setUser((prev) => ({
+  const handleInputChange = e => {
+    const { name, value } = e.target
+    setUser(prev => ({
       ...prev,
       [name]: value
-    }));
-  };
+    }))
+  }
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
+  const handleSubmit = async e => {
+    e.preventDefault()
+    setLoading(true)
 
     try {
       const response = await axios.put(
         `http://localhost:4000/api/user/${JSON.parse(localStorage.getItem("user")).id}`,
         user
-      );
-      setMessage({ text: "Profile updated successfully!", type: "success" });
-      setSuccess(true);
-      localStorage.setItem("user", JSON.stringify({ ...JSON.parse(localStorage.getItem("user")), ...response.data }));
+      )
+      setMessage({ text: "Profile updated successfully!", type: "success" })
+      setSuccess(true)
+      localStorage.setItem("user", JSON.stringify({ ...JSON.parse(localStorage.getItem("user")), ...response.data }))
 
       const countdownInterval = setInterval(() => {
-        setCountdown((prevCountdown) => prevCountdown - 1);
-      }, 1000);
+        setCountdown(prevCountdown => prevCountdown - 1)
+      }, 1000)
 
       setTimeout(() => {
-        clearInterval(countdownInterval);
-        router.push(`/profile/${JSON.parse(localStorage.getItem("user")).id}`);
-      }, 5000);
+        clearInterval(countdownInterval)
+        router.push(`/profile/${JSON.parse(localStorage.getItem("user")).id}`)
+      }, 5000)
     } catch (error) {
       if (error.response && error.response.status === 409) {
-        setMessage({ text: "Username already exists. Please choose another.", type: "error" });
+        setMessage({ text: "Username already exists. Please choose another.", type: "error" })
       } else {
-        setMessage({ text: "Failed to update profile. Please try again.", type: "error" });
+        setMessage({ text: "Failed to update profile. Please try again.", type: "error" })
       }
-      console.error("Error updating profile:", error);
-      setLoading(false);
+      console.error("Error updating profile:", error)
+      setLoading(false)
     }
-  };
+  }
 
   const handleCancel = () => {
-    const userId = JSON.parse(localStorage.getItem("user"))?.id;
-    router.push(`/profile/${userId}`);
-  };
+    const userId = JSON.parse(localStorage.getItem("user"))?.id
+    router.push(`/profile/${userId}`)
+  }
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
@@ -172,8 +172,12 @@ const EditProfile = () => {
                       id="profile-current"
                     />
                     <label htmlFor="profile-current" className="flex items-center cursor-pointer">
-                      <span className={`mr-2 w-4 h-4 inline-block rounded-full border-2 ${profileImageOption === "current" ? 'border-blue-500' : 'border-gray-300'} flex items-center justify-center`}>
-                        {profileImageOption === "current" && <span className="w-2 h-2 bg-blue-500 rounded-full inline-block"></span>}
+                      <span
+                        className={`mr-2 w-4 h-4 inline-block rounded-full border-2 ${profileImageOption === "current" ? "border-blue-500" : "border-gray-300"} flex items-center justify-center`}
+                      >
+                        {profileImageOption === "current" && (
+                          <span className="w-2 h-2 bg-blue-500 rounded-full inline-block"></span>
+                        )}
                       </span>
                       <span className="text-sm text-gray-700">Current</span>
                     </label>
@@ -189,8 +193,12 @@ const EditProfile = () => {
                       id="profile-random"
                     />
                     <label htmlFor="profile-random" className="flex items-center cursor-pointer">
-                      <span className={`mr-2 w-4 h-4 inline-block rounded-full border-2 ${profileImageOption === "random" ? 'border-blue-500' : 'border-gray-300'} flex items-center justify-center`}>
-                        {profileImageOption === "random" && <span className="w-2 h-2 bg-blue-500 rounded-full inline-block"></span>}
+                      <span
+                        className={`mr-2 w-4 h-4 inline-block rounded-full border-2 ${profileImageOption === "random" ? "border-blue-500" : "border-gray-300"} flex items-center justify-center`}
+                      >
+                        {profileImageOption === "random" && (
+                          <span className="w-2 h-2 bg-blue-500 rounded-full inline-block"></span>
+                        )}
                       </span>
                       <span className="text-sm text-gray-700">Random</span>
                     </label>
@@ -206,8 +214,12 @@ const EditProfile = () => {
                       id="profile-default"
                     />
                     <label htmlFor="profile-default" className="flex items-center cursor-pointer">
-                      <span className={`mr-2 w-4 h-4 inline-block rounded-full border-2 ${profileImageOption === "default" ? 'border-blue-500' : 'border-gray-300'} flex items-center justify-center`}>
-                        {profileImageOption === "default" && <span className="w-2 h-2 bg-blue-500 rounded-full inline-block"></span>}
+                      <span
+                        className={`mr-2 w-4 h-4 inline-block rounded-full border-2 ${profileImageOption === "default" ? "border-blue-500" : "border-gray-300"} flex items-center justify-center`}
+                      >
+                        {profileImageOption === "default" && (
+                          <span className="w-2 h-2 bg-blue-500 rounded-full inline-block"></span>
+                        )}
                       </span>
                       <span className="text-sm text-gray-700">Default</span>
                     </label>
@@ -228,8 +240,12 @@ const EditProfile = () => {
                       id="cover-current"
                     />
                     <label htmlFor="cover-current" className="flex items-center cursor-pointer">
-                      <span className={`mr-2 w-4 h-4 inline-block rounded-full border-2 ${coverImageOption === "current" ? 'border-blue-500' : 'border-gray-300'} flex items-center justify-center`}>
-                        {coverImageOption === "current" && <span className="w-2 h-2 bg-blue-500 rounded-full inline-block"></span>}
+                      <span
+                        className={`mr-2 w-4 h-4 inline-block rounded-full border-2 ${coverImageOption === "current" ? "border-blue-500" : "border-gray-300"} flex items-center justify-center`}
+                      >
+                        {coverImageOption === "current" && (
+                          <span className="w-2 h-2 bg-blue-500 rounded-full inline-block"></span>
+                        )}
                       </span>
                       <span className="text-sm text-gray-700">Current</span>
                     </label>
@@ -245,8 +261,12 @@ const EditProfile = () => {
                       id="cover-random"
                     />
                     <label htmlFor="cover-random" className="flex items-center cursor-pointer">
-                      <span className={`mr-2 w-4 h-4 inline-block rounded-full border-2 ${coverImageOption === "random" ? 'border-blue-500' : 'border-gray-300'} flex items-center justify-center`}>
-                        {coverImageOption === "random" && <span className="w-2 h-2 bg-blue-500 rounded-full inline-block"></span>}
+                      <span
+                        className={`mr-2 w-4 h-4 inline-block rounded-full border-2 ${coverImageOption === "random" ? "border-blue-500" : "border-gray-300"} flex items-center justify-center`}
+                      >
+                        {coverImageOption === "random" && (
+                          <span className="w-2 h-2 bg-blue-500 rounded-full inline-block"></span>
+                        )}
                       </span>
                       <span className="text-sm text-gray-700">Random</span>
                     </label>
@@ -262,8 +282,12 @@ const EditProfile = () => {
                       id="cover-default"
                     />
                     <label htmlFor="cover-default" className="flex items-center cursor-pointer">
-                      <span className={`mr-2 w-4 h-4 inline-block rounded-full border-2 ${coverImageOption === "default" ? 'border-blue-500' : 'border-gray-300'} flex items-center justify-center`}>
-                        {coverImageOption === "default" && <span className="w-2 h-2 bg-blue-500 rounded-full inline-block"></span>}
+                      <span
+                        className={`mr-2 w-4 h-4 inline-block rounded-full border-2 ${coverImageOption === "default" ? "border-blue-500" : "border-gray-300"} flex items-center justify-center`}
+                      >
+                        {coverImageOption === "default" && (
+                          <span className="w-2 h-2 bg-blue-500 rounded-full inline-block"></span>
+                        )}
                       </span>
                       <span className="text-sm text-gray-700">Default</span>
                     </label>
@@ -303,7 +327,7 @@ const EditProfile = () => {
         )}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default EditProfile;
+export default EditProfile
