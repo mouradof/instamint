@@ -14,6 +14,7 @@ help:
 	@echo "  make ${GREEN}docker_build${NC}   Build Docker image & container & launch it"
 	@echo "  make ${GREEN}docker_run${NC}     Run Docker container & launch it"
 	@echo "  make ${GREEN}docker_stop${NC}    Stop Docker container"
+	@echo "  make ${GREEN}prepare_commit${NC} Execute linter good practice before commit"
 
 setup_build:
 	@chmod +x $(DOCKER_BUILD_SCRIPT)

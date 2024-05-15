@@ -3,14 +3,16 @@ import { resolve } from "path"
 
 config()
 
+const isMigration = process.env.KNEX_CONTEXT === 'migration'
+
 const knexfile = {
   client: "pg",
   connection: {
-    host: process.env.DB_HOST || "localhost",
-    port: process.env.DB_PORT || 5432,
-    user: process.env.DB_USER || "user",
-    password: process.env.DB_PASSWORD || "password",
-    database: process.env.DB_NAME || "instamintdb"
+    host: isMigration ? process.env.DB_HOST_MIGRATIONS : process.env.DB_HOST_API,
+    port: process.env.DB_PORT,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_DATABASE
   },
   migrations: {
     directory: resolve("src/db/migrations"),
