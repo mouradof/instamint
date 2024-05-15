@@ -1,20 +1,32 @@
-import React, { useState, useEffect } from "react"
-import { useRouter } from "next/router"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faHeart, faComments, faRetweet, faBars, faTrash } from "@fortawesome/free-solid-svg-icons"
-import axios from "axios"
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/router";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faHeart, faComments, faRetweet, faBars, faTrash } from "@fortawesome/free-solid-svg-icons";
+import axios from "axios";
 
-const ProfileHeader = ({ user, handleDeleteAccount }) => {
-  const [showMenu, setShowMenu] = useState(false)
-  const [showConfirmation, setShowConfirmation] = useState(false)
+// Fonction pour formater les nombres
+const formatNumber = (num) => {
+  if (num >= 1000000000) {
+    return (num / 1000000000).toFixed(1) + ' B';
+  } else if (num >= 1000000) {
+    return (num / 1000000).toFixed(1) + ' M';
+  } else if (num >= 1000) {
+    return (num / 1000).toFixed(1) + ' K';
+  }
+  return num.toString();
+};
+
+const ProfileHeader = ({ user }) => {
+  const [showMenu, setShowMenu] = useState(false);
+  const router = useRouter();
 
   const toggleMenu = () => {
-    setShowMenu(!showMenu)
-  }
+    setShowMenu(!showMenu);
+  };
 
-  const toggleConfirmation = () => {
-    setShowConfirmation(!showConfirmation)
-  }
+  const handleDeleteAccountRedirect = () => {
+    router.push(`/profile/deleteProfile`);
+  };
 
   return (
     <div className="w-full h-56 bg-cover bg-center relative" style={{ backgroundImage: `url(${user.coverImage})` }}>
@@ -33,41 +45,27 @@ const ProfileHeader = ({ user, handleDeleteAccount }) => {
             <ul className="text-gray-700">
               <li
                 className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                onClick={() => (window.location.href = "editProfile")}
+                onClick={() => router.push("/profile/editProfile")}
               >
                 Edit Profile
               </li>
               <li
                 className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                onClick={() => (window.location.href = "changePassword")}
+                onClick={() => router.push("/profile/changePassword")}
               >
                 Change Password
               </li>
-              <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={toggleConfirmation}>
+              <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={handleDeleteAccountRedirect}>
                 Delete Account
               </li>
             </ul>
           </div>
         )}
       </div>
-      {showConfirmation && (
-        <div className="fixed inset-0 z-10 overflow-y-auto flex justify-center items-center bg-black bg-opacity-50">
-          <div className="bg-white rounded-lg p-8">
-            <p className="text-xl font-semibold">Are you sure you want to delete your account?</p>
-            <div className="flex justify-end mt-4">
-              <button className="bg-red-500 text-white px-4 py-2 rounded mr-4" onClick={handleDeleteAccount}>
-                Delete
-              </button>
-              <button className="bg-gray-200 text-gray-700 px-4 py-2 rounded" onClick={toggleConfirmation}>
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
-  )
-}
+  );
+};
+
 const ProfileContent = ({ user }) => (
   <div className="w-3/4 mt-4 px-4 flex flex-col items-start">
     <div className="flex w-full">
@@ -76,11 +74,11 @@ const ProfileContent = ({ user }) => (
       </div>
       <div className="flex-grow flex justify-around">
         <div className="flex flex-col items-center">
-          <span className="font-bold text-lg">{user.followers}</span>
+          <span className="font-bold text-lg" title={user.followers}>{formatNumber(user.followers)}</span>
           <span className="text-sm text-gray-600">Followers</span>
         </div>
         <div className="flex flex-col items-center">
-          <span className="font-bold text-lg">{user.following}</span>
+          <span className="font-bold text-lg" title={user.following}>{formatNumber(user.following)}</span>
           <span className="text-sm text-gray-600">Following</span>
         </div>
       </div>
@@ -93,53 +91,51 @@ const ProfileContent = ({ user }) => (
     </div>
     <hr className="w-full mt-4" />
   </div>
-)
+);
 
 const ProfilePage = () => {
-  const [user, setUser] = useState(null)
-  const router = useRouter()
+  const [user, setUser] = useState(null);
+  const router = useRouter();
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const userData = localStorage.getItem("user")
-      if (userData) {
-        const storedUser = JSON.parse(userData)
-        if (storedUser) {
-          setUser(storedUser)
+    const fetchUserData = async () => {
+      try {
+        const userId = JSON.parse(localStorage.getItem("user"))?.id;
+        if (!userId) {
+          throw new Error("No user ID found");
         }
-      } else {
-        console.error("No user data available. User might not be logged in.")
-        router.push("/login")
-      }
-    }
-  }, [router])
 
-  const handleDeleteAccount = () => {
-    axios
-      .delete(`http://localhost:4000/api/user/${user.id}`)
-      .then(response => {
-        alert("User deleted successfully!")
-        localStorage.removeItem("user")
-        router.push("/login")
-      })
-      .catch(error => {
-        console.error("Error deleting user:", error)
-        alert("Error deleting user. Please try again later.")
-      })
-  }
+        const response = await axios.get(`http://localhost:4000/api/user/${userId}`);
+        setUser(response.data);
+        localStorage.setItem("user", JSON.stringify(response.data));
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        router.push("/login");
+      }
+    };
+
+    // Fetch user data initially
+    fetchUserData();
+
+    // Set up polling to fetch user data every 10 seconds
+    const interval = setInterval(fetchUserData, 1000);
+
+    // Clear interval on component unmount
+    return () => clearInterval(interval);
+  }, [router]);
 
   return (
     <div className="flex flex-col items-center w-full">
       {user ? (
         <>
-          <ProfileHeader user={user} handleDeleteAccount={handleDeleteAccount} />
+          <ProfileHeader user={user} />
           <ProfileContent user={user} />
         </>
       ) : (
         <p>Loading user data...</p>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default ProfilePage
+export default ProfilePage;
