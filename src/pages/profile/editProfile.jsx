@@ -116,7 +116,6 @@ const EditProfile = () => {
     const userId = JSON.parse(localStorage.getItem("user"))?.id
     router.push(`/profile/${userId}`)
   }
-
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <div className="bg-white shadow-lg rounded-lg p-8 max-w-md w-full">
@@ -315,7 +314,7 @@ const EditProfile = () => {
         ) : (
           <>
             <p className="mb-6 text-gray-700">
-              Your profile has been updated. You will be redirected to your profile page in {countdown} seconds.
+              Your profile has been updated. You will be redirected to your profile page in {countdown} seconds
             </p>
             <div className="relative w-full h-4 bg-gray-200 rounded">
               <div
