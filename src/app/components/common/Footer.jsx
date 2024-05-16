@@ -1,27 +1,22 @@
 import React from "react"
-import {
-  HomeIcon,
-  MagnifyingGlassIcon,
-  UserGroupIcon,
-  UserCircleIcon,
-} from "@heroicons/react/24/outline"
+import { HomeIcon, MagnifyingGlassIcon, UserGroupIcon, UserCircleIcon } from "@heroicons/react/24/outline"
 import {
   HomeIcon as HomeIconSolid,
   MagnifyingGlassIcon as MagnifyingGlassIconSolid,
   UserGroupIcon as UserGroupIconSolid,
-  UserCircleIcon as UserCircleIconSolid,
+  UserCircleIcon as UserCircleIconSolid
 } from "@heroicons/react/24/solid"
 import { useRouter } from "next/router"
 
-const BottomNav = () => {
+const Footer = () => {
   const router = useRouter()
 
-  const navigate = (page) => {
+  const navigate = page => {
     router.push(`/${page}`)
   }
 
   return (
-    <div className="fixed inset-x-0 bottom-0 bg-white border-t border-gray-200">
+    <footer className="fixed inset-x-0 bottom-0 bg-white border-t border-gray-200">
       <div className="flex justify-evenly items-center max-w-2xl mx-auto p-5">
         <button onClick={() => navigate("home")}>
           {router.pathname === "/home" ? (
@@ -52,8 +47,8 @@ const BottomNav = () => {
           )}
         </button>
       </div>
-    </div>
+    </footer>
   )
 }
 
-export default BottomNav
+export default Footer

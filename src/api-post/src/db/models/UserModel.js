@@ -11,9 +11,9 @@ class UserModel extends BaseModel {
         modelClass: PostModel,
         join: {
           from: "users.id",
-          to: "posts.ownerId",
-        },
-      },
+          to: "posts.ownerId"
+        }
+      }
     }
   }
 }

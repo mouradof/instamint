@@ -1,80 +1,84 @@
 import { useState, useCallback, useEffect } from "react"
-import axios from "axios"
+import useAppContext from "@/app/hooks/useContext.jsx"
 
-const usePostInteractions = (postId, initialLikes, isInitiallyLiked) => {
-  const [isLiked, setIsLiked] = useState(isInitiallyLiked)
-  const [likeCount, setLikeCount] = useState(
-    initialLikes > 0 ? initialLikes : null,
-  )
+const usePostInteractions = postId => {
+  const {
+    state: { session },
+    action: { getLikedPost, getLikesPost, deleteLikePost, postLikePost }
+  } = useAppContext()
 
+  const [isLiked, setIsLiked] = useState(false)
+  const [likeCount, setLikeCount] = useState(null)
   const [toast, setToast] = useState({ message: "", isSuccess: true })
+  const [error, setError] = useState(null)
 
-  const showError = (error) => {
-    setToast({ message: error, isSuccess: false })
+  const showError = message => {
+    setToast({ message, isSuccess: false })
   }
 
-  const fetchLikes = useCallback(async () => {
-    try {
-      const response = await axios.get(
-        `http://localhost:4002/post/likes/${postId}`,
-      )
-
-      if (response.data.success) {
-        setLikeCount(
-          response.data.likeCount > 0 ? response.data.likeCount : null,
-        )
-      }
-    } catch (error) {
-      showError("Failed to fetch likes")
-    }
-  }, [postId])
-
   useEffect(() => {
-    const checkLikeStatus = async () => {
-      const response = await axios.get(
-        `http://localhost:4002/post/liked/${postId}`,
-      )
-      setIsLiked(response.data.isLiked)
+    const fetchLikeStatus = async () => {
+      try {
+        const [likedError, likedResponse] = await getLikedPost({ postId, userId: session.id })
+        const [likesError, likesResponse] = await getLikesPost({ postId, userId: session.id })
+
+        if (likedError || likesError) {
+          setError(likedError || likesError)
+          showError(likedError || likesError)
+
+          return
+        }
+
+        setIsLiked(likedResponse.isLiked)
+        setLikeCount(likesResponse.likeCount > 0 ? likesResponse.likeCount : null)
+      } catch (err) {
+        setError("Failed to fetch like data")
+        showError("Failed to fetch like data")
+      }
     }
 
-    checkLikeStatus()
-    fetchLikes()
-  }, [postId, fetchLikes])
+    fetchLikeStatus()
+  }, [postId, getLikedPost, getLikesPost, session.id])
 
   const toggleLike = useCallback(async () => {
-    const url = `http://localhost:4002/post/like/${postId}`
+    try {
+      if (isLiked) {
+        const { error } = await deleteLikePost({ postId, userId: session.id })
 
-    if (isLiked) {
-      try {
-        const response = await axios.delete(url)
+        if (error) {
+          setError(error)
+          showError(error)
 
-        if (response.data.success) {
-          setIsLiked(false)
-          setLikeCount((prev) => (prev > 1 ? parseInt(prev) - 1 : null))
+          return
         }
-      } catch (error) {
-        showError("Failed to remove like")
-      }
-    } else {
-      try {
-        const response = await axios.post(url)
 
-        if (response.data.success) {
-          setIsLiked(true)
-          setLikeCount((prev) => (prev != null ? parseInt(prev) + 1 : 1))
+        setIsLiked(false)
+        setLikeCount(prev => (prev > 1 ? parseInt(prev) - 1 : null))
+      } else {
+        const { error } = await postLikePost({ postId, userId: session.id })
+
+        if (error) {
+          setError(error)
+          showError(error)
+
+          return
         }
-      } catch (error) {
-        showError("Failed to add like")
+
+        setIsLiked(true)
+        setLikeCount(prev => (prev != null ? parseInt(prev) + 1 : 1))
       }
+    } catch (err) {
+      setError("Failed to update like status")
+      showError("Failed to update like status")
     }
-  }, [isLiked, postId])
+  }, [postId, isLiked, deleteLikePost, postLikePost, session.id])
 
   return {
     isLiked,
     likeCount,
     toggleLike,
-    fetchLikes,
-    toast,
+    error,
+    toast
   }
 }
 

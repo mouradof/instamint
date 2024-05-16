@@ -12,20 +12,19 @@ class LikeModel extends BaseModel {
         modelClass: UserModel,
         join: {
           from: "likes.userId",
-          to: "users.id",
-        },
+          to: "users.id"
+        }
       },
       post: {
         relation: BaseModel.BelongsToOneRelation,
         modelClass: PostModel,
         join: {
           from: "likes.postId",
-          to: "posts.id",
-        },
-      },
+          to: "posts.id"
+        }
+      }
     }
   }
 }
 
 export default LikeModel
-

@@ -1,5 +1,11 @@
-import prepareRoutesPosts from "./src/routes/prepareRoutesPosts.js"
+import prepareRoutesForYou from "./src/routes/posts/ForYouRoute.js"
+import prepareRoutesSubscribed from "./src/routes/posts/SubscribedRoute.js"
+import prepareRoutesLike from "./src/routes/posts/LikeRoute.js"
 
-export default function prepareRoutes(app, db) {
-  prepareRoutesPosts(app, db)
+const prepareRoutes = ctx => {
+  prepareRoutesForYou(ctx)
+  prepareRoutesSubscribed(ctx)
+  prepareRoutesLike(ctx)
 }
+
+export default prepareRoutes

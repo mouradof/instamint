@@ -17,6 +17,17 @@ const routes = {
       userTeabags: idUser => createRouteWithQueryParams(`/teabags/${idUser}`),
       userCreateTeabag: idUser => createRouteWithQueryParams(`teabags/${idUser}/createTeabag`)
     }
+  },
+  apiPost: {
+    post: {
+      forYou: (idUser, page) => createRouteWithQueryParams(`/post/for-you/${idUser}?page=${page}`),
+      subscribed: (idUser, page) => createRouteWithQueryParams(`/post/subscribed/${idUser}?page=${page}`)
+    },
+    like: {
+      likes: (postId, idUser) => createRouteWithQueryParams(`/post/likes/${postId}/${idUser}`),
+      like: (postId, idUser) => createRouteWithQueryParams(`/post/like/${postId}/${idUser}`),
+      liked: (postId, idUser) => createRouteWithQueryParams(`/post/liked/${postId}/${idUser}`)
+    }
   }
 }
 

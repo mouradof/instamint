@@ -1,10 +1,15 @@
 import React, { useState, useEffect } from "react"
-import axios from "axios"
-import Post from "./Post"
-import Toast from "../common/Toast"
+import Post from "./Post.jsx"
+import Toast from "../common/Toast.jsx"
 import InfiniteScroll from "react-infinite-scroll-component"
+import useAppContext from "@/app/hooks/useContext.jsx"
 
-const Feed = ({ type, userId }) => {
+const Feed = ({ type }) => {
+  const {
+    state: { session },
+    action: { getForyouPost, getSubscribedPost }
+  } = useAppContext()
+
   const [posts, setPosts] = useState([])
   const [hasMore, setHasMore] = useState(true)
   const [page, setPage] = useState(0)
@@ -13,51 +18,63 @@ const Feed = ({ type, userId }) => {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const param = type === "subscribed" ? "subscribed" : "for-you"
-        const url = `http://localhost:4002/post/${param}/1?page=${page}`
-        const response = await axios.get(url)
+        let apiError, apiData
 
-        if (response.data.success) {
-          setPosts((prevPosts) => [...prevPosts, ...response.data.data])
-          setHasMore(response.data.hasMore)
-        } else {
-          setError(response.data.message)
+        if (type === "forYou") {
+          ;[apiError, apiData] = await getForyouPost({ userId: session.id, page })
+        } else if (type === "subscribed") {
+          ;[apiError, apiData] = await getSubscribedPost({ userId: session.id, page })
         }
-      } catch (error) {
+
+        if (apiError) {
+          setError(apiError)
+
+          return
+        }
+
+        const sortedPosts = apiData.result.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+
+        if (page === 0) {
+          setPosts(sortedPosts)
+        } else {
+          setPosts(prevPosts => [...prevPosts, ...sortedPosts])
+        }
+
+        setHasMore(apiData.hasMore)
+      } catch (err) {
         setError("Failed to fetch posts")
       }
     }
 
     fetchPosts()
-  }, [type, userId, page])
+  }, [type, page, getForyouPost, session.id, getSubscribedPost])
+
+  useEffect(() => {
+    setPage(0)
+    setPosts([])
+  }, [type])
 
   const fetchMorePosts = () => {
-    setPage((prevPage) => prevPage + 1)
+    setPage(prevPage => prevPage + 1)
   }
 
   return (
     <div className="min-h-screen bg-white">
       {error && <Toast message={error} isSuccess={false} />}
-      <InfiniteScroll
-        dataLength={posts.length}
-        next={fetchMorePosts}
-        hasMore={hasMore}
-      >
-        {posts.map((post) => (
+      <InfiniteScroll dataLength={posts.length} next={fetchMorePosts} hasMore={hasMore}>
+        {posts.map(post => (
           <Post
             key={post.postId}
             username={post.username}
             createdAt={post.createdAt}
             description={post.description}
             imageUrl={post.imageUrl}
-            avatarUrl={post.avatarUrl}
+            profileImage={post.profileImage}
             postId={post.postId}
           />
         ))}
       </InfiniteScroll>
-      {posts.length === 0 && !error && (
-        <div className="text-center p-4">No posts to display.</div>
-      )}
+      {posts.length === 0 && !error && <div className="text-center p-4">No posts to display.</div>}
     </div>
   )
 }

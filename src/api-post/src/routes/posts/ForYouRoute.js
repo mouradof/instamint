@@ -1,71 +1,79 @@
-function fetchForyouPosts(db, userId, offset = 0, limit = 10) {
-  const directPosts = db
-    .table("follows")
-    .join("posts", "posts.ownerId", "=", "follows.followedId")
-    .join("users", "users.id", "=", "posts.ownerId")
-    .where("follows.followerId", userId)
-    .select(
-      "posts.id as postId",
-      "posts.createdAt",
-      "posts.description",
-      "posts.imageUrl",
-      "users.username",
-      "users.avatarUrl",
-    )
+import { Hono } from "hono"
+import { z } from "zod"
+import { idValidator, stringValidator } from "../validators.js"
+import { zValidator } from "@hono/zod-validator"
+import FollowModel from "../../db/models/FollowModel.js"
+import PostModel from "../../db/models/PostModel.js"
 
-  const indirectPosts = db
-    .table("follows as f1")
-    .join("follows as f2", "f2.followerId", "=", "f1.followedId")
-    .join("posts", "posts.ownerId", "=", "f2.followedId")
-    .join("users", "users.id", "=", "posts.ownerId")
-    .where("f1.followerId", userId)
-    .select(
-      "posts.id as postId",
-      "posts.createdAt",
-      "posts.description",
-      "posts.imageUrl",
-      "users.username",
-      "users.avatarUrl",
-    )
+const prepareRoutesForYou = ({ app }) => {
+  const forYouData = new Hono()
 
-  return db
-    .union([directPosts, indirectPosts], true)
-    .orderBy("createdAt", "desc")
-    .offset(offset)
-    .limit(limit)
-}
-
-export function forYouPostsRoutes(app, db) {
-  app.get("/post/for-you/:id", async (c) => {
-    const userId = 2 // Hardcoded for now
-    const page = parseInt(c.req.query("page")) || 0
-
-    if (page < 0) {
-      c.res.statusCode = 400
-
-      return c.json({
-        success: false,
-        message: "Invalid page number",
-      })
-    }
-
-    try {
-      const posts = await fetchForyouPosts(db, userId, page * 10, 10)
-
-      c.res.statusCode = 200
-
-      return c.json({
-        success: true,
-        data: posts,
-        hasMore: posts.length > 0,
-      })
-    } catch (error) {
-      c.res.statusCode = 500
-
-      return c.json({
-        success: false,
-        message: "An error occurred while fetching the posts",
-      })
-    }
+  const idForYouSchema = z.object({
+    id: idValidator
   })
+  const pageForYouSchema = z.object({
+    page: stringValidator
+  })
+
+  forYouData.get(
+    "/post/for-you/:id",
+    zValidator("param", idForYouSchema),
+    zValidator("query", pageForYouSchema),
+    async c => {
+      try {
+        const userId = c.req.valid("param").id
+        const page = parseInt(c.req.valid("query").page, 10) || 0
+
+        if (page < 0) {
+          c.status(400)
+
+          return c.json({
+            success: false,
+            message: "Invalid page number"
+          })
+        }
+
+        const directFollows = await FollowModel.query().where("followerId", userId)
+        const followedIds = directFollows.map(user => user.followedId)
+        const indirectFollows = await FollowModel.query().whereIn("followerId", followedIds)
+        const allFollowedIds = [...followedIds, ...indirectFollows.map(user => user.followedId)]
+
+        const allPosts = await PostModel.query()
+          .whereIn("ownerId", allFollowedIds)
+          .join("users", "posts.ownerId", "=", "users.id")
+          .select("posts.*", "users.username", "users.profileImage")
+          .limit(10 * (page + 1))
+
+        const formattedPosts = allPosts.map(post => ({
+          postId: post.id,
+          ownerId: post.ownerId,
+          profileImage: post.profileImage,
+          createdAt: post.createdAt,
+          description: post.description,
+          imageUrl: post.imageUrl,
+          username: post.username,
+          userId: post.userId
+        }))
+
+        c.status(200)
+
+        return c.json({
+          success: true,
+          result: formattedPosts,
+          hasMore: allPosts.length > 10 * (page + 1)
+        })
+      } catch (error) {
+        c.status(500)
+
+        return c.json({
+          success: false,
+          message: `Failed to fetch posts: ${error}`
+        })
+      }
+    }
+  )
+
+  app.route("/", forYouData)
 }
+
+export default prepareRoutesForYou

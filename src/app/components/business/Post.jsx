@@ -1,12 +1,11 @@
 import React from "react"
 import { ChatBubbleOvalLeftIcon, EllipsisHorizontalIcon } from "@heroicons/react/24/outline"
-import {} from "@heroicons/react/24/solid"
-import usePostInteractions from "../../hooks/usePostInteractions"
+import usePostInteractions from "../../hooks/usePostInteractions.jsx"
 import { formatDistanceToNow } from "date-fns"
-import Toast from "../common/Toast"
+import Toast from "../common/Toast.jsx"
 
-const Post = ({ postId, avatarUrl, username, createdAt, description, imageUrl, likes, liked }) => {
-  const { isLiked, likeCount, toggleLike, toast } = usePostInteractions(postId, likes, liked)
+const Post = ({ postId, profileImage, username, createdAt, description, imageUrl }) => {
+  const { isLiked, likeCount, toggleLike, error } = usePostInteractions(postId)
 
   const formattedTime = formatDistanceToNow(new Date(createdAt), {
     addSuffix: true
@@ -19,7 +18,7 @@ const Post = ({ postId, avatarUrl, username, createdAt, description, imageUrl, l
     <div className="border-b border-gray-200 px-4 py-4 bg-white">
       <div className="flex space-x-3">
         <div className="min-w-0 flex-shrink-0">
-          <img src={avatarUrl} alt={`${username}'s avatar`} width={40} height={40} className="rounded-full" />
+          <img src={profileImage} alt="Profile image" width={40} height={40} className="rounded-full" />
         </div>
         <div className="flex-1">
           <div className="flex justify-between items-center">
@@ -38,7 +37,13 @@ const Post = ({ postId, avatarUrl, username, createdAt, description, imageUrl, l
           <div className="flex justify-between items-center mt-2">
             <div className="flex space-x-4">
               <button onClick={toggleLike} className="flex items-center space-x-1 text-gray-500">
-                <img src={isLiked ? mintIconSolid : mintIcon} alt="mint Icon" className="h-4 w-4" />
+                <img
+                  src={isLiked ? mintIconSolid : mintIcon}
+                  alt="mint Icon"
+                  className="h-4 w-4"
+                  width={40}
+                  height={40}
+                />
                 <span className={`ml-1 ${isLiked ? "text-green-500" : "text-gray-500"}`}>{likeCount}</span>
               </button>
               <button className="flex items-center space-x-1 text-gray-500">
@@ -48,7 +53,7 @@ const Post = ({ postId, avatarUrl, username, createdAt, description, imageUrl, l
           </div>
         </div>
       </div>
-      {toast.message && <Toast message={toast.message} isSuccess={toast.isSuccess} />}
+      {error && <Toast message={error} isSuccess={false} />}
     </div>
   )
 }

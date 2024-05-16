@@ -2,27 +2,25 @@ import { faker } from "@faker-js/faker"
 import UserModel from "../models/UserModel.js"
 import PostModel from "../models/PostModel.js"
 
-export const seed = async (knex) => {
+export const seed = async knex => {
   UserModel.knex(knex)
   PostModel.knex(knex)
+
   const users = await UserModel.query().select("id")
   const posts = await PostModel.query().select("id")
   const likeData = []
 
-  for (let i = 1; i <= 20; i += 1) {
-    let userId, postId
+  for (const post of posts) {
+    const numLikes = faker.number.int({ min: 1, max: 20 })
+    const shuffledUsers = faker.helpers.shuffle(users.map(user => user.id))
 
-    do {
-      userId = faker.datatype.number({ min: 1, max: users.length })
-      postId = faker.datatype.number({ min: 1, max: posts.length })
-    } while (
-      likeData.some((like) => like.userId === userId && like.postId === postId)
-    )
-
-    likeData.push({
-      userId,
-      postId,
-    })
+    for (let i = 0; i < numLikes; i++) {
+      likeData.push({
+        userId: shuffledUsers[i],
+        postId: post.id
+      })
+    }
   }
+
   await knex("likes").insert(likeData)
 }

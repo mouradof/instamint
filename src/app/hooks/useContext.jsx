@@ -4,6 +4,12 @@ import { createContext, useContext, useEffect, useState } from "react"
 import { decode } from "hono/jwt"
 import createUserTeabagService from "@/app/services/teabags/teabagUserCreate.mjs"
 import getUserTeabagsService from "@/app/services/teabags/teabagsUserGet.mjs"
+import getForyouPostService from "@/app/services/posts/foryouPostGet.mjs"
+import getLikesPostService from "@/app/services/posts/likesPostGet.mjs"
+import getLikedPostService from "@/app/services/posts/likedPostGet.mjs"
+import deleteLikePostService from "@/app/services/posts/likePostDelete.mjs"
+import postLikePostService from "@/app/services/posts/likePostPost.mjs"
+import getSubscribedPostService from "@/app/services/posts/subscribedPostGet.mjs"
 
 const AppContext = createContext()
 
@@ -32,6 +38,12 @@ export const AppContextProvider = props => {
 
   const getUserTeabags = getUserTeabagsService({ apiClients })
   const createUserTeabag = createUserTeabagService({ apiClients })
+  const getForyouPost = getForyouPostService({ apiClients })
+  const getSubscribedPost = getSubscribedPostService({ apiClients })
+  const getLikesPost = getLikesPostService({ apiClients })
+  const getLikedPost = getLikedPostService({ apiClients })
+  const deleteLikePost = deleteLikePostService({ apiClients })
+  const postLikePost = postLikePostService({ apiClients })
 
   if (!isPublicPage && session === null) {
     return (
@@ -47,7 +59,13 @@ export const AppContextProvider = props => {
       value={{
         action: {
           getUserTeabags,
-          createUserTeabag
+          createUserTeabag,
+          getForyouPost,
+          getSubscribedPost,
+          getLikesPost,
+          getLikedPost,
+          deleteLikePost,
+          postLikePost
         },
         state: {
           session

@@ -14,18 +14,18 @@ const app = new Hono()
 app.use(logger())
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: "*",
     allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowHeaders: ["*"],
-    credentials: true,
-  }),
+    allowHeaders: ["authorization", "content-type"],
+    credentials: true
+  })
 )
 
-prepareRoutes(app, db)
+prepareRoutes({ app, db })
 
 serve({
   fetch: app.fetch,
-  port: config.port,
+  port: config.port
 })
 
 // eslint-disable-next-line no-console

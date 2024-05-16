@@ -11,17 +11,17 @@ class FollowModel extends BaseModel {
         modelClass: UserModel,
         join: {
           from: "follows.followerId",
-          to: "users.id",
-        },
+          to: "users.id"
+        }
       },
       followed: {
         relation: BaseModel.BelongsToOneRelation,
         modelClass: UserModel,
         join: {
           from: "follows.followedId",
-          to: "users.id",
-        },
-      },
+          to: "users.id"
+        }
+      }
     }
   }
 }
