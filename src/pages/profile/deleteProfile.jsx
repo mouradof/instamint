@@ -33,7 +33,7 @@ const DeleteProfile = () => {
         router.push("/login")
       }, 5000)
     } catch (error) {
-      setMessage(error.message || "Error deleting account. Please try again.")
+      setMessage(error.message || "Error deleting account. Please try again")
     } finally {
       setLoading(false)
     }
