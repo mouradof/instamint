@@ -4,7 +4,7 @@ import bcrypt from "bcrypt"
 
 const userRoutes = new Hono()
 
-userRoutes.get("/user/:id", async c => {
+userRoutes.get("/:id", async c => {
   const id = c.req.param("id")
 
   try {
@@ -20,7 +20,7 @@ userRoutes.get("/user/:id", async c => {
   }
 })
 
-userRoutes.put("/user/:id/change-password", async c => {
+userRoutes.put("/:id/change-password", async c => {
   const id = c.req.param("id")
   const { oldPassword, newPassword } = await c.req.json()
 
@@ -43,13 +43,11 @@ userRoutes.put("/user/:id/change-password", async c => {
 
     return c.json({ message: "Password updated successfully. Please log in again.", logout: true }, 200)
   } catch (error) {
-    console.error("Error updating password:", error)
-
     return c.json({ message: "Error updating password", error: error.message }, 500)
   }
 })
 
-userRoutes.put("/user/:id", async c => {
+userRoutes.put("/:id/update", async c => {
   const id = c.req.param("id")
   const body = await c.req.json()
 
@@ -77,7 +75,7 @@ userRoutes.put("/user/:id", async c => {
   return c.json(updatedUser, 200)
 })
 
-userRoutes.delete("/user/:id", async c => {
+userRoutes.delete("/:id", async c => {
   const id = c.req.param("id")
   const { password } = await c.req.json()
 

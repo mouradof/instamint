@@ -7,7 +7,6 @@ import { authMiddleware } from "./src/middleware/auth.js"
 import BaseModel from "./src/db/models/BaseModel.js"
 import config from "./config.js"
 import userRoutes from "./src/routes/user-routes.js"
-
 import prepareRouteRegister from "./src/routes/register-route.js"
 import prepareRouteLogin from "./src/routes/login-route.js"
 import prepareRouteVerify from "./src/routes/verify-route.js"
@@ -30,7 +29,7 @@ app.use(
   })
 )
 
-app.route("/api", userRoutes)
+app.route("/api/user", userRoutes)
 
 app.use("/api/protected", authMiddleware)
 

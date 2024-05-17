@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react"
 import { useRouter } from "next/router"
-import axios from "axios"
+import useAppContext from "@/app/hooks/useContext.jsx"
+import Toast from "@/app/components/common/Toast.jsx"
+import PasswordChangeForm from "@/app/components/profile/PasswordChangeForm.jsx"
+import PasswordChangeSuccessMessage from "@/app/components/profile/PasswordChangeSuccessMessage.jsx"
 
 const ChangePassword = () => {
   const [passwords, setPasswords] = useState({
@@ -13,15 +16,16 @@ const ChangePassword = () => {
   const [success, setSuccess] = useState(false)
   const [countdown, setCountdown] = useState(5)
   const router = useRouter()
+  const {
+    state: { session },
+    action: { changePassword }
+  } = useAppContext()
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const userData = localStorage.getItem("user")
-      if (!userData) {
-        router.push("/login")
-      }
+    if (!session) {
+      router.push("/login")
     }
-  }, [router])
+  }, [session, router])
 
   const handleChange = e => {
     const { name, value } = e.target
@@ -38,16 +42,25 @@ const ChangePassword = () => {
     if (passwords.newPassword !== passwords.confirmPassword) {
       setMessage({ text: "New passwords do not match!", type: "error" })
       setLoading(false)
+
       return
     }
 
-    const userId = JSON.parse(localStorage.getItem("user"))?.id
     try {
-      const response = await axios.put(`http://localhost:4000/api/user/${userId}/change-password`, {
+      const [error, response] = await changePassword({
+        idUser: session.id,
         oldPassword: passwords.oldPassword,
         newPassword: passwords.newPassword
       })
-      setMessage({ text: response.data.message, type: "success" })
+
+      if (error) {
+        setMessage({ text: error, type: "error" })
+        setLoading(false)
+
+        return
+      }
+
+      setMessage({ text: response.message, type: "success" })
       setSuccess(true)
 
       const countdownInterval = setInterval(() => {
@@ -61,14 +74,13 @@ const ChangePassword = () => {
         router.push("/login")
       }, 5000)
     } catch (error) {
-      console.error("Error updating password:", error)
       setMessage({ text: "Failed to update password. Please try again.", type: "error" })
       setLoading(false)
     }
   }
 
   const handleCancel = () => {
-    const userId = JSON.parse(localStorage.getItem("user"))?.id
+    const userId = session?.id
     router.push(`/profile/${userId}`)
   }
 
@@ -85,81 +97,19 @@ const ChangePassword = () => {
                 {message.text}
               </div>
             )}
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="flex flex-col">
-                <label htmlFor="oldPassword" className="text-sm font-medium text-gray-700">
-                  Old Password:
-                </label>
-                <input
-                  id="oldPassword"
-                  type="password"
-                  name="oldPassword"
-                  value={passwords.oldPassword}
-                  onChange={handleChange}
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                  required
-                />
-              </div>
-              <div className="flex flex-col">
-                <label htmlFor="newPassword" className="text-sm font-medium text-gray-700">
-                  New Password:
-                </label>
-                <input
-                  id="newPassword"
-                  type="password"
-                  name="newPassword"
-                  value={passwords.newPassword}
-                  onChange={handleChange}
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                  required
-                />
-              </div>
-              <div className="flex flex-col">
-                <label htmlFor="confirmPassword" className="text-sm font-medium text-gray-700">
-                  Confirm New Password:
-                </label>
-                <input
-                  id="confirmPassword"
-                  type="password"
-                  name="confirmPassword"
-                  value={passwords.confirmPassword}
-                  onChange={handleChange}
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                  required
-                />
-              </div>
-              <div className="flex justify-between">
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
-                >
-                  {loading ? "Updating..." : "Change Password"}
-                </button>
-                <button
-                  type="button"
-                  onClick={handleCancel}
-                  className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-gray-500"
-                >
-                  Cancel
-                </button>
-              </div>
-            </form>
+            <PasswordChangeForm
+              passwords={passwords}
+              handleChange={handleChange}
+              handleSubmit={handleSubmit}
+              handleCancel={handleCancel}
+              loading={loading}
+            />
           </>
         ) : (
-          <>
-            <p className="mb-6 text-gray-700">
-              Your password has been updated. You will be redirected to the login page in {countdown} seconds.
-            </p>
-            <div className="relative w-full h-4 bg-gray-200 rounded">
-              <div
-                className="absolute top-0 left-0 h-4 bg-blue-500 rounded transition-width duration-1000"
-                style={{ width: `${(5 - countdown) * 20}%` }}
-              ></div>
-            </div>
-          </>
+          <PasswordChangeSuccessMessage countdown={countdown} />
         )}
       </div>
+      {message && <Toast message={message.text} isSuccess={message.type === "success"} />}
     </div>
   )
 }

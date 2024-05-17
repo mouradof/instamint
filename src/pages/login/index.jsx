@@ -1,3 +1,5 @@
+// login/index.jsx
+
 import React, { useState } from "react"
 import { useRouter } from "next/router"
 import Link from "next/link"
@@ -25,7 +27,7 @@ const Login = () => {
         const data = await response.json()
         alert("Vous êtes connecté")
         localStorage.setItem("user", JSON.stringify(data.user))
-        localStorage.setItem("token", data.token)
+        localStorage.setItem("token", data.token) // Assurez-vous que le token est bien stocké sous la clé "token"
         router.push(`/profile/${data.user.id}`)
       } else {
         const error = await response.json()
@@ -75,7 +77,7 @@ const Login = () => {
               borderRadius: "5px"
             }}
           >
-            {isLoading ? "Loading..." : "Login"}
+            {isLoading ? "Loadings..." : "Login"}
           </button>
         </div>
       </form>
