@@ -36,7 +36,23 @@ const prepareRouteLogin = ({ app }) => {
 
       const token = await sign(payload, process.env.JWT_SECRET)
 
-      return c.json({ message: "Auth successful", token }, 200)
+      return c.json(
+        {
+          message: "Auth successful",
+          token,
+          user: {
+            id: user.id,
+            username: user.username,
+            email: user.email,
+            profileImage: user.profileImage,
+            coverImage: user.coverImage,
+            bio: user.bio,
+            followers: user.followers,
+            following: user.following
+          }
+        },
+        200
+      )
     } catch (error) {
       return c.json({ message: "Authentication service unavailable" }, 500)
     }

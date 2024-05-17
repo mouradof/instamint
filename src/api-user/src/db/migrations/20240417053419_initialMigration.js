@@ -10,8 +10,8 @@ export const up = async knex => {
     table.text("bio").nullable().defaultTo(null)
     table.integer("followers").defaultTo(0)
     table.integer("following").defaultTo(0)
-    table.string("profileImage", 255).defaultTo("path/to/default/profile.jpg")
-    table.string("coverImage", 255).defaultTo("path/to/default/cover.jpg")
+    table.string("profileImage", 255).defaultTo("/images/default-profile-picture.jpg")
+    table.string("coverImage", 255).defaultTo("/images/default-cover-picture.jpg")
   })
 }
 

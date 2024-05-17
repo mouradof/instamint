@@ -1,125 +1,163 @@
 import React, { useState, useEffect } from "react"
-import axios from "axios"
-import Link from "next/link"
+import { useRouter } from "next/router"
+import useAppContext from "@/app/hooks/useContext.jsx"
+import EditProfileForm from "@/app/components/profile/edit/EditProfileForm"
+import Countdown from "@/app/components/profile/edit/Countdown"
 
-export default function EditUserProfile() {
+const EditProfile = () => {
   const [user, setUser] = useState({
     username: "",
-    bio: ""
+    bio: "",
+    profileImage: "",
+    coverImage: ""
   })
-  const [isLoading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [message, setMessage] = useState(null)
   const [success, setSuccess] = useState(false)
-  const [error, setError] = useState(null)
+  const [countdown, setCountdown] = useState(5)
+  const [profileImageOption, setProfileImageOption] = useState("current")
+  const [coverImageOption, setCoverImageOption] = useState("current")
+  const router = useRouter()
+  const {
+    state: { session },
+    action: { updateUserProfile, getUserProfile }
+  } = useAppContext()
 
   useEffect(() => {
-    setLoading(true)
-    axios
-      .get("http://localhost:4000/api/user/1")
-      .then(response => {
-        setUser(response.data)
-      })
-      .catch(error => {
-        setError(error)
-      })
-      .finally(() => setLoading(false))
-  }, [])
+    const fetchUserData = async () => {
+      try {
+        const userId = session.id
 
-  const handleChange = event => {
-    const { name, value } = event.target
-    setUser(prevState => ({
-      ...prevState,
+        if (!userId) {
+          throw new Error("No user ID found")
+        }
+
+        const [error, data] = await getUserProfile({ userId })
+
+        if (error) {
+          throw new Error(error)
+        }
+
+        setUser({
+          username: data.username,
+          bio: data.bio,
+          profileImage: data.profileImage || "",
+          coverImage: data.coverImage || ""
+        })
+      } catch {
+        router.push("/login")
+      }
+    }
+
+    if (session) {
+      fetchUserData()
+    }
+  }, [session, getUserProfile, router])
+
+  useEffect(() => {
+    if (profileImageOption === "random") {
+      setUser(prev => ({
+        ...prev,
+        profileImage: `https://source.unsplash.com/random/400x400?sig=${Math.floor(Math.random() * 1000)}`
+      }))
+    } else if (profileImageOption === "default") {
+      setUser(prev => ({
+        ...prev,
+        profileImage: "/images/default-profile-picture.jpg"
+      }))
+    } else {
+      setUser(prev => ({
+        ...prev,
+        profileImage: JSON.parse(localStorage.getItem("user")).profileImage || ""
+      }))
+    }
+  }, [profileImageOption])
+
+  useEffect(() => {
+    if (coverImageOption === "random") {
+      setUser(prev => ({
+        ...prev,
+        coverImage: `https://source.unsplash.com/random/1200x400?sig=${Math.floor(Math.random() * 1000)}`
+      }))
+    } else if (coverImageOption === "default") {
+      setUser(prev => ({
+        ...prev,
+        coverImage: "/images/default-cover-picture.jpg"
+      }))
+    } else {
+      setUser(prev => ({
+        ...prev,
+        coverImage: JSON.parse(localStorage.getItem("user")).coverImage || ""
+      }))
+    }
+  }, [coverImageOption])
+
+  const handleInputChange = e => {
+    const { name, value } = e.target
+    setUser(prev => ({
+      ...prev,
       [name]: value
     }))
   }
 
-  const handleSubmit = async event => {
-    event.preventDefault()
+  const handleSubmit = async e => {
+    e.preventDefault()
     setLoading(true)
 
     try {
-      const response = await axios.put("http://localhost:4000/api/user/1", user)
+      const userId = session.id
+      const [error, data] = await updateUserProfile({ userId, userData: user })
 
-      if (response.status === 200) {
-        setSuccess(true)
-        setTimeout(() => {
-          setSuccess(false)
-        }, 3000)
-      } else {
-        setSuccess(false)
-        throw new Error("Failed to update user")
+      if (error) {
+        throw new Error(error)
       }
+
+      setMessage({ text: "Profile updated successfully!", type: "success" })
+      setSuccess(true)
+      localStorage.setItem("user", JSON.stringify({ ...JSON.parse(localStorage.getItem("user")), ...data }))
+
+      const countdownInterval = setInterval(() => {
+        setCountdown(prevCountdown => prevCountdown - 1)
+      }, 1000)
+
+      setTimeout(() => {
+        clearInterval(countdownInterval)
+        router.push(`/profile/${userId}`)
+      }, 5000)
     } catch (error) {
-      setError(error)
-      setSuccess(false)
-    } finally {
+      setMessage({ text: error.message || "Failed to update profile. Please try again.", type: "error" })
       setLoading(false)
     }
   }
 
+  const handleCancel = () => {
+    const userId = session.id
+    router.push(`/profile/${userId}`)
+  }
+
   return (
-    <div className="flex justify-center items-center h-screen bg-gray-100">
-      <div className="w-full max-w-md p-4">
-        <div className="bg-white shadow-md rounded-lg p-6">
-          <div className="flex items-center mb-4">
-            <img src="/images/logo-Instamint.png" alt="Logo" className="mr-2 w-14 h-14" />
-            <h2 className="text-xl font-semibold">Edit User Profile</h2>
-          </div>
-          {success && (
-            <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded-lg mb-4">
-              User updated successfully!
-            </div>
-          )}
-          {error && (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded-lg mb-4">
-              Failed to update user. Please try again later.
-            </div>
-          )}
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="flex flex-col">
-              <label htmlFor="username" className="text-gray-800 font-semibold">
-                Username
-              </label>
-              <input
-                type="text"
-                id="username"
-                name="username"
-                value={user.username}
-                onChange={handleChange}
-                placeholder="Username"
-                className="border border-gray-300 rounded-lg p-3 w-full focus:outline-none focus:border-blue-500"
-              />
-            </div>
-            <div className="flex flex-col">
-              <label htmlFor="bio" className="text-gray-800 font-semibold">
-                Bio
-              </label>
-              <textarea
-                id="bio"
-                name="bio"
-                value={user.bio}
-                onChange={handleChange}
-                placeholder="Bio"
-                className="border border-gray-300 rounded-lg p-3 w-full focus:outline-none focus:border-blue-500"
-              ></textarea>
-            </div>
-            <div className="flex justify-between">
-              <Link
-                href="/profile"
-                className="inline-block bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded-lg"
-              >
-                Cancel
-              </Link>
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="inline-block bg-blue-500 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg"
-              >
-                Save Changes
-              </button>
-            </div>
-          </form>
-        </div>
+    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+      <div className="bg-white shadow-lg rounded-lg p-8 max-w-md w-full">
+        <h1 className="text-2xl font-bold text-blue-600 mb-4">Edit Profile</h1>
+        {!success ? (
+          <EditProfileForm
+            user={user}
+            handleInputChange={handleInputChange}
+            handleSubmit={handleSubmit}
+            loading={loading}
+            message={message}
+            profileImageOption={profileImageOption}
+            setProfileImageOption={setProfileImageOption}
+            coverImageOption={coverImageOption}
+            setCoverImageOption={setCoverImageOption}
+            handleCancel={handleCancel} // Passez handleCancel ici
+          />
+        ) : (
+          <Countdown countdown={countdown} setCountdown={setCountdown} userId={session.id} />
+        )}
       </div>
     </div>
   )
 }
+
+export default EditProfile

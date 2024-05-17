@@ -1,3 +1,5 @@
+// login/index.jsx
+
 import React, { useState } from "react"
 import { useRouter } from "next/router"
 import Link from "next/link"
@@ -23,10 +25,10 @@ const Login = () => {
 
       if (response.ok) {
         const data = await response.json()
-        const token = data.token
         alert("Vous êtes connecté")
-        localStorage.setItem("instamint", token)
-        router.push("/home")
+        localStorage.setItem("user", JSON.stringify(data.user))
+        localStorage.setItem("token", data.token) // Assurez-vous que le token est bien stocké sous la clé "token"
+        router.push(`/profile/${data.user.id}`)
       } else {
         const error = await response.json()
         alert(error.message || "Erreur de connexion")
@@ -75,7 +77,7 @@ const Login = () => {
               borderRadius: "5px"
             }}
           >
-            {isLoading ? "Loading..." : "Login"}
+            {isLoading ? "Loadings..." : "Login"}
           </button>
         </div>
       </form>
