@@ -1,12 +1,13 @@
-import Layout from "../app/layout/layout"
+import Layout from "@/app/layout/layout.jsx"
 import "../app/styles/globals.css"
-import Navigation from "../app/components/Navigation"
+import { AppContextProvider } from "@/app/hooks/useContext.jsx"
 
 function MyApp({ Component, pageProps }) {
   return (
     <Layout>
-      <Navigation />
-      <Component {...pageProps} />
+      <AppContextProvider isPublicPage={Component.isPublicPage}>
+        <Component {...pageProps} />
+      </AppContextProvider>
     </Layout>
   )
 }

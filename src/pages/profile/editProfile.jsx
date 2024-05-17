@@ -20,6 +20,7 @@ const EditProfile = () => {
   useEffect(() => {
     if (typeof window !== "undefined") {
       const userData = localStorage.getItem("user")
+
       if (userData) {
         const userObj = JSON.parse(userData)
         setUser({
@@ -107,6 +108,7 @@ const EditProfile = () => {
       } else {
         setMessage({ text: "Failed to update profile. Please try again.", type: "error" })
       }
+
       console.error("Error updating profile:", error)
       setLoading(false)
     }
@@ -116,6 +118,7 @@ const EditProfile = () => {
     const userId = JSON.parse(localStorage.getItem("user"))?.id
     router.push(`/profile/${userId}`)
   }
+
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <div className="bg-white shadow-lg rounded-lg p-8 max-w-md w-full">

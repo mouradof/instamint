@@ -1,0 +1,4 @@
+{
+  "watch": ["src/pages", "src/app"],
+  "ext": "cjs,mjs,js,jsx,json"
+}
