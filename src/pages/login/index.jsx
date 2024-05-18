@@ -1,12 +1,20 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { useRouter } from "next/router"
 import Link from "next/link"
+import styles from "../../app/styles/Login.module.css"
 
 const Login = () => {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [isLoading, setIsLoading] = useState(false)
+  const [verifiedMessage, setVerifiedMessage] = useState("")
   const router = useRouter()
+
+  useEffect(() => {
+    if (router.query.verified === "true") {
+      setVerifiedMessage("Email successfully verified. You can now log in.")
+    }
+  }, [router.query.verified])
 
   const handleSubmit = async event => {
     event.preventDefault()
@@ -39,52 +47,43 @@ const Login = () => {
   }
 
   return (
-    <div style={{ maxWidth: "400px", margin: "auto", padding: "20px" }}>
-      <h2 style={{ textAlign: "center", marginBottom: "20px" }}>Login</h2>
+    <div className={styles.pageContainer}>
+      <img className={styles.logo} src="/images/logo-Instamint.png" />
+      {verifiedMessage && <div className={styles.verifiedMessage}>{verifiedMessage}</div>}
+
       <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: "20px" }}>
+        <div>
           <input
             type="email"
             placeholder="Email"
             required
-            style={{ width: "100%", padding: "10px" }}
             value={email}
             onChange={e => setEmail(e.target.value)}
+            className={styles.input}
           />
         </div>
-        <div style={{ marginBottom: "20px" }}>
+        <div>
           <input
             type="password"
             placeholder="Password"
             required
-            style={{ width: "100%", padding: "10px" }}
             value={password}
             onChange={e => setPassword(e.target.value)}
+            className={styles.input}
           />
         </div>
-        <div style={{ textAlign: "center", marginBottom: "20px" }}>
-          <button
-            type="submit"
-            disabled={isLoading}
-            style={{
-              width: "100%",
-              padding: "10px",
-              backgroundColor: "green",
-              color: "white",
-              border: "none",
-              borderRadius: "5px"
-            }}
-          >
+        <div className={styles.bottomContainerLogin}>
+          <div>
+            Not have an account? {""}
+            <Link href="/register">
+              &nbsp;<span className={styles.secondTextBottomContainerLogin}>Register now</span>
+            </Link>
+          </div>
+          <button className={styles.btnlogin} type="submit" disabled={isLoading}>
             {isLoading ? "Loading..." : "Login"}
           </button>
         </div>
       </form>
-      <div style={{ textAlign: "center" }}>
-        Not have an account?{" "}
-        <Link className="text-blue-400" href="/register">
-          Register now
-        </Link>
-      </div>
     </div>
   )
 }

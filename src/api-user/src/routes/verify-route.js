@@ -5,29 +5,23 @@ const prepareRouteVerify = ({ app }) => {
   const auth = new Hono()
 
   auth.get("/verify", async c => {
-    const token = c.req.query("token")
-
-    if (!token) {
-      return c.json({ message: "Verification token is required" }, 400)
-    }
+    const { token } = c.req.query()
 
     try {
       const user = await UserModel.query().where({ verifyToken: token }).first()
 
       if (!user) {
-        return c.json({ message: "Invalid or expired verification token" }, 404)
+        return c.json({ message: "Invalid token" }, 400)
       }
 
       await UserModel.query()
-        .patch({
-          emailVerified: true,
-          verifyToken: null
-        })
-        .where({ id: user.id })
 
-      return c.json({ message: "Email verified successfully" }, 200)
+        .findById(user.id)
+        .patch({ emailVerified: true, verifyToken: null })
+
+      return c.redirect("http://localhost:3000/login?verified=true")
     } catch (error) {
-      return c.json({ message: "Verification failed", error: error.message }, 500)
+      return c.json({ message: "Error verifying email", error: error.message }, 500)
     }
   })
 

@@ -3,7 +3,7 @@ import { resolve } from "path"
 
 config()
 
-const isMigration = process.env.KNEX_CONTEXT === 'migration'
+const isMigration = process.env.KNEX_CONTEXT === "migration"
 
 const knexfile = {
   client: "pg",
