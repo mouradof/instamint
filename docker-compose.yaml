@@ -5,80 +5,94 @@ services:
     build: .
     ports:
       - "3000:3000"
+    volumes:
+      - ./src/pages:/app/src/pages
+      - ./src/app:/app/src/app
 
   api-user:
     build: ./src/api-user
     ports:
-      - "4000:4000"
+      - "4000:4002"
     environment:
-      DATABASE_URL: postgresql://user:password@postgres-db/instamintdb
+      DATABASE_URL: ${DATABASE_URL}
+      SMTP_HOST: mailhog
+      SMTP_PORT: 1025
+      DB_HOST: postgres-db
+      DB_PORT: 5432
+      DB_USER: user
+      DB_PASSWORD: password
+      DB_NAME: instamintdb
+    volumes:
+      - ./src/api-user:/usr/src/app
+      - /usr/src/app/node_modules
 
   api-relation:
     build: ./src/api-relation
     ports:
-      - "4001:4000"
+      - "4001:4002"
     environment:
-      DATABASE_URL: postgresql://user:password@postgres-db/instamintdb
+      DATABASE_URL: ${DATABASE_URL}
+    volumes:
+      - ./src/api-relation:/usr/src/app
+      - /usr/src/app/node_modules
 
   api-post:
     build: ./src/api-post
     ports:
       - "4002:4000"
     environment:
-      DATABASE_URL: postgresql://user:password@postgres-db/instamintdb
+      DATABASE_URL: ${DATABASE_URL}
+    volumes:
+      - ./src/api-post:/usr/src/app
+      - /usr/src/app/node_modules
 
   api-notification:
-    build: ./src/api-user
+    build: ./src/api-notification
     ports:
       - "4003:4000"
     environment:
-      DATABASE_URL: postgresql://user:password@postgres-db/instamintdb  
-      
+      DATABASE_URL: ${DATABASE_URL}
+    volumes:
+      - ./src/api-notification:/usr/src/app
+      - /usr/src/app/node_modules
+
   api-nft:
     build: ./src/api-nft
     ports:
       - "4004:4000"
     environment:
-      DATABASE_URL: postgresql://user:password@postgres-db/instamintdb
-
-  keycloak:
-    image: quay.io/keycloak/keycloak
-    command: start-dev
-    environment:
-      KC_DB: postgres
-      KC_DB_URL_HOST: postgres-db
-      KC_DB_URL_DATABASE: instamintdb
-      KC_DB_USER: keycloak
-      KC_DB_PASSWORD: password
-      KC_DB_SCHEMA: public
-      KEYCLOAK_ADMIN: admin
-      KEYCLOAK_ADMIN_PASSWORD: password
-    ports:
-      - 8081:8080
-    depends_on:
-      - postgres-db
+      DATABASE_URL: ${DATABASE_URL}
+    volumes:
+      - ./src/api-nft:/usr/src/app
+      - /usr/src/app/node_modules
 
   postgres-db:
     image: postgres:15
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: instamintdb
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_HOST: ${POSTGRES_HOST}
     volumes:
       - postgres-data:/var/lib/postgresql/data
-      - ./initdb:/docker-entrypoint-initdb.d
 
   pgadmin:
     image: dpage/pgadmin4
     ports:
       - "5050:80"
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@admin.com
-      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
     depends_on:
       - postgres-db
+
+  mailhog:
+    image: mailhog/mailhog:latest
+    ports:
+      - "1025:1025"
+      - "8025:8025"
 
 volumes:
   postgres-data:

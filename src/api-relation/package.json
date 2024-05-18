@@ -1,15 +1,33 @@
 {
-    "name": "api-relation",
-    "version": "1.0.0",
-    "description": "",
-    "main": "index.js",
-    "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
-    },
-    "author": "",
-    "license": "ISC",
-    "dependencies": {
-        "express": "^4.19.2",
-        "keycloak-admin": "^1.14.22"
-    }
+  "name": "api-relation",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js",
+    "dev": "nodemon --legacy-watch index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@faker-js/faker": "^8.4.1"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.10.0",
+    "@hono/zod-validator": "^0.2.1",
+    "aws-sdk": "^2.1603.0",
+    "axios": "^1.6.8",
+    "dotenv": "^16.4.5",
+    "hono": "^4.2.4",
+    "knex": "^3.1.0",
+    "multer": "^1.4.5-lts.1",
+    "next": "^14.2.1",
+    "nodemon": "^3.1.0",
+    "objection": "^3.1.4",
+    "pg": "^8.11.5",
+    "winston": "^3.13.0",
+    "zod": "^3.22.4"
+  }
 }

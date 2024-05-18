@@ -9,4 +9,13 @@ RUN npm install
 
 COPY . .
 
-CMD ["node", "src/index.js"]
+RUN apt-get update && \
+    apt-get install -y make gcc g++ python3 python3-pip && \
+    npm install && \
+    npm rebuild bcrypt --build-from-source && \
+    apt-get remove -y make gcc g++ python3 python3-pip && \
+    apt-get autoremove -y
+
+RUN npm install nodemon -g
+
+CMD ["npm", "run", "dev"]
