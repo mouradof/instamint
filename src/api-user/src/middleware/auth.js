@@ -31,5 +31,4 @@ async function authMiddleware(ctx, next) {
   }
 }
 
-// Exporter le middleware pour l'utiliser dans votre application Hono
 module.exports = { authMiddleware }
