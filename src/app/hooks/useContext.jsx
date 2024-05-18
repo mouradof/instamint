@@ -12,7 +12,6 @@ import deleteUserProfileService from "@/app/services/profile/deleteUserProfile.m
 const AppContext = createContext()
 
 export const AppContextProvider = props => {
-  // eslint-disable-next-line no-unused-vars
   const { isPublicPage, ...otherProps } = props
   const [session, setSession] = useState(null)
   const [jwt, setJWT] = useState(null)
@@ -23,7 +22,7 @@ export const AppContextProvider = props => {
   }
 
   useEffect(() => {
-    const storedJwt = localStorage.getItem("token")
+    const storedJwt = localStorage.getItem("instamint") || localStorage.getItem("token")
 
     if (!storedJwt) {
       return
@@ -31,9 +30,16 @@ export const AppContextProvider = props => {
 
     try {
       const { payload } = decode(storedJwt)
-      setSession(payload)
-      setJWT(storedJwt)
+
+      if (payload && payload.id) {
+        setSession(payload)
+        setJWT(storedJwt)
+      } else {
+        localStorage.removeItem("instamint")
+        localStorage.removeItem("token")
+      }
     } catch (error) {
+      localStorage.removeItem("instamint")
       localStorage.removeItem("token")
     }
   }, [])
@@ -55,6 +61,14 @@ export const AppContextProvider = props => {
       changePassword,
       deleteUserProfile
     }
+  }
+
+  if (!isPublicPage && session === null) {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-white text-4xl font-bold">
+        <span className="animate-bounce">Loading...</span>
+      </div>
+    )
   }
 
   return <AppContext.Provider value={appContextValue} {...otherProps} />

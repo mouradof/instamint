@@ -14,7 +14,7 @@ const ProfilePage = () => {
 
   useEffect(() => {
     if (!session) {
-      router.push("/login") // Redirigez si la session n'existe pas
+      router.push("/login")
 
       return
     }
@@ -29,7 +29,7 @@ const ProfilePage = () => {
         }
 
         setUser(data)
-      } catch {
+      } catch (err) {
         router.push("/login")
       }
     }

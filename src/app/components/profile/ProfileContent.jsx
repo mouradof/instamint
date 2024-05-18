@@ -1,5 +1,3 @@
-// ProfileContent.jsx
-
 import React from "react"
 
 const formatNumber = num => {
@@ -14,35 +12,45 @@ const formatNumber = num => {
   return num.toString()
 }
 
-const ProfileContent = ({ user }) => (
-  <div className="w-3/4 mt-4 px-4 flex flex-col items-start">
-    <div className="flex w-full">
+const ProfileContent = ({ user }) => {
+  const postsCount = user.posts || 50
+
+  return (
+    <div className="w-3/4 mt-4 px-4 flex flex-col items-start">
+      <div className="flex w-full">
+        <div className="flex flex-col items-start mr-8">
+          <img src={user.profileImage} alt="Profile" className="h-24 w-24 rounded-full border-4 border-white" />
+        </div>
+        <div className="flex-grow flex justify-around">
+          <div className="flex flex-col items-center">
+            <span className="font-bold text-lg" title={postsCount}>
+              {formatNumber(postsCount)}
+            </span>
+            <span className="text-sm text-gray-600">Posts</span>
+          </div>
+          <div className="flex flex-col items-center">
+            <span className="font-bold text-lg" title={user.following}>
+              {formatNumber(user.following)}
+            </span>
+            <span className="text-sm text-gray-600">Following</span>
+          </div>
+          <div className="flex flex-col items-center">
+            <span className="font-bold text-lg" title={user.followers}>
+              {formatNumber(user.followers)}
+            </span>
+            <span className="text-sm text-gray-600">Followers</span>
+          </div>
+        </div>
+      </div>
       <div className="flex flex-col items-start mr-8">
-        <img src={user.profileImage} alt="Profile" className="h-24 w-24 rounded-full border-4 border-white" />
-      </div>
-      <div className="flex-grow flex justify-around">
-        <div className="flex flex-col items-center">
-          <span className="font-bold text-lg" title={user.followers}>
-            {formatNumber(user.followers)}
-          </span>
-          <span className="text-sm text-gray-600">Followers</span>
-        </div>
-        <div className="flex flex-col items-center">
-          <span className="font-bold text-lg" title={user.following}>
-            {formatNumber(user.following)}
-          </span>
-          <span className="text-sm text-gray-600">Following</span>
+        <div className="mt-2">
+          <div className="text-xl font-bold">{user.username}</div>
+          <div className="text-sm text-gray-600">{user.bio || "No bio provided."}</div>
         </div>
       </div>
+      <hr className="w-full mt-4" />
     </div>
-    <div className="flex flex-col items-start mr-8">
-      <div className="mt-2">
-        <div className="text-xl font-bold">{user.username}</div>
-        <div className="text-sm text-gray-600">{user.bio || "No bio provided."}</div>
-      </div>
-    </div>
-    <hr className="w-full mt-4" />
-  </div>
-)
+  )
+}
 
 export default ProfileContent
