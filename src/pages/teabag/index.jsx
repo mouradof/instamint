@@ -22,6 +22,10 @@ const ListTeabags = () => {
   const router = useRouter()
 
   const fetchTeabags = useCallback(async () => {
+    if (!session || !session.id) {
+      return
+    }
+
     try {
       const [error, data] = await getUserTeabags({ userId: session.id })
 
@@ -36,7 +40,7 @@ const ListTeabags = () => {
     } catch (error) {
       setError(error.message)
     }
-  }, [getUserTeabags, session.id])
+  }, [getUserTeabags, session])
 
   useEffect(() => {
     const fetchData = async () => {
@@ -111,7 +115,7 @@ const ListTeabags = () => {
           <AddTeabagForm
             onSubmit={teabagData => onSubmitTeabag(teabagData, session)}
             closeModal={closeModal}
-            idUser={session.id}
+            idUser={session && session.id}
             createTeabagFunction={createUserTeabag}
           />
         </Modal>

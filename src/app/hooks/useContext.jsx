@@ -4,6 +4,10 @@ import { createContext, useContext, useEffect, useState } from "react"
 import { decode } from "hono/jwt"
 import createUserTeabagService from "@/app/services/teabags/teabagUserCreate.mjs"
 import getUserTeabagsService from "@/app/services/teabags/teabagsUserGet.mjs"
+import getUserProfileService from "@/app/services/profile/getUserProfile.mjs"
+import updateUserProfileService from "@/app/services/profile/updateUserProfile.mjs"
+import changeUserPasswordService from "@/app/services/profile/changeUserPassword.mjs"
+import deleteUserProfileService from "@/app/services/profile/deleteUserProfile.mjs"
 
 const AppContext = createContext()
 
@@ -18,20 +22,46 @@ export const AppContextProvider = props => {
   }
 
   useEffect(() => {
-    const jwt = localStorage.getItem("instamint")
+    const storedJwt = localStorage.getItem("instamint") || localStorage.getItem("token")
 
-    if (!jwt) {
+    if (!storedJwt) {
       return
     }
 
-    const { payload } = decode(jwt)
+    try {
+      const { payload } = decode(storedJwt)
 
-    setSession(payload)
-    setJWT(jwt)
+      if (payload && payload.id) {
+        setSession(payload)
+        setJWT(storedJwt)
+      } else {
+        localStorage.removeItem("instamint")
+        localStorage.removeItem("token")
+      }
+    } catch (error) {
+      localStorage.removeItem("instamint")
+      localStorage.removeItem("token")
+    }
   }, [])
 
   const getUserTeabags = getUserTeabagsService({ apiClients })
   const createUserTeabag = createUserTeabagService({ apiClients })
+  const getUserProfile = getUserProfileService({ apiClients })
+  const updateUserProfile = updateUserProfileService({ apiClients })
+  const changePassword = changeUserPasswordService({ apiClients })
+  const deleteUserProfile = deleteUserProfileService({ apiClients })
+
+  const appContextValue = {
+    state: { session },
+    action: {
+      getUserTeabags,
+      createUserTeabag,
+      getUserProfile,
+      updateUserProfile,
+      changePassword,
+      deleteUserProfile
+    }
+  }
 
   if (!isPublicPage && session === null) {
     return (
@@ -41,20 +71,7 @@ export const AppContextProvider = props => {
     )
   }
 
-  return (
-    <AppContext.Provider
-      {...otherProps}
-      value={{
-        action: {
-          getUserTeabags,
-          createUserTeabag
-        },
-        state: {
-          session
-        }
-      }}
-    />
-  )
+  return <AppContext.Provider value={appContextValue} {...otherProps} />
 }
 
 const useAppContext = () => useContext(AppContext)
