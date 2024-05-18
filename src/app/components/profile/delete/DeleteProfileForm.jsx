@@ -1,9 +1,8 @@
-// eslint-disable-next-line no-unused-vars
 import React, { useState } from "react"
 import Button from "@/app/components/common/Button"
 import Toast from "@/app/components/common/Toast"
 
-const DeleteProfileForm = ({ onDelete, loading, message, success }) => {
+const DeleteProfileForm = ({ onDelete, loading, message, success, router, session }) => {
   const [password, setPassword] = useState("")
 
   const handleDelete = () => {
@@ -30,7 +29,6 @@ const DeleteProfileForm = ({ onDelete, loading, message, success }) => {
           className="bg-red-500 hover:bg-red-600"
         />
         <Button
-          // eslint-disable-next-line no-undef
           onClick={() => router.push(`/profile/${session.id}`)}
           text="Cancel"
           className="bg-gray-500 hover:bg-gray-600"

@@ -33,7 +33,7 @@ const DeleteProfile = () => {
         router.push("/login")
       }, 5000)
     } catch (error) {
-      setMessage(error.message || "Error deleting account. Please try again")
+      setMessage(error.message || "Error deleting account. Please try again.")
     } finally {
       setLoading(false)
     }
@@ -43,7 +43,14 @@ const DeleteProfile = () => {
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <div className="bg-white shadow-lg rounded-lg p-8 max-w-md w-full">
         {!success ? (
-          <DeleteProfileForm onDelete={handleDelete} loading={loading} message={message} success={success} />
+          <DeleteProfileForm
+            onDelete={handleDelete}
+            loading={loading}
+            message={message}
+            success={success}
+            router={router}
+            session={session}
+          />
         ) : (
           <>
             <DeleteProfileMessage countdown={countdown} />
