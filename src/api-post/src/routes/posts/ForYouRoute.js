@@ -4,6 +4,7 @@ import { idValidator, stringValidator } from "../validators.js"
 import { zValidator } from "@hono/zod-validator"
 import FollowModel from "../../db/models/FollowModel.js"
 import PostModel from "../../db/models/PostModel.js"
+import { HTTP_STATUS_CODES, HTTP_ERRORS } from "../../errors.js"
 
 const prepareRoutesForYou = ({ app }) => {
   const forYouData = new Hono()
@@ -25,12 +26,13 @@ const prepareRoutesForYou = ({ app }) => {
         const page = parseInt(c.req.valid("query").page, 10) || 0
 
         if (page < 0) {
-          c.status(400)
-
-          return c.json({
-            success: false,
-            message: "Invalid page number"
-          })
+          return c.json(
+            {
+              success: false,
+              message: HTTP_ERRORS.INVALID_PAGE_NUMBER
+            },
+            HTTP_STATUS_CODES.BAD_REQUEST
+          )
         }
 
         const directFollows = await FollowModel.query().where("followerId", userId)
@@ -55,20 +57,22 @@ const prepareRoutesForYou = ({ app }) => {
           userId: post.userId
         }))
 
-        c.status(200)
-
-        return c.json({
-          success: true,
-          result: formattedPosts,
-          hasMore: allPosts.length > 10 * (page + 1)
-        })
+        return c.json(
+          {
+            success: true,
+            result: formattedPosts,
+            hasMore: allPosts.length > 10 * (page + 1)
+          },
+          HTTP_STATUS_CODES.OK
+        )
       } catch (error) {
-        c.status(500)
-
-        return c.json({
-          success: false,
-          message: `Failed to fetch posts: ${error}`
-        })
+        return c.json(
+          {
+            success: false,
+            message: `${HTTP_ERRORS.FETCH_POSTS_FAILED}: ${error.message}`
+          },
+          HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR
+        )
       }
     }
   )

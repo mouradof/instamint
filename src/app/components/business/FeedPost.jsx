@@ -18,29 +18,43 @@ const Feed = ({ type }) => {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        let apiError, apiData
-
         if (type === "forYou") {
-          ;[apiError, apiData] = await getForyouPost({ userId: session.id, page })
+          const [apiError, apiData] = await getForyouPost({ userId: session.id, page })
+
+          if (apiError) {
+            setError(apiError)
+
+            return
+          }
+
+          const sortedPosts = apiData.result.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+
+          if (page === 0) {
+            setPosts(sortedPosts)
+          } else {
+            setPosts(prevPosts => [...prevPosts, ...sortedPosts])
+          }
+
+          setHasMore(apiData.hasMore)
         } else if (type === "subscribed") {
-          ;[apiError, apiData] = await getSubscribedPost({ userId: session.id, page })
+          const [apiError, apiData] = await getSubscribedPost({ userId: session.id, page })
+
+          if (apiError) {
+            setError(apiError)
+
+            return
+          }
+
+          const sortedPosts = apiData.result.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+
+          if (page === 0) {
+            setPosts(sortedPosts)
+          } else {
+            setPosts(prevPosts => [...prevPosts, ...sortedPosts])
+          }
+
+          setHasMore(apiData.hasMore)
         }
-
-        if (apiError) {
-          setError(apiError)
-
-          return
-        }
-
-        const sortedPosts = apiData.result.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-
-        if (page === 0) {
-          setPosts(sortedPosts)
-        } else {
-          setPosts(prevPosts => [...prevPosts, ...sortedPosts])
-        }
-
-        setHasMore(apiData.hasMore)
       } catch (err) {
         setError("Failed to fetch posts")
       }

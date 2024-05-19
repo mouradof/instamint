@@ -2,8 +2,10 @@ import { Hono } from "hono"
 import { z } from "zod"
 import { zValidator } from "@hono/zod-validator"
 import { idValidator } from "../validators.js"
+import { HTTP_STATUS_CODES, HTTP_ERRORS } from "../../errors.js"
+import LikeModel from "../../db/models/LikeModel.js"
 
-const prepareRoutesLike = ({ app, db }) => {
+const prepareRoutesLike = ({ app }) => {
   const likeData = new Hono()
 
   const likeSchema = z.object({
@@ -16,13 +18,17 @@ const prepareRoutesLike = ({ app, db }) => {
     const userId = c.req.valid("param").userId
 
     try {
-      const existingLike = await db.table("likes").where({ postId, userId }).first()
+      const existingLike = await LikeModel.query().where({ postId, userId }).first()
 
-      return c.json({ success: true, isLiked: Boolean(existingLike) })
+      return c.json({ success: true, isLiked: Boolean(existingLike) }, HTTP_STATUS_CODES.OK)
     } catch (error) {
-      c.status(500)
-
-      return c.json({ success: false, message: `Error checking like status for post ${postId}: ${error.message}` })
+      return c.json(
+        {
+          success: false,
+          message: `${HTTP_ERRORS.LIKE_STATUS_ERROR} ${postId}: ${error.message}`
+        },
+        HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR
+      )
     }
   })
 
@@ -30,13 +36,24 @@ const prepareRoutesLike = ({ app, db }) => {
     const postId = c.req.valid("param").postId
 
     try {
-      const likeCount = await db.table("likes").where({ postId }).count("* as likeCount")
+      const likeCount = await LikeModel.query().where({ postId }).count("* as likeCount")
 
-      return c.json({ success: true, postId, likeCount: likeCount[0].likeCount })
+      return c.json(
+        {
+          success: true,
+          postId,
+          likeCount: likeCount[0].likeCount
+        },
+        HTTP_STATUS_CODES.OK
+      )
     } catch (error) {
-      c.status(500)
-
-      return c.json({ success: false, message: `Error retrieving like count for post ${postId}: ${error.message}` })
+      return c.json(
+        {
+          success: false,
+          message: `${HTTP_ERRORS.RETRIEVE_LIKE_COUNT_ERROR} ${postId}: ${error.message}`
+        },
+        HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR
+      )
     }
   })
 
@@ -44,34 +61,74 @@ const prepareRoutesLike = ({ app, db }) => {
     const postId = c.req.valid("param").postId
     const userId = c.req.valid("param").userId
 
-    const existingLike = await db.table("likes").where({ postId, userId }).first()
+    try {
+      const existingLike = await LikeModel.query().where({ postId, userId }).first()
 
-    if (existingLike) {
-      c.status(404)
+      if (existingLike) {
+        return c.json(
+          {
+            success: false,
+            message: HTTP_ERRORS.ALREADY_LIKED
+          },
+          HTTP_STATUS_CODES.NOT_FOUND
+        )
+      }
 
-      return c.json({ success: false, message: "You have already liked this post" })
+      await LikeModel.query().insert({ postId, userId })
+
+      return c.json(
+        {
+          success: true,
+          message: HTTP_ERRORS.LIKE_ADDED
+        },
+        HTTP_STATUS_CODES.OK
+      )
+    } catch (error) {
+      return c.json(
+        {
+          success: false,
+          message: `${HTTP_ERRORS.LIKE_STATUS_ERROR} ${postId}: ${error.message}`
+        },
+        HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR
+      )
     }
-
-    await db.table("likes").insert({ postId, userId })
-
-    return c.json({ success: true, message: "Like added to post" })
   })
 
   likeData.delete("/post/like/:postId/:userId", zValidator("param", likeSchema), async c => {
     const postId = c.req.valid("param").postId
     const userId = c.req.valid("param").userId
 
-    const existingLike = await db.table("likes").where({ postId, userId }).first()
+    try {
+      const existingLike = await LikeModel.query().where({ postId, userId }).first()
 
-    if (!existingLike) {
-      c.status(404)
+      if (!existingLike) {
+        return c.json(
+          {
+            success: false,
+            message: HTTP_ERRORS.NOT_LIKED
+          },
+          HTTP_STATUS_CODES.NOT_FOUND
+        )
+      }
 
-      return c.json({ success: false, message: "You have not liked this post" })
+      await LikeModel.query().where({ postId, userId }).delete()
+
+      return c.json(
+        {
+          success: true,
+          message: HTTP_ERRORS.LIKE_REMOVED
+        },
+        HTTP_STATUS_CODES.OK
+      )
+    } catch (error) {
+      return c.json(
+        {
+          success: false,
+          message: `${HTTP_ERRORS.LIKE_STATUS_ERROR} ${postId}: ${error.message}`
+        },
+        HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR
+      )
     }
-
-    await db.table("likes").where({ postId, userId }).delete()
-
-    return c.json({ success: true, message: "Like removed from post" })
   })
 
   app.route("/", likeData)

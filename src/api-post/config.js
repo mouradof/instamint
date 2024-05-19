@@ -15,6 +15,9 @@ const config = {
       digest: "sha512",
       pepper: process.env.SECURITY__PASSWORD__PEPPER
     }
+  },
+  cors: {
+    allowedOrigins: ["http://localhost:3000"]
   }
 }
 export default config

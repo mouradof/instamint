@@ -4,6 +4,7 @@ import { idValidator, stringValidator } from "../validators.js"
 import { zValidator } from "@hono/zod-validator"
 import FollowModel from "../../db/models/FollowModel.js"
 import PostModel from "../../db/models/PostModel.js"
+import { HTTP_STATUS_CODES, HTTP_ERRORS } from "../../errors.js"
 
 const prepareRoutesSubscribed = ({ app }) => {
   const subscribedData = new Hono()
@@ -22,37 +23,40 @@ const prepareRoutesSubscribed = ({ app }) => {
     async c => {
       try {
         const userId = c.req.valid("param").id
-        const page = parseInt(c.req.valid("query").page) || 0
+        const page = parseInt(c.req.valid("query").page, 10) || 0
 
         if (page < 0) {
-          c.status(400)
-
-          return c.json({
-            success: false,
-            message: "Invalid page number"
-          })
+          return c.json(
+            {
+              success: false,
+              message: HTTP_ERRORS.INVALID_PAGE_NUMBER
+            },
+            HTTP_STATUS_CODES.BAD_REQUEST
+          )
         }
 
         const followedUsers = await FollowModel.query().where("followerId", userId)
 
         if (followedUsers.length === 0) {
-          c.status(404)
-
-          return c.json({
-            success: false,
-            message: "No followed users"
-          })
+          return c.json(
+            {
+              success: false,
+              message: HTTP_ERRORS.NO_FOLLOWED_USERS
+            },
+            HTTP_STATUS_CODES.NOT_FOUND
+          )
         }
 
         const followedIds = followedUsers.map(user => user.followedId)
 
         if (followedIds.length === 0) {
-          c.status(404)
-
-          return c.json({
-            success: false,
-            message: "No followed ids"
-          })
+          return c.json(
+            {
+              success: false,
+              message: HTTP_ERRORS.NO_FOLLOWED_IDS
+            },
+            HTTP_STATUS_CODES.NOT_FOUND
+          )
         }
 
         const followedPosts = await PostModel.query()
@@ -69,28 +73,31 @@ const prepareRoutesSubscribed = ({ app }) => {
           .orderBy("posts.createdAt", "desc")
 
         if (followedPosts.length === 0) {
-          c.status(404)
-
-          return c.json({
-            success: false,
-            message: "No followed posts"
-          })
+          return c.json(
+            {
+              success: false,
+              message: HTTP_ERRORS.NO_FOLLOWED_POSTS
+            },
+            HTTP_STATUS_CODES.NOT_FOUND
+          )
         }
 
-        c.status(200)
-
-        return c.json({
-          success: true,
-          result: followedPosts,
-          hasMore: followedPosts.length > 10
-        })
+        return c.json(
+          {
+            success: true,
+            result: followedPosts,
+            hasMore: followedPosts.length > 10
+          },
+          HTTP_STATUS_CODES.OK
+        )
       } catch (error) {
-        c.status(500)
-
-        return c.json({
-          success: false,
-          message: `Failed to fetch posts: ${error}`
-        })
+        return c.json(
+          {
+            success: false,
+            message: `${HTTP_ERRORS.FETCH_POSTS_FAILED}: ${error.message}`
+          },
+          HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR
+        )
       }
     }
   )

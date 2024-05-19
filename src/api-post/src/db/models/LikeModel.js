@@ -5,6 +5,10 @@ import PostModel from "./PostModel.js"
 class LikeModel extends BaseModel {
   static tableName = "likes"
 
+  static get idColumn() {
+    return ["userId", "postId"]
+  }
+
   static get relationMappings() {
     return {
       user: {

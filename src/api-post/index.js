@@ -12,14 +12,26 @@ BaseModel.knex(db)
 
 const app = new Hono()
 app.use(logger())
-app.use(
-  cors({
-    origin: "*",
-    allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowHeaders: ["authorization", "content-type"],
-    credentials: true
-  })
-)
+
+const routesWithCors = [
+  "/post/for-you/:id",
+  "/post/subscribed/:id",
+  "/post/liked/:postId/:userId",
+  "/post/likes/:postId/:userId",
+  "/post/like/:postId/:userId"
+]
+
+routesWithCors.forEach(route => {
+  app.use(
+    route,
+    cors({
+      origin: config.cors.allowedOrigins,
+      allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+      allowHeaders: ["authorization", "content-type"],
+      credentials: true
+    })
+  )
+})
 
 prepareRoutes({ app, db })
 

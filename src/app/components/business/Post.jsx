@@ -3,8 +3,14 @@ import { ChatBubbleOvalLeftIcon, EllipsisHorizontalIcon } from "@heroicons/react
 import usePostInteractions from "../../hooks/usePostInteractions.jsx"
 import { formatDistanceToNow } from "date-fns"
 import Toast from "../common/Toast.jsx"
+// import useAppContext from "@/app/hooks/useContext.jsx"
 
 const Post = ({ postId, profileImage, username, createdAt, description, imageUrl }) => {
+  // This is not dead code, we only comment it out to avoid making too many requests to the bucket because we are limited to 20,000 requests in the free version
+  // const {
+  //   action: { getImagesBucket }
+  // } = useAppContext()
+
   const { isLiked, likeCount, toggleLike, error } = usePostInteractions(postId)
 
   const formattedTime = formatDistanceToNow(new Date(createdAt), {
@@ -13,6 +19,9 @@ const Post = ({ postId, profileImage, username, createdAt, description, imageUrl
 
   const mintIcon = "/images/mint.png"
   const mintIconSolid = "/images/mintSolid.png"
+
+  // const mintIcon = {getImagesBucket("mint.png")}
+  // const mintIconSolid = getImagesBucket("mintSolid.png")}
 
   return (
     <div className="border-b border-gray-200 px-4 py-4 bg-white">
