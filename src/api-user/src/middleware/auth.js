@@ -1,26 +1,34 @@
 import jwt from "jsonwebtoken"
 
-export function authMiddleware(req, res, next) {
-  const authHeader = req.headers.authorization
+async function authMiddleware(ctx, next) {
+  const authHeader = ctx.req.headers.get("authorization")
 
   if (!authHeader) {
-    return res.status(401).json({ message: "Authorization header is missing" })
+    ctx.status = 401
+
+    return ctx.json({ message: "Authorization header is missing" })
   }
 
   const token = authHeader.split(" ")[1]
 
   if (!token) {
-    return res.status(401).json({ message: "Auth token is not supplied" })
+    ctx.status = 401
+
+    return ctx.json({ message: "Auth token is not supplied" })
   }
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET)
-    req.userData = decoded
-    next()
+    ctx.req.userData = decoded
+    await next()
   } catch (error) {
-    return res.status(401).json({
+    ctx.status = 401
+
+    return ctx.json({
       message: "Auth failed",
       error: error.message
     })
   }
 }
+
+export { authMiddleware }

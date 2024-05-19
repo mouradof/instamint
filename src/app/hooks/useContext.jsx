@@ -10,6 +10,10 @@ import getLikedPostService from "@/app/services/posts/likedPostGet.mjs"
 import deleteLikePostService from "@/app/services/posts/likePostDelete.mjs"
 import postLikePostService from "@/app/services/posts/likePostPost.mjs"
 import getSubscribedPostService from "@/app/services/posts/subscribedPostGet.mjs"
+import getUserProfileService from "@/app/services/profile/getUserProfile.mjs"
+import updateUserProfileService from "@/app/services/profile/updateUserProfile.mjs"
+import changeUserPasswordService from "@/app/services/profile/changeUserPassword.mjs"
+import deleteUserProfileService from "@/app/services/profile/deleteUserProfile.mjs"
 
 const AppContext = createContext()
 
@@ -24,16 +28,26 @@ export const AppContextProvider = props => {
   }
 
   useEffect(() => {
-    const jwt = localStorage.getItem("instamint")
+    const storedJwt = localStorage.getItem("instamint") || localStorage.getItem("token")
 
-    if (!jwt) {
+    if (!storedJwt) {
       return
     }
 
-    const { payload } = decode(jwt)
+    try {
+      const { payload } = decode(storedJwt)
 
-    setSession(payload)
-    setJWT(jwt)
+      if (payload && payload.id) {
+        setSession(payload)
+        setJWT(storedJwt)
+      } else {
+        localStorage.removeItem("instamint")
+        localStorage.removeItem("token")
+      }
+    } catch (error) {
+      localStorage.removeItem("instamint")
+      localStorage.removeItem("token")
+    }
   }, [])
 
   const getUserTeabags = getUserTeabagsService({ apiClients })
@@ -44,6 +58,28 @@ export const AppContextProvider = props => {
   const getLikedPost = getLikedPostService({ apiClients })
   const deleteLikePost = deleteLikePostService({ apiClients })
   const postLikePost = postLikePostService({ apiClients })
+  const getUserProfile = getUserProfileService({ apiClients })
+  const updateUserProfile = updateUserProfileService({ apiClients })
+  const changePassword = changeUserPasswordService({ apiClients })
+  const deleteUserProfile = deleteUserProfileService({ apiClients })
+
+  const appContextValue = {
+    state: { session },
+    action: {
+      getUserTeabags,
+      createUserTeabag,
+      getUserProfile,
+      updateUserProfile,
+      changePassword,
+      deleteUserProfile,
+      getForyouPost,
+      getSubscribedPost,
+      getLikesPost,
+      getLikedPost,
+      deleteLikePost,
+      postLikePost
+    }
+  }
 
   if (!isPublicPage && session === null) {
     return (
@@ -53,26 +89,7 @@ export const AppContextProvider = props => {
     )
   }
 
-  return (
-    <AppContext.Provider
-      {...otherProps}
-      value={{
-        action: {
-          getUserTeabags,
-          createUserTeabag,
-          getForyouPost,
-          getSubscribedPost,
-          getLikesPost,
-          getLikedPost,
-          deleteLikePost,
-          postLikePost
-        },
-        state: {
-          session
-        }
-      }}
-    />
-  )
+  return <AppContext.Provider value={appContextValue} {...otherProps} />
 }
 
 const useAppContext = () => useContext(AppContext)
