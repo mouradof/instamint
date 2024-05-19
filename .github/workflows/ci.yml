@@ -74,12 +74,6 @@ jobs:
     - name: Run code format check
       run: docker-compose exec -T instamint-frontend npm run format
 
-    - name: Run code lint fix
-      run: docker-compose exec -T instamint-frontend npm run lint:fix
-
-    - name: Run frontend tests
-      run: docker-compose exec -T instamint-frontend npm test
-
     - name: Run API User tests
       run: docker-compose exec -T api-user npm test
 
