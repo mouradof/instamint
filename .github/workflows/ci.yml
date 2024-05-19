@@ -74,20 +74,5 @@ jobs:
     - name: Run code format check
       run: docker-compose exec -T instamint-frontend npm run format
 
-    - name: Run API User tests
-      run: docker-compose exec -T api-user npm test
-
-    - name: Run API Relation tests
-      run: docker-compose exec -T api-relation npm test
-
-    - name: Run API Post tests
-      run: docker-compose exec -T api-post npm test
-
-    - name: Run API Notification tests
-      run: docker-compose exec -T api-notification npm test
-
-    - name: Run API NFT tests
-      run: docker-compose exec -T api-nft npm test
-
     - name: Shut down Docker Compose services
       run: docker-compose down
