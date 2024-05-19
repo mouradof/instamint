@@ -13,7 +13,7 @@ export default function Home() {
 
       if (pageContainer) {
         pageContainer.classList.add("fadeOut")
-        setTimeout(() => router.push("/login"), 500)
+        setTimeout(() => router.push("/home"), 500)
       }
     }, 5000)
 

@@ -4,6 +4,12 @@ import { createContext, useContext, useEffect, useState } from "react"
 import { decode } from "hono/jwt"
 import createUserTeabagService from "@/app/services/teabags/teabagUserCreate.mjs"
 import getUserTeabagsService from "@/app/services/teabags/teabagsUserGet.mjs"
+import getForyouPostService from "@/app/services/posts/foryouPostGet.mjs"
+import getLikesPostService from "@/app/services/posts/likesPostGet.mjs"
+import getLikedPostService from "@/app/services/posts/likedPostGet.mjs"
+import deleteLikePostService from "@/app/services/posts/likePostDelete.mjs"
+import postLikePostService from "@/app/services/posts/likePostPost.mjs"
+import getSubscribedPostService from "@/app/services/posts/subscribedPostGet.mjs"
 import getUserProfileService from "@/app/services/profile/getUserProfile.mjs"
 import updateUserProfileService from "@/app/services/profile/updateUserProfile.mjs"
 import changeUserPasswordService from "@/app/services/profile/changeUserPassword.mjs"
@@ -46,6 +52,12 @@ export const AppContextProvider = props => {
 
   const getUserTeabags = getUserTeabagsService({ apiClients })
   const createUserTeabag = createUserTeabagService({ apiClients })
+  const getForyouPost = getForyouPostService({ apiClients })
+  const getSubscribedPost = getSubscribedPostService({ apiClients })
+  const getLikesPost = getLikesPostService({ apiClients })
+  const getLikedPost = getLikedPostService({ apiClients })
+  const deleteLikePost = deleteLikePostService({ apiClients })
+  const postLikePost = postLikePostService({ apiClients })
   const getUserProfile = getUserProfileService({ apiClients })
   const updateUserProfile = updateUserProfileService({ apiClients })
   const changePassword = changeUserPasswordService({ apiClients })
@@ -59,7 +71,13 @@ export const AppContextProvider = props => {
       getUserProfile,
       updateUserProfile,
       changePassword,
-      deleteUserProfile
+      deleteUserProfile,
+      getForyouPost,
+      getSubscribedPost,
+      getLikesPost,
+      getLikedPost,
+      deleteLikePost,
+      postLikePost
     }
   }
 

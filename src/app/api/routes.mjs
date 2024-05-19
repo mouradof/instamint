@@ -22,6 +22,17 @@ const routes = {
   apiUser: {
     profile: userId => `/api/user/${userId}`, // Utilisez "/api" comme base
     updateProfile: userId => `/api/user/${userId}/update`
+  },
+  apiPost: {
+    post: {
+      forYou: (idUser, page) => createRouteWithQueryParams(`/post/for-you/${idUser}?page=${page}`),
+      subscribed: (idUser, page) => createRouteWithQueryParams(`/post/subscribed/${idUser}?page=${page}`)
+    },
+    like: {
+      likes: (postId, idUser) => createRouteWithQueryParams(`/post/likes/${postId}/${idUser}`),
+      like: (postId, idUser) => createRouteWithQueryParams(`/post/like/${postId}/${idUser}`),
+      liked: (postId, idUser) => createRouteWithQueryParams(`/post/liked/${postId}/${idUser}`)
+    }
   }
 }
 

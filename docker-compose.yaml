@@ -39,7 +39,7 @@ services:
   api-post:
     build: ./src/api-post
     ports:
-      - "4002:4000"
+      - "4002:4002"
     environment:
       DATABASE_URL: ${DATABASE_URL}
     volumes:
