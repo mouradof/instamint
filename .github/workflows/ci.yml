@@ -42,6 +42,11 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-buildx-
 
+    - name: Stop and remove all containers
+      run: |
+        docker ps -q | xargs -r docker stop
+        docker ps -a -q | xargs -r docker rm
+
     - name: Build and run Docker Compose services
       env:
         POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
