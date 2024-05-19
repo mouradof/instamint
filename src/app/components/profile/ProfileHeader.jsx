@@ -45,6 +45,9 @@ const ProfileHeader = ({ user }) => {
               <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={handleDeleteAccountRedirect}>
                 Delete Account
               </li>
+              <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={() => router.push("/logout/logout")}>
+                Logout
+              </li>
             </ul>
           </div>
         )}

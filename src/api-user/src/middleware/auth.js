@@ -1,10 +1,10 @@
-const jwt = require("jsonwebtoken")
+import jwt from "jsonwebtoken"
 
 async function authMiddleware(ctx, next) {
   const authHeader = ctx.req.headers.get("authorization")
 
   if (!authHeader) {
-    ctx.status(401)
+    ctx.status = 401
 
     return ctx.json({ message: "Authorization header is missing" })
   }
@@ -12,7 +12,7 @@ async function authMiddleware(ctx, next) {
   const token = authHeader.split(" ")[1]
 
   if (!token) {
-    ctx.status(401)
+    ctx.status = 401
 
     return ctx.json({ message: "Auth token is not supplied" })
   }
@@ -22,7 +22,7 @@ async function authMiddleware(ctx, next) {
     ctx.req.userData = decoded
     await next()
   } catch (error) {
-    ctx.status(401)
+    ctx.status = 401
 
     return ctx.json({
       message: "Auth failed",
@@ -31,4 +31,4 @@ async function authMiddleware(ctx, next) {
   }
 }
 
-module.exports = { authMiddleware }
+export { authMiddleware }

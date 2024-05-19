@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react"
-
 import { useRouter } from "next/router"
 import Link from "next/link"
 import styles from "../../app/styles/Login.module.css"
@@ -9,6 +8,7 @@ const Login = () => {
   const [password, setPassword] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [verifiedMessage, setVerifiedMessage] = useState("")
+  const [errorMessage, setErrorMessage] = useState("")
   const router = useRouter()
 
   useEffect(() => {
@@ -34,11 +34,16 @@ const Login = () => {
         const data = await response.json()
         alert("Vous êtes connecté")
         localStorage.setItem("user", JSON.stringify(data.user))
-        localStorage.setItem("token", data.token) // Assurez-vous que le token est bien stocké sous la clé "token"
+        localStorage.setItem("token", data.token)
         router.push(`/profile/${data.user.id}`)
       } else {
         const error = await response.json()
-        alert(error.message || "Erreur de connexion")
+
+        if (error.message === "Account has been deleted due to inactivity") {
+          setErrorMessage("Your account has been deleted due to 30 days of inactivity. Please register again.")
+        } else {
+          setErrorMessage(error.message || "Erreur de connexion")
+        }
       }
     } catch (error) {
       alert("Erreur réseau")
@@ -51,6 +56,7 @@ const Login = () => {
     <div className={styles.pageContainer}>
       <img className={styles.logo} src="/images/logo-Instamint.png" />
       {verifiedMessage && <div className={styles.verifiedMessage}>{verifiedMessage}</div>}
+      {errorMessage && <div className={styles.errorMessage}>{errorMessage}</div>}
 
       <form onSubmit={handleSubmit}>
         <div>

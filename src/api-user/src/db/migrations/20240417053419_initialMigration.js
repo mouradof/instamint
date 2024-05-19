@@ -12,6 +12,7 @@ export const up = async knex => {
     table.integer("following").defaultTo(0)
     table.string("profileImage", 255).defaultTo("/images/default-profile-picture.jpg")
     table.string("coverImage", 255).defaultTo("/images/default-cover-picture.jpg")
+    table.timestamp("lastLoginDate").defaultTo(knex.fn.now())
   })
 }
 
