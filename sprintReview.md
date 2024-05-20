@@ -52,6 +52,8 @@
 
 ---
 
+# Sprint Review
+
 ## Basic Information
 
 - **Sprint:** 1
@@ -113,6 +115,8 @@
 
 ---
 
+# Sprint Review
+
 ## Basic Information
 
 - **Sprint:** 1
@@ -128,7 +132,7 @@
 
 ### Completed Features
 
--
+- 
 
 ### Unfinished Features
 
@@ -140,13 +144,13 @@
 - **Challenges:**
   - Having no real back-end experience, my challenge was to implement a back-end feature from A to Z.
 - **Blockages:**
-  - Make the backEnd - frontEnd connection, install and understand how the project works properly
+  - Make the BackEnd - FrontEnd connection, install and understand how the project works properly
   - I had problems with NextJs
 
 ## Feedback and Discussion
 
 - **General Discussion on Achievements and Challenges**
-  - Participants will discuss potential solutions to the encountered blockages, particularly regarding How micro-service works and its subtleties
+  - Participants will discuss potential solutions to the encountered blockages, particularly regarding how micro-service works and its subtleties.
 
 ## Action Plan
 
@@ -159,3 +163,68 @@
   Normally, I'll be able to manage my time better during the next sprint and get the work done on time.
 
 ---
+
+# Sprint 2
+
+## Basic Information
+
+- **Sprint:** 2
+- **Review Date:** 05/20
+- **Participants:** HADJRES Mourad
+
+## Sprint Goals
+
+- Fix all Docker-related issues.
+- Update and add another Makefile, fixing problems when launching migration and API with the same host.
+- Update middleware for hono signature.
+- Redirect to login when email is confirmed.
+- Style login and register pages.
+- Add restrictions for password and email.
+- Create an introduction for launching the app.
+- Add CI, running app containers, execute linter, and prepare for adding tests for the backend.
+- Change DockerFile, add MakeFile, update scripts in package.json, Knex config, and simplify migrations.
+- Add a general script in Makefile to launch the app (containers, migrations, seed) with one command ('make run').
+- Fix header and footer on all pages, adjust HomePage height.
+- Add search functionality for both front and back end.
+
+## Deliverables
+
+### Completed Features
+
+1. **Fix Docker Problems**
+   - **Description:** Resolved all issues related to Docker configuration and setup.
+2. **API User Update**
+   - **Description:** Updated and added a new Makefile, fixed migration and API host issues, updated middleware, added redirection after email confirmation, styled login and register pages, added password and email restrictions, and created an introduction for launching the app.
+3. **Continuous Integration**
+   - **Description:** Implemented CI, running app containers, executing linter, and prepared backend tests.
+4. **API Post and Update**
+   - **Description:** Updated DockerFile, added MakeFile, updated package.json scripts, Knex config, and simplified migrations. Added a general script in Makefile for launching the app, fixed headers and footers on all pages, and adjusted HomePage height.
+5. **Search Functionality**
+   - **Description:** Added search functionality for both front and back end.
+
+### Unfinished Features
+
+- **Advanced Security Features for User Authentication**
+  - **Description:** Further enhancements in security features and integration of more robust authentication mechanisms were planned but not completed.
+
+## Challenges and Blockages
+
+- **Challenges:**
+  - Adapting Docker configurations to new service requirements and ensuring compatibility with existing codebase and tools like Knex.
+- **Blockages:**
+  - Some issues with environment-specific settings in Docker causing delays in CI workflow stability.
+
+## Feedback and Discussion
+
+- **General Discussion on Achievements and Challenges**
+  - Participants will discuss the effectiveness of Docker integration and the CI/CD pipeline. Feedback on documentation clarity and the need for additional security measures in user authentication will be addressed.
+
+## Action Plan
+
+- Continue refining Docker setups to ensure environment-specific configurations are robust and flexible.
+- Expand security features in the user authentication process.
+- Address any pending CI/CD pipeline issues to enhance deployment efficiency.
+
+## Conclusion
+
+- The sprint successfully enhanced project setup, documentation, and user authentication features, laying a solid foundation for further development. The introduction of a CI workflow marks a significant step towards ensuring code quality and security, setting the stage for future enhancements.
