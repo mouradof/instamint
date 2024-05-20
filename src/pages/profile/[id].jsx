@@ -23,13 +23,18 @@ const ProfilePage = () => {
     const fetchUserData = async () => {
       try {
         const userId = router.query.id
-        const [error, data] = await getUserProfile({ userId })
 
-        if (error) {
-          throw new Error(error)
+        if (!userId) {
+          return
         }
 
-        setUser(data)
+        const [profileError, profileData] = await getUserProfile({ userId })
+
+        if (profileError) {
+          throw new Error(profileError)
+        }
+
+        setUser(profileData)
 
         const [postsError, postsData] = await getUserPosts({ userId })
 

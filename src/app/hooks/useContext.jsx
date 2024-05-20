@@ -41,13 +41,24 @@ export const AppContextProvider = props => {
       if (payload && payload.id) {
         setSession(payload)
         setJWT(storedJwt)
+        localStorage.setItem("session", JSON.stringify(payload))
       } else {
         localStorage.removeItem("instamint")
         localStorage.removeItem("token")
+        localStorage.removeItem("session")
       }
     } catch (error) {
       localStorage.removeItem("instamint")
       localStorage.removeItem("token")
+      localStorage.removeItem("session")
+    }
+  }, [])
+
+  useEffect(() => {
+    const storedSession = localStorage.getItem("session")
+
+    if (storedSession) {
+      setSession(JSON.parse(storedSession))
     }
   }, [])
 
