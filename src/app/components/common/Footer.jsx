@@ -7,12 +7,23 @@ import {
   UserCircleIcon as UserCircleIconSolid
 } from "@heroicons/react/24/solid"
 import { useRouter } from "next/router"
+import useAppContext from "../../hooks/useContext"
 
 const Footer = ({ toggleSearch }) => {
   const router = useRouter()
+  const { state } = useAppContext()
+  const { session } = state
 
   const navigate = page => {
     router.push(`/${page}`)
+  }
+
+  const navigateToProfile = () => {
+    if (session?.id) {
+      router.push(`/profile/${session.id}`)
+    } else {
+      router.push("/login")
+    }
   }
 
   return (
@@ -39,8 +50,8 @@ const Footer = ({ toggleSearch }) => {
             <UserGroupIcon className="h-7 w-7 text-gray-500" />
           )}
         </button>
-        <button onClick={() => navigate("profile")}>
-          {router.pathname === "/profile" ? (
+        <button onClick={navigateToProfile}>
+          {router.pathname.startsWith("/profile") ? (
             <UserCircleIconSolid className="h-7 w-7 text-green-500" />
           ) : (
             <UserCircleIcon className="h-7 w-7 text-gray-500" />
