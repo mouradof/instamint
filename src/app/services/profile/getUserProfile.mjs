@@ -2,7 +2,7 @@ import routes from "@/app/api/routes.mjs"
 
 const getUserProfile =
   ({ apiClients }) =>
-  async ({ userId }) => {
+  async ({ userId, search }) => {
     if (!apiClients) {
       throw new Error("apiClients is not defined yet")
     }
@@ -13,10 +13,22 @@ const getUserProfile =
       throw new Error("apiUser is not defined or not a function")
     }
 
-    userId = parseInt(userId)
-
     try {
-      const { data } = await apiUser.get(routes.apiUser.profile(userId))
+      let data
+
+      if (userId) {
+        userId = parseInt(userId)
+
+        if (isNaN(userId)) {
+          throw new Error("Invalid user ID")
+        }
+
+        ;({ data } = await apiUser.get(routes.apiUser.profile(userId)))
+      } else if (search) {
+        ;({ data } = await apiUser.get(routes.apiUser.search(search)))
+      } else {
+        throw new Error("Either userId or search must be provided")
+      }
 
       return [null, data]
     } catch (err) {

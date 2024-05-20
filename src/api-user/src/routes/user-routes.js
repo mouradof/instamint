@@ -20,6 +20,22 @@ userRoutes.get("/:id", async c => {
   }
 })
 
+userRoutes.get("/search/:name", async c => {
+  const name = c.req.param("name").toLowerCase()
+
+  try {
+    const users = await UserModel.query().whereRaw("LOWER(username) LIKE ?", [`${name}%`])
+
+    if (users.length === 0) {
+      return c.json({ message: "No users found" }, 404)
+    }
+
+    return c.json(users, 200)
+  } catch (error) {
+    return c.json({ message: "Error fetching users", error: error.message }, 500)
+  }
+})
+
 userRoutes.put("/:id/change-password", async c => {
   const id = c.req.param("id")
   const { oldPassword, newPassword } = await c.req.json()
