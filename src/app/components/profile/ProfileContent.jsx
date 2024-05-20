@@ -24,7 +24,7 @@ const ProfileContent = ({ user, posts, readOnly }) => {
         <div className="flex flex-col items-start mr-8">
           <img src={user.profileImage} alt="Profile" className="h-24 w-24 rounded-full border-4 border-white" />
         </div>
-        <div className="flex-grow flex justify-around">
+        <div className="flex-grow flex justify-around mt-6">
           <div className="flex flex-col items-center">
             <span className="font-bold text-lg" title={postsCount}>
               {formatNumber(postsCount)}
