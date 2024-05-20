@@ -1,5 +1,6 @@
 import React from "react"
 import Post from "@/app/components/business/Post.jsx"
+import { useRouter } from "next/router"
 
 const formatNumber = num => {
   if (num >= 1000000000) {
@@ -13,11 +14,12 @@ const formatNumber = num => {
   return num.toString()
 }
 
-const ProfileContent = ({ user, posts }) => {
+const ProfileContent = ({ user, posts, readOnly }) => {
   const postsCount = posts.length
+  const router = useRouter()
 
   return (
-    <div className="w-3/4 mt-4 px-4 flex flex-col items-start">
+    <div className="mt-4 px-4 flex flex-col items-start" style={{ padding: "10px" }}>
       <div className="flex w-full">
         <div className="flex flex-col items-start mr-8">
           <img src={user.profileImage} alt="Profile" className="h-24 w-24 rounded-full border-4 border-white" />
@@ -47,6 +49,26 @@ const ProfileContent = ({ user, posts }) => {
         <div className="mt-2">
           <div className="text-xl font-bold">{user.username}</div>
           <div className="text-sm text-gray-600">{user.bio || "No bio provided."}</div>
+        </div>
+        <div className="mt-4 flex space-x-2">
+          {!readOnly ? (
+            <>
+              <button
+                className="bg-gray-300 text-gray-800 py-2 px-4 rounded"
+                onClick={() => router.push("/profile/editProfile")}
+              >
+                Edit Profile
+              </button>
+              <button className="bg-gray-300 text-gray-800 py-2 px-4 rounded">Share Profile</button>
+            </>
+          ) : (
+            <>
+              <button className="text-white py-2 px-4 rounded" style={{ backgroundColor: "#16502d" }}>
+                Follow
+              </button>
+              <button className="bg-gray-300 text-gray-800 py-2 px-4 rounded">Message</button>
+            </>
+          )}
         </div>
       </div>
       <hr className="w-full mt-4" />
