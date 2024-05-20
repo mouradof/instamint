@@ -1,4 +1,5 @@
 import React from "react"
+import Post from "@/app/components/business/Post.jsx"
 
 const formatNumber = num => {
   if (num >= 1000000000) {
@@ -12,8 +13,8 @@ const formatNumber = num => {
   return num.toString()
 }
 
-const ProfileContent = ({ user }) => {
-  const postsCount = user.posts || 50
+const ProfileContent = ({ user, posts }) => {
+  const postsCount = posts.length
 
   return (
     <div className="w-3/4 mt-4 px-4 flex flex-col items-start">
@@ -49,6 +50,19 @@ const ProfileContent = ({ user }) => {
         </div>
       </div>
       <hr className="w-full mt-4" />
+      <div className="mt-4 w-full">
+        {posts.map(post => (
+          <Post
+            key={post.id}
+            postId={post.id}
+            username={user.username}
+            createdAt={post.createdAt}
+            description={post.description}
+            imageUrl={post.imageUrl}
+            profileImage={user.profileImage}
+          />
+        ))}
+      </div>
     </div>
   )
 }

@@ -14,6 +14,7 @@ import getUserProfileService from "@/app/services/profile/getUserProfile.mjs"
 import updateUserProfileService from "@/app/services/profile/updateUserProfile.mjs"
 import changeUserPasswordService from "@/app/services/profile/changeUserPassword.mjs"
 import deleteUserProfileService from "@/app/services/profile/deleteUserProfile.mjs"
+import getUserPostsService from "@/app/services/posts/getUserPosts.mjs"
 
 const AppContext = createContext()
 
@@ -62,6 +63,7 @@ export const AppContextProvider = props => {
   const updateUserProfile = updateUserProfileService({ apiClients })
   const changePassword = changeUserPasswordService({ apiClients })
   const deleteUserProfile = deleteUserProfileService({ apiClients })
+  const getUserPosts = getUserPostsService({ apiClients })
 
   const appContextValue = {
     state: { session },
@@ -77,7 +79,8 @@ export const AppContextProvider = props => {
       getLikesPost,
       getLikedPost,
       deleteLikePost,
-      postLikePost
+      postLikePost,
+      getUserPosts
     }
   }
 

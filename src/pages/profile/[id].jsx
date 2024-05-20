@@ -6,10 +6,11 @@ import useAppContext from "@/app/hooks/useContext.jsx"
 
 const ProfilePage = () => {
   const [user, setUser] = useState(null)
+  const [userPosts, setUserPosts] = useState([])
   const router = useRouter()
   const {
     state: { session },
-    action: { getUserProfile }
+    action: { getUserProfile, getUserPosts }
   } = useAppContext()
 
   useEffect(() => {
@@ -29,13 +30,21 @@ const ProfilePage = () => {
         }
 
         setUser(data)
+
+        const [postsError, postsData] = await getUserPosts({ userId })
+
+        if (postsError) {
+          throw new Error(postsError)
+        }
+
+        setUserPosts(postsData)
       } catch (err) {
         router.push("/login")
       }
     }
 
     fetchUserData()
-  }, [session, router.query.id, getUserProfile, router])
+  }, [session, router.query.id, getUserProfile, getUserPosts, router])
 
   if (!session) {
     return (
@@ -50,7 +59,7 @@ const ProfilePage = () => {
       {user ? (
         <>
           <ProfileHeader user={user} />
-          <ProfileContent user={user} />
+          <ProfileContent user={user} posts={userPosts} />
         </>
       ) : (
         <p>Loading...</p>

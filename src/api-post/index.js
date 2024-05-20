@@ -6,12 +6,22 @@ import knex from "knex"
 import BaseModel from "./src/db/models/BaseModel.js"
 import config from "./config.js"
 import prepareRoutes from "./prepareRoutes.js"
+import postRoutes from "./src/routes/posts.js"
 
 const db = knex(config.db)
 BaseModel.knex(db)
 
 const app = new Hono()
 app.use(logger())
+
+const corsMiddleware = cors({
+  origin: config.cors.allowedOrigins,
+  allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowHeaders: ["authorization", "content-type"],
+  credentials: true
+})
+
+app.use("*", corsMiddleware)
 
 const routesWithCors = [
   "/post/for-you/:id",
@@ -22,18 +32,12 @@ const routesWithCors = [
 ]
 
 routesWithCors.forEach(route => {
-  app.use(
-    route,
-    cors({
-      origin: config.cors.allowedOrigins,
-      allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-      allowHeaders: ["authorization", "content-type"],
-      credentials: true
-    })
-  )
+  app.use(route, corsMiddleware)
 })
 
 prepareRoutes({ app, db })
+
+app.route("/post", postRoutes)
 
 serve({
   fetch: app.fetch,
