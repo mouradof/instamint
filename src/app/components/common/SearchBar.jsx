@@ -1,4 +1,5 @@
 import React, { useState } from "react"
+import { useRouter } from "next/router"
 import { MagnifyingGlassIcon as MagnifyingGlassIconSolid } from "@heroicons/react/24/solid"
 import useAppContext from "@/app/hooks/useContext.jsx"
 
@@ -9,6 +10,7 @@ const Search = ({ toggleSearch }) => {
     state: { session },
     action: { getUserProfile }
   } = useAppContext()
+  const router = useRouter()
 
   const handleSearch = async e => {
     const { value } = e.target
@@ -37,6 +39,11 @@ const Search = ({ toggleSearch }) => {
     }
   }
 
+  const handleProfileClick = userId => {
+    toggleSearch()
+    router.push(`/user/${userId}`)
+  }
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-filter backdrop-blur-lg">
       <div className="relative max-w-md mx-auto bg-white rounded-lg z-50" style={{ width: "80%" }}>
@@ -53,7 +60,11 @@ const Search = ({ toggleSearch }) => {
         {suggestions.length > 0 && (
           <div className="absolute top-full mt-1 w-full bg-white shadow-lg rounded z-50">
             {suggestions.map(user => (
-              <div key={user.id} className="flex items-center p-2 border-b last:border-b-0">
+              <div
+                key={user.id}
+                className="flex items-center p-2 border-b last:border-b-0 cursor-pointer"
+                onClick={() => handleProfileClick(user.id)}
+              >
                 <img src={user.profileImage} alt={user.username} className="h-8 w-8 rounded-full" />
                 <span className="ml-2">{user.username}</span>
               </div>
