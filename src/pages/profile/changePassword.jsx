@@ -46,6 +46,18 @@ const ChangePassword = () => {
       return
     }
 
+    const passwordRegex = /^(?=.*[A-Z])(?=.*[!@#$%^&*])(?=.{8,})/
+
+    if (!passwordRegex.test(passwords.newPassword)) {
+      setMessage({
+        text: "Password must be at least 8 characters long, contain 1 uppercase letter and 1 symbol.",
+        type: "error"
+      })
+      setLoading(false)
+
+      return
+    }
+
     try {
       const [error, response] = await changePassword({
         idUser: session.id,
