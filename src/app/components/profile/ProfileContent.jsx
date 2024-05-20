@@ -45,12 +45,12 @@ const ProfileContent = ({ user, posts, readOnly }) => {
           </div>
         </div>
       </div>
-      <div className="flex flex-col items-start mr-8">
+      <div className="flex flex-col items-start w-full">
         <div className="mt-2">
           <div className="text-xl font-bold">{user.username}</div>
           <div className="text-sm text-gray-600">{user.bio || "No bio provided."}</div>
         </div>
-        <div className="mt-4 flex space-x-2">
+        <div className="mt-4 flex justify-center w-full space-x-2">
           {!readOnly ? (
             <>
               <button
