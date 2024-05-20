@@ -8,7 +8,7 @@ import {
 } from "@heroicons/react/24/solid"
 import { useRouter } from "next/router"
 
-const Footer = () => {
+const Footer = ({ toggleSearch }) => {
   const router = useRouter()
 
   const navigate = page => {
@@ -25,7 +25,7 @@ const Footer = () => {
             <HomeIcon className="h-7 w-7 text-gray-500" />
           )}
         </button>
-        <button onClick={() => navigate("search")}>
+        <button onClick={toggleSearch}>
           {router.pathname === "/search" ? (
             <MagnifyingGlassIconSolid className="h-7 w-7 text-green-500" />
           ) : (

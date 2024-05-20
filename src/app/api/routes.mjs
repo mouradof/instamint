@@ -20,8 +20,9 @@ const routes = {
     }
   },
   apiUser: {
-    profile: userId => `/api/user/${userId}`, // Utilisez "/api" comme base
-    updateProfile: userId => `/api/user/${userId}/update`
+    profile: userId => `/api/user/${userId}`,
+    updateProfile: userId => `/api/user/${userId}/update`,
+    search: search => createRouteWithQueryParams(`/api/user/search/${search}`)
   },
   apiPost: {
     post: {

@@ -32,7 +32,6 @@ const Login = () => {
 
       if (response.ok) {
         const data = await response.json()
-        alert("Vous êtes connecté")
         localStorage.setItem("user", JSON.stringify(data.user))
         localStorage.setItem("token", data.token)
         router.push(`/profile/${data.user.id}`)
@@ -45,8 +44,6 @@ const Login = () => {
           setErrorMessage(error.message || "Erreur de connexion")
         }
       }
-    } catch (error) {
-      alert("Erreur réseau")
     } finally {
       setIsLoading(false)
     }
