@@ -7,7 +7,10 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js",
-    "dev": "nodemon index.js"
+    "dev": "nodemon --legacy-watch index.js",
+    "migrate": "KNEX_CONTEXT=migration knex migrate:latest",
+    "rollback": "KNEX_CONTEXT=migration knex migrate:rollback",
+    "seed": "KNEX_CONTEXT=migration knex seed:run"
   },
   "author": "",
   "license": "ISC",

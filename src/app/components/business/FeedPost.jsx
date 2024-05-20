@@ -73,7 +73,7 @@ const Feed = ({ type }) => {
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white" style={{ marginTop: "100px" }}>
       {error && <Toast message={error} isSuccess={false} />}
       <InfiniteScroll dataLength={posts.length} next={fetchMorePosts} hasMore={hasMore}>
         {posts.map(post => (

@@ -17,5 +17,5 @@ export const up = async knex => {
 }
 
 export const down = async knex => {
-  await knex.schema.dropTableIfExists("users")
+  await knex.raw('DROP TABLE IF EXISTS "users" CASCADE')
 }
