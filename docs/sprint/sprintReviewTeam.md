@@ -228,3 +228,57 @@
 ## Conclusion
 
 - The sprint successfully enhanced project setup, documentation, and user authentication features, laying a solid foundation for further development. The introduction of a CI workflow marks a significant step towards ensuring code quality and security, setting the stage for future enhancements.
+
+---
+# Sprint 2
+
+## Basic Information
+
+- **Sprint:** 2
+- **Review Date:** 20/05/2024
+- **Participants:** Yani Haouili
+
+## Sprint Goals
+
+- Improve session management and user experience on the profile page
+- Enhance security features related to user sessions and data management
+- Introduce new profile customization options
+
+## Deliverables
+
+### Completed Features
+
+1. **Session Management Enhancements**
+   - **Description:** Implemented persistent sessions to maintain user connectivity even after refreshing the page. Included logout functionalities to securely disconnect users.
+2. **Profile Page Improvements**
+   - **Description:** Updated the profile page with fixes and style adjustments for a better user experience. Added functionalities to display user posts and manage profile editing more effectively.
+3. **Profile Deletion and Editing**
+   - **Description:** Introduced a feature for automatic profile deletion after 30 days of inactivity to maintain database integrity. Enhanced the profile editing process to be more user-friendly.
+4. **Customization Options**
+   - **Description:** Provided options for users to choose either a default or random profile and cover photos, allowing for greater personalization.
+
+### Unfinished Features
+
+- **Profile and Cover Photo Selection**
+  - **Description:** The full integration of the profile and cover photo selection feature is still in progress and needs to be completed in the next sprint.
+
+## Challenges and Blockages
+
+- **Challenges:**
+  - Implementing comprehensive session management that remains stable across different user actions and page refreshes.
+- **Blockages:**
+  - Delays in API availability hindered progress on features related to post management on user profiles.
+
+## Feedback and Discussion
+
+- **General Discussion on Achievements and Challenges**
+  - The participants reviewed the improvements made in session stability and user interface enhancements. Discussion also covered the delays caused by API availability issues, affecting timely feature completions.
+
+## Action Plan
+
+- Finalize the integration of profile and cover photo selections to ensure all profile customization features are functional.
+- Continue to improve the backend APIs to support stable and efficient data retrieval and management for user profiles.
+
+## Conclusion
+
+- The second sprint focused on refining user interaction with the profile page and enhancing security and personalization features. While significant progress was made, the need to address API availability and complete pending features remains a priority for the next sprint.
