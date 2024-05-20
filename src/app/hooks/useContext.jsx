@@ -10,6 +10,7 @@ import getLikedPostService from "@/app/services/posts/likedPostGet.mjs"
 import deleteLikePostService from "@/app/services/posts/likePostDelete.mjs"
 import postLikePostService from "@/app/services/posts/likePostPost.mjs"
 import getSubscribedPostService from "@/app/services/posts/subscribedPostGet.mjs"
+import postReportPostService from "@/app/services/posts/reportPostPost.mjs"
 import getUserProfileService from "@/app/services/profile/getUserProfile.mjs"
 import updateUserProfileService from "@/app/services/profile/updateUserProfile.mjs"
 import changeUserPasswordService from "@/app/services/profile/changeUserPassword.mjs"
@@ -70,6 +71,7 @@ export const AppContextProvider = props => {
   const getLikedPost = getLikedPostService({ apiClients })
   const deleteLikePost = deleteLikePostService({ apiClients })
   const postLikePost = postLikePostService({ apiClients })
+  const postReportPost = postReportPostService({ apiClients })
   const getUserProfile = getUserProfileService({ apiClients })
   const updateUserProfile = updateUserProfileService({ apiClients })
   const changePassword = changeUserPasswordService({ apiClients })
@@ -91,7 +93,8 @@ export const AppContextProvider = props => {
       getLikedPost,
       deleteLikePost,
       postLikePost,
-      getUserPosts
+      getUserPosts,
+      postReportPost
     }
   }
 

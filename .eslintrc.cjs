@@ -4,7 +4,8 @@ module.exports = {
   plugins: ["react", "react-hooks"],
   env: {
     es2022: true,
-    node: true
+    node: true,
+    browser: true
   },
   parserOptions: {
     sourceType: "module"

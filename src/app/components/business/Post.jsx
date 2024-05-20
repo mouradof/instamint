@@ -1,8 +1,10 @@
-import React from "react"
+import React, { useState } from "react"
 import { ChatBubbleOvalLeftIcon, EllipsisHorizontalIcon } from "@heroicons/react/24/outline"
 import usePostInteractions from "../../hooks/usePostInteractions.jsx"
 import { formatDistanceToNow } from "date-fns"
 import Toast from "../common/Toast.jsx"
+import PostOptionsPopup from "./OptionsPopupPost.jsx"
+import ReportModal from "./ReportModalPost.jsx"
 // import useAppContext from "@/app/hooks/useContext.jsx"
 
 const Post = ({ postId, profileImage, username, createdAt, description, imageUrl }) => {
@@ -11,7 +13,14 @@ const Post = ({ postId, profileImage, username, createdAt, description, imageUrl
   //   action: { getImagesBucket }
   // } = useAppContext()
 
+  const [showOptions, setShowOptions] = useState(false)
+  const [showReportModal, setShowReportModal] = useState(false)
   const { isLiked, likeCount, toggleLike, error } = usePostInteractions(postId)
+
+  const handleReportClick = shouldShow => {
+    setShowReportModal(shouldShow)
+    setShowOptions(false)
+  }
 
   const formattedTime = formatDistanceToNow(new Date(createdAt), {
     addSuffix: true
@@ -35,7 +44,9 @@ const Post = ({ postId, profileImage, username, createdAt, description, imageUrl
               <h4 className="font-bold text-black text-sm">{username}</h4>
               <span className="text-gray-500 text-xs ml-2">{formattedTime}</span>
             </div>
-            <EllipsisHorizontalIcon className="h-5 w-5 text-gray-500" />
+            <EllipsisHorizontalIcon className="h-5 w-5 text-gray-500" onClick={() => setShowOptions(!showOptions)} />
+            {showOptions && <PostOptionsPopup onReportClick={handleReportClick} />}
+            <ReportModal isOpen={showReportModal} onClose={() => setShowReportModal(false)} postId={postId} />
           </div>
           {description && <p className="text-sm text-gray-800">{description}</p>}
           {imageUrl && (
