@@ -1,11 +1,11 @@
 import React from "react"
-import Header from "@/app/components/common/Header.jsx"
+import Footer from "../components/common/Footer"
 
 const Layout = ({ children }) => {
   return (
     <div>
-      <Header />
       <main>{children}</main>
+      <Footer />
     </div>
   )
 }

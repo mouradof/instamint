@@ -1,7 +1,6 @@
 import React, { useState } from "react"
 import Tab from "../../app/components/business/TabPost.jsx"
 import Feed from "../../app/components/business/FeedPost.jsx"
-import Footer from "../../app/components/common/Footer.jsx"
 import Header from "../../app/components/common/Header.jsx"
 import { PaperAirplaneIcon } from "@heroicons/react/24/outline"
 // import useAppContext from "@/app/hooks/useContext.jsx"
@@ -28,7 +27,6 @@ const Home = () => {
         </div>
       </div>
       <Feed type={activeTab} />
-      <Footer />
     </div>
   )
 }
