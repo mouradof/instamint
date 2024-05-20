@@ -28,7 +28,8 @@ const routesWithCors = [
   "/post/subscribed/:id",
   "/post/liked/:postId/:userId",
   "/post/likes/:postId/:userId",
-  "/post/like/:postId/:userId"
+  "/post/like/:postId/:userId",
+  "/post/report/:postId/:userId"
 ]
 
 routesWithCors.forEach(route => {

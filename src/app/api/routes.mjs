@@ -33,6 +33,9 @@ const routes = {
       likes: (postId, idUser) => createRouteWithQueryParams(`/post/likes/${postId}/${idUser}`),
       like: (postId, idUser) => createRouteWithQueryParams(`/post/like/${postId}/${idUser}`),
       liked: (postId, idUser) => createRouteWithQueryParams(`/post/liked/${postId}/${idUser}`)
+    },
+    report: {
+      report: (postId, idUser) => createRouteWithQueryParams(`/post/report/${postId}/${idUser}`)
     }
   }
 }
