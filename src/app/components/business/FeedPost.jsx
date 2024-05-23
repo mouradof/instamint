@@ -76,17 +76,21 @@ const Feed = ({ type }) => {
     <div className="min-h-screen bg-white" style={{ marginTop: "100px" }}>
       {error && <Toast message={error} isSuccess={false} />}
       <InfiniteScroll dataLength={posts.length} next={fetchMorePosts} hasMore={hasMore}>
-        {posts.map(post => (
-          <Post
-            key={post.postId}
-            username={post.username}
-            createdAt={post.createdAt}
-            description={post.description}
-            imageUrl={post.imageUrl}
-            profileImage={post.profileImage}
-            postId={post.postId}
-          />
-        ))}
+        {posts.map(post => {
+          return (
+            <Post
+              key={post.postId}
+              username={post.username}
+              createdAt={post.createdAt}
+              description={post.description}
+              imageUrl={post.imageUrl}
+              profileImage={post.profileImage}
+              postId={post.postId}
+              userId={post.userId}
+              ownerId={post.ownerId}
+            />
+          )
+        })}
       </InfiniteScroll>
       {posts.length === 0 && !error && <div className="text-center p-4">No posts to display.</div>}
     </div>

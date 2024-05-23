@@ -26,6 +26,7 @@ app.use("*", corsMiddleware)
 const routesWithCors = [
   "/post/for-you/:id",
   "/post/subscribed/:id",
+  "/post/:postId/:userId",
   "/post/liked/:postId/:userId",
   "/post/likes/:postId/:userId",
   "/post/like/:postId/:userId",

@@ -3,24 +3,34 @@ import { ChatBubbleOvalLeftIcon, EllipsisHorizontalIcon } from "@heroicons/react
 import usePostInteractions from "../../hooks/usePostInteractions.jsx"
 import { formatDistanceToNow } from "date-fns"
 import Toast from "../common/Toast.jsx"
-import PostOptionsPopup from "./OptionsPopupPost.jsx"
+import PostOptionsPopup from "../business/OptionsPopupPost.jsx"
 import ReportModal from "./ReportModalPost.jsx"
-// import useAppContext from "@/app/hooks/useContext.jsx"
+import DeleteModalPost from "./DeleteModalPost.jsx"
+import useAppContext from "@/app/hooks/useContext.jsx"
 
-const Post = ({ postId, profileImage, username, createdAt, description, imageUrl }) => {
-  // This is not dead code, we only comment it out to avoid making too many requests to the bucket because we are limited to 20,000 requests in the free version
-  // const {
-  //   action: { getImagesBucket }
-  // } = useAppContext()
-
+const Post = ({ postId, profileImage, username, ownerId, createdAt, description, imageUrl }) => {
   const [showOptions, setShowOptions] = useState(false)
   const [showReportModal, setShowReportModal] = useState(false)
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
   const { isLiked, likeCount, toggleLike, error } = usePostInteractions(postId)
+
+  const {
+    state: { session }
+    // This is not dead code, we only comment it out to avoid making too many requests to the bucket because we are limited to 20,000 requests in the free version
+    //action: { getImagesBucket }
+  } = useAppContext()
 
   const handleReportClick = shouldShow => {
     setShowReportModal(shouldShow)
     setShowOptions(false)
   }
+
+  const handleDeleteClick = () => {
+    setShowDeleteModal(true)
+    setShowOptions(false)
+  }
+
+  const isAuthor = session.id === ownerId
 
   const formattedTime = formatDistanceToNow(new Date(createdAt), {
     addSuffix: true
@@ -28,7 +38,6 @@ const Post = ({ postId, profileImage, username, createdAt, description, imageUrl
 
   const mintIcon = "/images/mint.png"
   const mintIconSolid = "/images/mintSolid.png"
-
   // const mintIcon = {getImagesBucket("mint.png")}
   // const mintIconSolid = getImagesBucket("mintSolid.png")}
 
@@ -45,9 +54,16 @@ const Post = ({ postId, profileImage, username, createdAt, description, imageUrl
               <span className="text-gray-500 text-xs ml-2">{formattedTime}</span>
             </div>
             <EllipsisHorizontalIcon className="h-5 w-5 text-gray-500" onClick={() => setShowOptions(!showOptions)} />
-            {showOptions && <PostOptionsPopup onReportClick={handleReportClick} />}
-            <ReportModal isOpen={showReportModal} onClose={() => setShowReportModal(false)} postId={postId} />
+            {showOptions && (
+              <PostOptionsPopup
+                onReportClick={handleReportClick}
+                onDeleteClick={handleDeleteClick}
+                isAuthor={isAuthor}
+              />
+            )}
           </div>
+          <ReportModal isOpen={showReportModal} onClose={() => setShowReportModal(false)} postId={postId} />
+          <DeleteModalPost isOpen={showDeleteModal} onClose={() => setShowDeleteModal(false)} postId={postId} />
           {description && <p className="text-sm text-gray-800">{description}</p>}
           {imageUrl && (
             <div className="relative w-full mt-2">

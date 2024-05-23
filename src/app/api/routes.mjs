@@ -27,7 +27,8 @@ const routes = {
   apiPost: {
     post: {
       forYou: (idUser, page) => createRouteWithQueryParams(`/post/for-you/${idUser}?page=${page}`),
-      subscribed: (idUser, page) => createRouteWithQueryParams(`/post/subscribed/${idUser}?page=${page}`)
+      subscribed: (idUser, page) => createRouteWithQueryParams(`/post/subscribed/${idUser}?page=${page}`),
+      deletePost: (postId, idUser) => createRouteWithQueryParams(`/post/${postId}/${idUser}`)
     },
     like: {
       likes: (postId, idUser) => createRouteWithQueryParams(`/post/likes/${postId}/${idUser}`),

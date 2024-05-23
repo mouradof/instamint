@@ -67,6 +67,7 @@ const prepareRoutesSubscribed = ({ app }) => {
             "posts.createdAt",
             "posts.description",
             "posts.imageUrl",
+            "posts.ownerId",
             "users.username",
             "users.profileImage"
           )
