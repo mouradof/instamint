@@ -1,6 +1,6 @@
 import React, { useState } from "react"
 import Modal from "../common/Modal.jsx"
-import Toast from "../common/Toast.jsx" 
+import Toast from "../common/Toast.jsx"
 import useAppContext from "@/app/hooks/useContext.jsx"
 import { useRouter } from "next/router"
 import { CheckIcon } from "@heroicons/react/24/outline"

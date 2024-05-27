@@ -1,47 +1,47 @@
-import React, { useState } from "react";
-import Modal from "../common/Modal.jsx";
-import Toast from "../common/Toast.jsx"; 
-import useAppContext from "@/app/hooks/useContext.jsx";
-import { CheckIcon } from "@heroicons/react/24/outline";
+import React, { useState } from "react"
+import Modal from "../common/Modal.jsx"
+import Toast from "../common/Toast.jsx"
+import useAppContext from "@/app/hooks/useContext.jsx"
+import { CheckIcon } from "@heroicons/react/24/outline"
 
 const ReportModal = ({ isOpen, onClose, postId }) => {
   const {
     state: { session },
     action: { postReportPost }
-  } = useAppContext();
+  } = useAppContext()
 
-  const [selectedOption, setSelectedOption] = useState("");
-  const [error, setError] = useState(null);
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const [toast, setToast] = useState({ message: "", isSuccess: true });
+  const [selectedOption, setSelectedOption] = useState("")
+  const [error, setError] = useState(null)
+  const [isSubmitted, setIsSubmitted] = useState(false)
+  const [toast, setToast] = useState({ message: "", isSuccess: true })
 
   const showToast = (message, isSuccess) => {
-    setToast({ message, isSuccess });
-  };
+    setToast({ message, isSuccess })
+  }
 
   const handleSubmit = async event => {
-    event.preventDefault();
+    event.preventDefault()
 
     try {
       const [error, response] = await postReportPost({
         postId,
         userId: session.id,
         reason: selectedOption
-      });
+      })
 
       if (error) {
-        setError(response.message);
-        showToast(response.message, false);
+        setError(response.message)
+        showToast(response.message, false)
       } else {
-        setIsSubmitted(true);
-        showToast("Report submitted successfully!", true);
+        setIsSubmitted(true)
+        showToast("Report submitted successfully!", true)
       }
     } catch (err) {
-      const errorMessage = "Failed to submit report";
-      setError(errorMessage);
-      showToast(errorMessage, false);
+      const errorMessage = "Failed to submit report"
+      setError(errorMessage)
+      showToast(errorMessage, false)
     }
-  };
+  }
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="What kind of problems do you report?">
@@ -91,7 +91,7 @@ const ReportModal = ({ isOpen, onClose, postId }) => {
         </div>
       )}
     </Modal>
-  );
-};
+  )
+}
 
-export default ReportModal;
+export default ReportModal
