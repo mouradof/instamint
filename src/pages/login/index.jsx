@@ -36,7 +36,13 @@ const Login = () => {
         localStorage.setItem("user", JSON.stringify(data.user))
         localStorage.setItem("token", data.token)
         localStorage.setItem("session", JSON.stringify(data.user))  // Stocker la session
-        router.push(data.redirectUrl)
+
+        // Rediriger selon le rôle de l'utilisateur
+        if (data.user.role === "role_user") {
+          router.push(`/profile/${data.user.id}`)
+        } else {
+          router.push(data.redirectUrl)
+        }
       } else {
         const error = await response.json()
 
