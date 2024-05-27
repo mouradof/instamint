@@ -20,6 +20,7 @@ const Login = () => {
   const handleSubmit = async event => {
     event.preventDefault()
     setIsLoading(true)
+    setErrorMessage("")  // Réinitialiser les messages d'erreur
 
     try {
       const response = await fetch("http://localhost:4000/auth/login", {
@@ -45,6 +46,8 @@ const Login = () => {
           setErrorMessage(error.message || "Erreur de connexion")
         }
       }
+    } catch (error) {
+      setErrorMessage("Network error: Unable to reach the server.")
     } finally {
       setIsLoading(false)
     }

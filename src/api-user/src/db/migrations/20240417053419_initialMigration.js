@@ -29,25 +29,43 @@ export const up = async knex => {
 }
 
 export const down = async knex => {
-  await knex.schema.alterTable("posts", table => {
-    table.dropForeign("ownerId")
-  })
-  await knex.schema.alterTable("likes", table => {
-    table.dropForeign("userId")
-  })
-  await knex.schema.alterTable("follows", table => {
-    table.dropForeign("followerId")
-    table.dropForeign("followedId")
-  })
-  await knex.schema.alterTable("reports", table => {
-    table.dropForeign("userId")
-  })
-  await knex.schema.alterTable("teabags", table => {
-    table.dropForeign("ownerId")
-  })
-  await knex.schema.alterTable("groupMembers", table => {
-    table.dropForeign("userId")
-  })
+  const tablesWithForeignKeys = [
+    { table: 'posts', column: 'ownerId' },
+    { table: 'likes', column: 'userId' },
+    { table: 'follows', columns: ['followerId', 'followedId'] },
+    { table: 'reports', column: 'userId' },
+    { table: 'teabags', column: 'ownerId' },
+    { table: 'groupMembers', column: 'userId' }
+  ];
+
+  for (const { table, column, columns } of tablesWithForeignKeys) {
+    if (column) {
+      await knex.raw(`
+        DO $$ BEGIN
+          IF EXISTS (
+            SELECT 1 FROM pg_constraint
+            WHERE conname = '${table}_${column}_foreign'
+          ) THEN
+            ALTER TABLE "${table}" DROP CONSTRAINT "${table}_${column}_foreign";
+          END IF;
+        END $$;
+      `);
+    }
+    if (columns) {
+      for (const col of columns) {
+        await knex.raw(`
+          DO $$ BEGIN
+            IF EXISTS (
+              SELECT 1 FROM pg_constraint
+              WHERE conname = '${table}_${col}_foreign'
+            ) THEN
+              ALTER TABLE "${table}" DROP CONSTRAINT "${table}_${col}_foreign";
+            END IF;
+          END $$;
+        `);
+      }
+    }
+  }
 
   await knex.schema.dropTableIfExists("users")
   await knex.schema.dropTableIfExists("roles")

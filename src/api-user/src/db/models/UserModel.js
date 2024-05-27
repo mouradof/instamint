@@ -27,7 +27,8 @@ class UserModel extends BaseModel {
         following: { type: "integer" },
         profileImage: { type: "string", minLength: 1, maxLength: 255 },
         coverImage: { type: "string", minLength: 1, maxLength: 255 },
-        lastLoginDate: { type: "string", format: "date-time" }
+        lastLoginDate: { type: "string", format: "date-time" },
+        role: { type: "string", enum: ["role_user", "role_admin", "role_superadmin"] }
       }
     }
   }

@@ -1,9 +1,11 @@
-import { Hono } from 'hono';
+import { Hono } from 'hono'
+import UserModel from '../../db/models/UserModel.js' // Assurez-vous du chemin correct
 
-const superAdminRoute = new Hono();
+const superAdminRoute = new Hono()
 
-superAdminRoute.get('/', (ctx) => {
-  return ctx.json({ message: 'Bonjour Super Admin' });
-});
+superAdminRoute.get('/', async (ctx) => {
+  const users = await UserModel.query()
+  return ctx.json(users)
+})
 
-export default superAdminRoute;
+export default superAdminRoute
