@@ -1,48 +1,51 @@
-import React, { useState } from "react"
-import Modal from "../common/Modal.jsx"
-import useAppContext from "@/app/hooks/useContext.jsx"
-import { CheckIcon } from "@heroicons/react/24/outline"
+import React, { useState } from "react";
+import Modal from "../common/Modal.jsx";
+import Toast from "../common/Toast.jsx"; 
+import useAppContext from "@/app/hooks/useContext.jsx";
+import { CheckIcon } from "@heroicons/react/24/outline";
 
 const ReportModal = ({ isOpen, onClose, postId }) => {
   const {
     state: { session },
     action: { postReportPost }
-  } = useAppContext()
+  } = useAppContext();
 
-  const [selectedOption, setSelectedOption] = useState("")
-  const [error, setError] = useState(null)
-  const [isSubmitted, setIsSubmitted] = useState(false)
-  const [toast, setToast] = useState({ message: "", isSuccess: true })
+  const [selectedOption, setSelectedOption] = useState("");
+  const [error, setError] = useState(null);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [toast, setToast] = useState({ message: "", isSuccess: true });
 
   const showToast = (message, isSuccess) => {
-    setToast({ message, isSuccess })
-  }
+    setToast({ message, isSuccess });
+  };
 
   const handleSubmit = async event => {
-    event.preventDefault()
+    event.preventDefault();
 
     try {
       const [error, response] = await postReportPost({
         postId,
         userId: session.id,
         reason: selectedOption
-      })
+      });
 
       if (error) {
-        setError(response.message)
-        showToast(response.message, false)
+        setError(response.message);
+        showToast(response.message, false);
       } else {
-        setIsSubmitted(true)
-        showToast("Report submitted successfully!", true)
+        setIsSubmitted(true);
+        showToast("Report submitted successfully!", true);
       }
     } catch (err) {
-      setError("Failed to submit report")
-      showToast("Failed to submit report", false)
+      const errorMessage = "Failed to submit report";
+      setError(errorMessage);
+      showToast(errorMessage, false);
     }
-  }
+  };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="What kind of problems do you report?">
+      {toast.message && <Toast message={toast.message} isSuccess={toast.isSuccess} />}
       {!isSubmitted ? (
         <form onSubmit={handleSubmit}>
           <div className="flex flex-col space-y-4">
@@ -82,17 +85,13 @@ const ReportModal = ({ isOpen, onClose, postId }) => {
           </div>
         </form>
       ) : (
-        <div className="text-center p-4">
-          {toast.message && (
-            <div className={`${toast.isSuccess ? "text-green-500" : "text-red-500"} mb-2`}>
-              <CheckIcon className="h-10 w-10 text-green-500 mx-auto" />
-              {toast.message}
-            </div>
-          )}
+        <div className="text-center p-4 text-green-500">
+          <CheckIcon className="h-10 w-10 text-green-500 mx-auto" />
+          Thank you for helping us improve Instamint for the benefit of all.
         </div>
       )}
     </Modal>
-  )
-}
+  );
+};
 
-export default ReportModal
+export default ReportModal;

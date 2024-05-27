@@ -1,8 +1,9 @@
 import React, { useState } from "react"
 import Modal from "../common/Modal.jsx"
+import Toast from "../common/Toast.jsx" 
 import useAppContext from "@/app/hooks/useContext.jsx"
-import { CheckIcon } from "@heroicons/react/24/outline"
 import { useRouter } from "next/router"
+import { CheckIcon } from "@heroicons/react/24/outline"
 
 const DeleteModalPost = ({ isOpen, onClose, postId }) => {
   const {
@@ -12,7 +13,7 @@ const DeleteModalPost = ({ isOpen, onClose, postId }) => {
 
   const [error, setError] = useState(null)
   const [isDeleted, setIsDeleted] = useState(false)
-  const [toast, setToast] = useState({ message: "", isSuccess: true })
+  const [toast, setToast] = useState({ message: "", isSuccess: false })
 
   const router = useRouter()
 
@@ -29,13 +30,15 @@ const DeleteModalPost = ({ isOpen, onClose, postId }) => {
         router.reload()
       }, 2000)
     } catch (err) {
-      setError(err.message || "An error occurred while deleting the post.")
-      showToast(err.message || "An error occurred while deleting the post.", false)
+      const errorMessage = err.message || "An error occurred while deleting the post."
+      setError(errorMessage)
+      showToast(errorMessage, false)
     }
   }
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Are you sure you want to delete this post?">
+    <Modal isOpen={isOpen} onClose={onClose} title="Are you sure you want to delete this post ?">
+      {toast.message && <Toast message={toast.message} isSuccess={toast.isSuccess} />}
       {!isDeleted ? (
         <div className="text-center">
           <button onClick={handleDelete} className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700">
@@ -47,13 +50,9 @@ const DeleteModalPost = ({ isOpen, onClose, postId }) => {
           {error && <div className="text-red-500 mt-2">{error}</div>}
         </div>
       ) : (
-        <div className="text-center p-4">
-          {toast.message && (
-            <div className={`${toast.isSuccess ? "text-green-500" : "text-red-500"} mb-2`}>
-              <CheckIcon className="h-10 w-10 text-green-500 mx-auto" />
-              {toast.message}
-            </div>
-          )}
+        <div className="text-center p-4 text-green-500">
+          <CheckIcon className="h-10 w-10 text-green-500 mx-auto" />
+          Thank you for helping us improve Instamint for the benefit of all.
         </div>
       )}
     </Modal>
