@@ -150,7 +150,7 @@ const EditProfile = () => {
             setProfileImageOption={setProfileImageOption}
             coverImageOption={coverImageOption}
             setCoverImageOption={setCoverImageOption}
-            handleCancel={handleCancel} // Passez handleCancel ici
+            handleCancel={handleCancel}
           />
         ) : (
           <Countdown countdown={countdown} setCountdown={setCountdown} userId={session.id} />

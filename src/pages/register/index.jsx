@@ -45,7 +45,7 @@ const Register = () => {
       return
     }
 
-    setEmailError("") // Clear any previous email errors
+    setEmailError("")
 
     try {
       const response = await fetch("http://localhost:4000/auth/register", {

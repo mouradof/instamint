@@ -1,9 +1,9 @@
-import { Hono } from 'hono';
+import { Hono } from "hono"
 
-const adminRoute = new Hono();
+const adminRoute = new Hono()
 
-adminRoute.get('/', (ctx) => {
-  return ctx.json({ message: 'Bonjour Admin' });
-});
+adminRoute.get("/", ctx => {
+  return ctx.json({ message: "Bonjour Admin" })
+})
 
-export default adminRoute;
+export default adminRoute

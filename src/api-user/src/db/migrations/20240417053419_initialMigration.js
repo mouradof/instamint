@@ -30,13 +30,13 @@ export const up = async knex => {
 
 export const down = async knex => {
   const tablesWithForeignKeys = [
-    { table: 'posts', column: 'ownerId' },
-    { table: 'likes', column: 'userId' },
-    { table: 'follows', columns: ['followerId', 'followedId'] },
-    { table: 'reports', column: 'userId' },
-    { table: 'teabags', column: 'ownerId' },
-    { table: 'groupMembers', column: 'userId' }
-  ];
+    { table: "posts", column: "ownerId" },
+    { table: "likes", column: "userId" },
+    { table: "follows", columns: ["followerId", "followedId"] },
+    { table: "reports", column: "userId" },
+    { table: "teabags", column: "ownerId" },
+    { table: "groupMembers", column: "userId" }
+  ]
 
   for (const { table, column, columns } of tablesWithForeignKeys) {
     if (column) {
@@ -49,8 +49,9 @@ export const down = async knex => {
             ALTER TABLE "${table}" DROP CONSTRAINT "${table}_${column}_foreign";
           END IF;
         END $$;
-      `);
+      `)
     }
+
     if (columns) {
       for (const col of columns) {
         await knex.raw(`
@@ -62,7 +63,7 @@ export const down = async knex => {
               ALTER TABLE "${table}" DROP CONSTRAINT "${table}_${col}_foreign";
             END IF;
           END $$;
-        `);
+        `)
       }
     }
   }

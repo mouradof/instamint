@@ -35,6 +35,7 @@ export const AppContextProvider = props => {
 
     if (!storedJwt) {
       setIsLoading(false)
+
       return
     }
 
@@ -55,7 +56,7 @@ export const AppContextProvider = props => {
       localStorage.removeItem("token")
       localStorage.removeItem("session")
     } finally {
-      setIsLoading(false) 
+      setIsLoading(false)
     }
   }, [])
 

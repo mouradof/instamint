@@ -132,7 +132,7 @@
 
 ### Completed Features
 
-- 
+-
 
 ### Unfinished Features
 
@@ -230,6 +230,7 @@
 - The sprint successfully enhanced project setup, documentation, and user authentication features, laying a solid foundation for further development. The introduction of a CI workflow marks a significant step towards ensuring code quality and security, setting the stage for future enhancements.
 
 ---
+
 # Sprint 2
 
 ## Basic Information

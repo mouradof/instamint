@@ -20,7 +20,7 @@ const Login = () => {
   const handleSubmit = async event => {
     event.preventDefault()
     setIsLoading(true)
-    setErrorMessage("")  // Réinitialiser les messages d'erreur
+    setErrorMessage("")
 
     try {
       const response = await fetch("http://localhost:4000/auth/login", {
@@ -35,9 +35,8 @@ const Login = () => {
         const data = await response.json()
         localStorage.setItem("user", JSON.stringify(data.user))
         localStorage.setItem("token", data.token)
-        localStorage.setItem("session", JSON.stringify(data.user))  // Stocker la session
+        localStorage.setItem("session", JSON.stringify(data.user))
 
-        // Rediriger selon le rôle de l'utilisateur
         if (data.user.role === "role_user") {
           router.push(`/profile/${data.user.id}`)
         } else {

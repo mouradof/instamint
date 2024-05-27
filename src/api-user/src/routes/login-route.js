@@ -55,11 +55,12 @@ const prepareRouteLogin = ({ app }) => {
 
       const token = await sign(payload, process.env.JWT_SECRET)
 
-      let redirectUrl = '/profile';
-      if (user.role === 'role_admin') {
-        redirectUrl = '/admin';
-      } else if (user.role === 'role_superadmin') {
-        redirectUrl = '/superadmin';
+      let redirectUrl = "/profile"
+
+      if (user.role === "role_admin") {
+        redirectUrl = "/admin"
+      } else if (user.role === "role_superadmin") {
+        redirectUrl = "/superadmin"
       }
 
       return c.json(
