@@ -1,4 +1,3 @@
-// errors.js
 const HTTP_STATUS_CODES = {
   UNAUTHORIZED: 401,
   BAD_REQUEST: 400,
@@ -19,7 +18,10 @@ const HTTP_ERRORS = {
   LIKE_STATUS_ERROR: "Error checking like status for post",
   RETRIEVE_LIKE_COUNT_ERROR: "Error retrieving like count for post",
   LIKE_ADDED: "Like added to post",
-  LIKE_REMOVED: "Like removed from post"
+  LIKE_REMOVED: "Like removed from post",
+  NOT_AUTHORIZED_OR_NOT_FOUND: "Not authorized to delete this post or post not found",
+  POST_DELETED: "Post successfully deleted",
+  DELETE_POST_FAILED: "Failed to delete post"
 }
 
 export { HTTP_STATUS_CODES, HTTP_ERRORS }

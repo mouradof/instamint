@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import Tab from "../../app/components/business/TabPost.jsx"
 import Feed from "../../app/components/business/FeedPost.jsx"
 import Header from "../../app/components/common/Header.jsx"
@@ -11,7 +11,11 @@ const Home = () => {
   //   action: { getImagesBucket }
   // } = useAppContext()
 
-  const [activeTab, setActiveTab] = useState("forYou")
+  const [activeTab, setActiveTab] = useState(localStorage.getItem("activeTab") || "forYou")
+
+  useEffect(() => {
+    localStorage.setItem("activeTab", activeTab)
+  }, [activeTab])
 
   return (
     <div className="relative max-w-md mx-auto min-h-screen pb-16">
