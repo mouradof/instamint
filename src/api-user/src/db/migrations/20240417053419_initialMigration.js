@@ -13,9 +13,42 @@ export const up = async knex => {
     table.string("profileImage", 255).defaultTo("/images/default-profile-picture.jpg")
     table.string("coverImage", 255).defaultTo("/images/default-cover-picture.jpg")
     table.timestamp("lastLoginDate").defaultTo(knex.fn.now())
+    table.enu("role", ["role_user", "role_admin", "role_superadmin"]).defaultTo("role_user").notNullable()
   })
+
+  await knex.schema.createTable("roles", table => {
+    table.increments("id").primary()
+    table.string("role_name").notNullable()
+  })
+
+  await knex("roles").insert([
+    { role_name: "role_user" },
+    { role_name: "role_admin" },
+    { role_name: "role_superadmin" }
+  ])
 }
 
 export const down = async knex => {
-  await knex.raw('DROP TABLE IF EXISTS "users" CASCADE')
+  await knex.schema.alterTable("posts", table => {
+    table.dropForeign("ownerId")
+  })
+  await knex.schema.alterTable("likes", table => {
+    table.dropForeign("userId")
+  })
+  await knex.schema.alterTable("follows", table => {
+    table.dropForeign("followerId")
+    table.dropForeign("followedId")
+  })
+  await knex.schema.alterTable("reports", table => {
+    table.dropForeign("userId")
+  })
+  await knex.schema.alterTable("teabags", table => {
+    table.dropForeign("ownerId")
+  })
+  await knex.schema.alterTable("groupMembers", table => {
+    table.dropForeign("userId")
+  })
+
+  await knex.schema.dropTableIfExists("users")
+  await knex.schema.dropTableIfExists("roles")
 }

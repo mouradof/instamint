@@ -34,7 +34,8 @@ const Login = () => {
         const data = await response.json()
         localStorage.setItem("user", JSON.stringify(data.user))
         localStorage.setItem("token", data.token)
-        router.push(`/profile/${data.user.id}`)
+        localStorage.setItem("session", JSON.stringify(data.user))  // Stocker la session
+        router.push(data.redirectUrl)
       } else {
         const error = await response.json()
 

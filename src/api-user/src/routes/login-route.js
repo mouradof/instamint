@@ -49,10 +49,18 @@ const prepareRouteLogin = ({ app }) => {
         id: user.id,
         username: user.username,
         email: user.email,
+        role: user.role,
         exp: Math.floor(Date.now() / 1000) + 60 * 5
       }
 
       const token = await sign(payload, process.env.JWT_SECRET)
+
+      let redirectUrl = '/profile';
+      if (user.role === 'role_admin') {
+        redirectUrl = '/admin';
+      } else if (user.role === 'role_superadmin') {
+        redirectUrl = '/superadmin';
+      }
 
       return c.json(
         {
@@ -66,8 +74,10 @@ const prepareRouteLogin = ({ app }) => {
             coverImage: user.coverImage,
             bio: user.bio,
             followers: user.followers,
-            following: user.following
-          }
+            following: user.following,
+            role: user.role
+          },
+          redirectUrl
         },
         200
       )

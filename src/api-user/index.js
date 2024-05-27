@@ -10,6 +10,8 @@ import userRoutes from "./src/routes/user-routes.js"
 import prepareRouteRegister from "./src/routes/register-route.js"
 import prepareRouteLogin from "./src/routes/login-route.js"
 import prepareRouteVerify from "./src/routes/verify-route.js"
+import adminRoute from "./src/routes/admin/admin-route.js"
+import superAdminRoute from "./src/routes/superadmin/superadmin-route.js"
 import dotenv from "dotenv"
 
 dotenv.config()
@@ -32,6 +34,8 @@ app.use(
 app.route("/api/user", userRoutes)
 
 app.use("/api/protected", authMiddleware)
+app.route("/admin", adminRoute)
+app.route("/superadmin", superAdminRoute)
 
 prepareRouteRegister({ app, db })
 prepareRouteLogin({ app, db })
