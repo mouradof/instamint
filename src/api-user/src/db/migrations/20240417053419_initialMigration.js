@@ -14,6 +14,8 @@ export const up = async knex => {
     table.string("coverImage", 255).defaultTo("/images/default-cover-picture.jpg")
     table.timestamp("lastLoginDate").defaultTo(knex.fn.now())
     table.enu("role", ["role_user", "role_admin", "role_superadmin"]).defaultTo("role_user").notNullable()
+    table.boolean("isBanned").defaultTo(false)
+    table.timestamp("bannedUntil").nullable()
   })
 
   await knex.schema.createTable("roles", table => {
@@ -40,34 +42,37 @@ export const down = async knex => {
 
   for (const { table, column, columns } of tablesWithForeignKeys) {
     if (column) {
-      await knex.raw(`
-        DO $$ BEGIN
-          IF EXISTS (
-            SELECT 1 FROM pg_constraint
-            WHERE conname = '${table}_${column}_foreign'
-          ) THEN
-            ALTER TABLE "${table}" DROP CONSTRAINT "${table}_${column}_foreign";
-          END IF;
-        END $$;
-      `)
+      await knex.schema.alterTable(table, tbl => {
+        tbl.dropForeign(column)
+      })
     }
 
     if (columns) {
       for (const col of columns) {
-        await knex.raw(`
-          DO $$ BEGIN
-            IF EXISTS (
-              SELECT 1 FROM pg_constraint
-              WHERE conname = '${table}_${col}_foreign'
-            ) THEN
-              ALTER TABLE "${table}" DROP CONSTRAINT "${table}_${col}_foreign";
-            END IF;
-          END $$;
-        `)
+        await knex.schema.alterTable(table, tbl => {
+          tbl.dropForeign(col)
+        })
       }
     }
   }
 
   await knex.schema.dropTableIfExists("users")
   await knex.schema.dropTableIfExists("roles")
+
+  // Recreate foreign keys
+  for (const { table, column, columns } of tablesWithForeignKeys) {
+    if (column) {
+      await knex.schema.alterTable(table, tbl => {
+        tbl.integer(column).unsigned().references("id").inTable("users").onDelete("SET NULL")
+      })
+    }
+
+    if (columns) {
+      for (const col of columns) {
+        await knex.schema.alterTable(table, tbl => {
+          tbl.integer(col).unsigned().references("id").inTable("users").onDelete("CASCADE")
+        })
+      }
+    }
+  }
 }

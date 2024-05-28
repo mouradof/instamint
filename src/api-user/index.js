@@ -32,14 +32,13 @@ app.use(
 )
 
 app.route("/api/user", userRoutes)
-
 app.use("/api/protected", authMiddleware)
 app.route("/admin", adminRoute)
 app.route("/superadmin", superAdminRoute)
 
-prepareRouteRegister({ app, db })
-prepareRouteLogin({ app, db })
-prepareRouteVerify({ app, db })
+prepareRouteRegister({ app })
+prepareRouteLogin({ app })
+prepareRouteVerify({ app })
 
 serve({
   fetch: app.fetch,

@@ -28,7 +28,9 @@ class UserModel extends BaseModel {
         profileImage: { type: "string", minLength: 1, maxLength: 255 },
         coverImage: { type: "string", minLength: 1, maxLength: 255 },
         lastLoginDate: { type: "string", format: "date-time" },
-        role: { type: "string", enum: ["role_user", "role_admin", "role_superadmin"] }
+        role: { type: "string", enum: ["role_user", "role_admin", "role_superadmin"] },
+        isBanned: { type: "boolean", default: false },
+        bannedUntil: { type: ["string", "null"], format: "date-time" }
       }
     }
   }

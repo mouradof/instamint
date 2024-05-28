@@ -17,6 +17,10 @@ const prepareRouteLogin = ({ app }) => {
         return c.json({ message: "Email or password is incorrect" }, 401)
       }
 
+      if (user.isBanned && new Date() < new Date(user.bannedUntil)) {
+        return c.json({ message: "Your account is banned until " + user.bannedUntil }, 403)
+      }
+
       const match = await bcrypt.compare(password, user.passwordHash)
 
       if (!match) {
@@ -24,9 +28,7 @@ const prepareRouteLogin = ({ app }) => {
       }
 
       const now = new Date().toISOString()
-
       const lastLoginDate = new Date(user.lastLoginDate)
-
       const diffDays = Math.ceil((new Date(now) - lastLoginDate) / (1000 * 60 * 60 * 24))
 
       if (diffDays > 15) {
@@ -35,11 +37,7 @@ const prepareRouteLogin = ({ app }) => {
         return c.json({ message: "Account has been deleted due to inactivity" }, 401)
       }
 
-      try {
-        await UserModel.query().patchAndFetchById(user.id, { lastLoginDate: now })
-      } catch (error) {
-        return c.json({ message: "Failed to update last login date", error: error.message }, 500)
-      }
+      await UserModel.query().patchAndFetchById(user.id, { lastLoginDate: now })
 
       if (!user.emailVerified) {
         return c.json({ message: "Please verify your email address first" }, 401)
@@ -55,7 +53,7 @@ const prepareRouteLogin = ({ app }) => {
 
       const token = await sign(payload, process.env.JWT_SECRET)
 
-      let redirectUrl = "/profile"
+      let redirectUrl = `/profile/${user.id}`
 
       if (user.role === "role_admin") {
         redirectUrl = "/admin"

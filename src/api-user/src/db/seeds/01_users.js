@@ -19,7 +19,9 @@ const createFakeUser = async (role = "role_user") => {
     coverImage: `https://source.unsplash.com/random/1200x400?sig=${Math.floor(Math.random() * 1000)}`,
     followers: faker.datatype.number({ min: 0, max: 10000 }),
     following: faker.datatype.number({ min: 0, max: 1000 }),
-    role
+    role,
+    isBanned: false,
+    bannedUntil: null
   }
 }
 
