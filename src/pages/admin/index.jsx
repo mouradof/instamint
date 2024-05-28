@@ -7,6 +7,8 @@ const AdminPage = () => {
   const [banDuration, setBanDuration] = useState("")
   const [showBanModal, setShowBanModal] = useState(false)
   const [showUnbanModal, setShowUnbanModal] = useState(false)
+  const [showPostsModal, setShowPostsModal] = useState(false)
+  const [userPosts, setUserPosts] = useState([])
   const [alertMessage, setAlertMessage] = useState("")
   const [alertType, setAlertType] = useState("")
   const router = useRouter()
@@ -30,6 +32,22 @@ const AdminPage = () => {
 
     fetchUsers()
   }, [])
+
+  const fetchUserPosts = async userId => {
+    try {
+      const response = await fetch(`http://localhost:4002/post/user/${userId}`)
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch user posts")
+      }
+
+      const data = await response.json()
+      setUserPosts(data)
+    } catch (error) {
+      setAlertMessage("Failed to fetch user posts: " + error.message)
+      setAlertType("error")
+    }
+  }
 
   const handleLogout = () => {
     localStorage.removeItem("user")
@@ -110,6 +128,12 @@ const AdminPage = () => {
     }
   }
 
+  const handleViewPosts = async user => {
+    setSelectedUser(user)
+    await fetchUserPosts(user.id)
+    setShowPostsModal(true)
+  }
+
   const bannedUsers = users.filter(user => user.isBanned)
 
   return (
@@ -151,7 +175,7 @@ const AdminPage = () => {
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {users.map(user => (
-              <tr key={user.id}>
+              <tr key={user.id} onClick={() => handleViewPosts(user)} className="cursor-pointer">
                 <td className="px-6 py-4 whitespace-nowrap">{user.id}</td>
                 <td className="px-6 py-4 whitespace-nowrap">{user.username}</td>
                 <td className="px-6 py-4 whitespace-nowrap">{user.role}</td>
@@ -202,9 +226,9 @@ const AdminPage = () => {
 
       {showUnbanModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-4xl mx-auto">
-            <h2 className="text-xl font-bold mb-4">Unban Users</h2>
-            <div className="overflow-x-auto">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-2xl mx-auto">
+            <h2 className="text-xl font-bold mb-4">Banned Users</h2>
+            <div className="overflow-y-auto h-96">
               <table className="min-w-full bg-white divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
@@ -243,6 +267,35 @@ const AdminPage = () => {
             </div>
             <div className="flex justify-end mt-4">
               <button className="bg-gray-500 text-white px-4 py-2 rounded" onClick={() => setShowUnbanModal(false)}>
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showPostsModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-4xl mx-auto">
+            <h2 className="text-xl font-bold mb-4">Posts by {selectedUser?.username}</h2>
+            <div className="overflow-y-auto h-96">
+              {userPosts.length > 0 ? (
+                <ul>
+                  {userPosts.map(post => (
+                    <li key={post.id} className="mb-4 p-4 border rounded-lg">
+                      <h3 className="text-lg font-bold">Post ID: {post.id}</h3>
+                      <p>Description: {post.description}</p>
+                      {post.imageUrl && <img src={post.imageUrl} alt="Post Image" className="mt-2 rounded-lg" />}
+                      <p className="text-sm text-gray-500">Posted on {new Date(post.createdAt).toLocaleDateString()}</p>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p>No posts available.</p>
+              )}
+            </div>
+            <div className="flex justify-end mt-4">
+              <button className="bg-gray-500 text-white px-4 py-2 rounded" onClick={() => setShowPostsModal(false)}>
                 Close
               </button>
             </div>
