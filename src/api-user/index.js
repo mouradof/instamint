@@ -36,9 +36,9 @@ app.use("/api/protected", authMiddleware)
 app.route("/admin", adminRoute)
 app.route("/superadmin", superAdminRoute)
 
-prepareRouteRegister({ app })
-prepareRouteLogin({ app })
-prepareRouteVerify({ app })
+prepareRouteRegister({ app, db })
+prepareRouteLogin({ app, db })
+prepareRouteVerify({ app, db })
 
 serve({
   fetch: app.fetch,

@@ -38,6 +38,14 @@ class UserModel extends BaseModel {
   static generateVerifyToken() {
     return crypto.randomBytes(20).toString("hex")
   }
+
+  static async updateBanStatus() {
+    const now = new Date().toISOString()
+    await UserModel.query().where("isBanned", true).andWhere("bannedUntil", "<", now).patch({
+      isBanned: false,
+      bannedUntil: null
+    })
+  }
 }
 
 export default UserModel

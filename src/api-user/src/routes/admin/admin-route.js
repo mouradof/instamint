@@ -3,49 +3,54 @@ import UserModel from "../../db/models/UserModel.js"
 
 const adminRoute = new Hono()
 
-adminRoute.get("/", ctx => {
-  return ctx.json({ message: "Bonjour Admin" })
-})
+adminRoute.post("/ban/:id", async c => {
+  const { id } = c.req.param()
+  const { duration } = await c.req.json()
 
-adminRoute.get("/users", async ctx => {
-  try {
-    const users = await UserModel.query()
+  let bannedUntil
+  const now = new Date()
 
-    return ctx.json(users)
-  } catch (error) {
-    return ctx.json({ error: "Failed to fetch users" }, 500)
+  switch (duration) {
+    case "10m":
+      bannedUntil = new Date(now.getTime() + 10 * 60 * 1000) // 10 minutes
+
+      break
+
+    case "12h":
+      bannedUntil = new Date(now.getTime() + 12 * 60 * 60 * 1000) // 12 hours
+
+      break
+
+    case "24h":
+      bannedUntil = new Date(now.getTime() + 24 * 60 * 60 * 1000) // 24 hours
+
+      break
+
+    case "1w":
+      bannedUntil = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000) // 1 week
+
+      break
+
+    case "1m":
+      bannedUntil = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000) // 1 month
+
+      break
+
+    case "forever":
+      bannedUntil = null // Permanent ban
+
+      break
+
+    default:
+      return c.json({ message: "Invalid ban duration" }, 400)
   }
-})
 
-adminRoute.put("/ban/:id", async ctx => {
-  const { id } = ctx.req.param()
-  const { banDuration } = await ctx.req.json()
+  await UserModel.query().patchAndFetchById(id, {
+    isBanned: true,
+    bannedUntil: bannedUntil ? bannedUntil.toISOString() : null
+  })
 
-  const banDurations = {
-    "10min": 10 * 60 * 1000,
-    "12h": 12 * 60 * 60 * 1000,
-    "24h": 24 * 60 * 60 * 1000,
-    "1week": 7 * 24 * 60 * 60 * 1000,
-    "1month": 30 * 24 * 60 * 60 * 1000,
-    forever: null
-  }
-
-  const bannedUntil = banDurations[banDuration] ? new Date(Date.now() + banDurations[banDuration]).toISOString() : null
-
-  try {
-    const updatedUser = await UserModel.query().patchAndFetchById(id, {
-      isBanned: true,
-      bannedUntil
-    })
-
-    if (!updatedUser) {
-      return ctx.json({ error: "User not found or ban failed" }, 404)
-    }
-
-    return ctx.json(updatedUser)
-  } catch (error) {
-    return ctx.json({ error: "Failed to ban user" }, 500)
-  }
+  return c.json({ message: "User banned successfully" })
 })
 
 export default adminRoute

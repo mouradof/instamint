@@ -17,47 +17,58 @@ const prepareRouteLogin = ({ app }) => {
         return c.json({ message: "Email or password is incorrect" }, 401)
       }
 
-      if (user.isBanned && new Date() < new Date(user.bannedUntil)) {
-        return c.json({ message: "Your account is banned until " + user.bannedUntil }, 403)
+      // Met à jour le statut de bannissement si nécessaire
+      await UserModel.updateBanStatus(user.id)
+
+      // Rafraîchit les informations utilisateur après la mise à jour du statut de bannissement
+      const updatedUser = await UserModel.query().findById(user.id)
+
+      if (updatedUser.isBanned) {
+        return c.json({ message: "Account is banned" }, 403)
       }
 
-      const match = await bcrypt.compare(password, user.passwordHash)
+      const match = await bcrypt.compare(password, updatedUser.passwordHash)
 
       if (!match) {
         return c.json({ message: "Email or password is incorrect" }, 401)
       }
 
       const now = new Date().toISOString()
-      const lastLoginDate = new Date(user.lastLoginDate)
+
+      const lastLoginDate = new Date(updatedUser.lastLoginDate)
       const diffDays = Math.ceil((new Date(now) - lastLoginDate) / (1000 * 60 * 60 * 24))
 
       if (diffDays > 15) {
-        await UserModel.query().deleteById(user.id)
+        await UserModel.query().deleteById(updatedUser.id)
 
         return c.json({ message: "Account has been deleted due to inactivity" }, 401)
       }
 
-      await UserModel.query().patchAndFetchById(user.id, { lastLoginDate: now })
+      try {
+        await UserModel.query().patchAndFetchById(updatedUser.id, { lastLoginDate: now })
+      } catch (error) {
+        return c.json({ message: "Failed to update last login date", error: error.message }, 500)
+      }
 
-      if (!user.emailVerified) {
+      if (!updatedUser.emailVerified) {
         return c.json({ message: "Please verify your email address first" }, 401)
       }
 
       const payload = {
-        id: user.id,
-        username: user.username,
-        email: user.email,
-        role: user.role,
+        id: updatedUser.id,
+        username: updatedUser.username,
+        email: updatedUser.email,
+        role: updatedUser.role,
         exp: Math.floor(Date.now() / 1000) + 60 * 5
       }
 
       const token = await sign(payload, process.env.JWT_SECRET)
 
-      let redirectUrl = `/profile/${user.id}`
+      let redirectUrl = "/profile"
 
-      if (user.role === "role_admin") {
+      if (updatedUser.role === "role_admin") {
         redirectUrl = "/admin"
-      } else if (user.role === "role_superadmin") {
+      } else if (updatedUser.role === "role_superadmin") {
         redirectUrl = "/superadmin"
       }
 
@@ -66,15 +77,15 @@ const prepareRouteLogin = ({ app }) => {
           message: "Auth successful",
           token,
           user: {
-            id: user.id,
-            username: user.username,
-            email: user.email,
-            profileImage: user.profileImage,
-            coverImage: user.coverImage,
-            bio: user.bio,
-            followers: user.followers,
-            following: user.following,
-            role: user.role
+            id: updatedUser.id,
+            username: updatedUser.username,
+            email: updatedUser.email,
+            profileImage: updatedUser.profileImage,
+            coverImage: updatedUser.coverImage,
+            bio: updatedUser.bio,
+            followers: updatedUser.followers,
+            following: updatedUser.following,
+            role: updatedUser.role
           },
           redirectUrl
         },
