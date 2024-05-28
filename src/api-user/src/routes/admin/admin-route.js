@@ -53,4 +53,21 @@ adminRoute.post("/ban/:id", async c => {
   return c.json({ message: "User banned successfully" })
 })
 
+adminRoute.post("/unban/:id", async c => {
+  const { id } = c.req.param()
+
+  await UserModel.query().patchAndFetchById(id, {
+    isBanned: false,
+    bannedUntil: null
+  })
+
+  return c.json({ message: "User unbanned successfully" })
+})
+
+adminRoute.get("/banned", async c => {
+  const bannedUsers = await UserModel.query().where("isBanned", true)
+
+  return c.json(bannedUsers)
+})
+
 export default adminRoute
