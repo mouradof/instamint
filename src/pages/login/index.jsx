@@ -20,6 +20,7 @@ const Login = () => {
   const handleSubmit = async event => {
     event.preventDefault()
     setIsLoading(true)
+    setErrorMessage("")
 
     try {
       const response = await fetch("http://localhost:4000/auth/login", {
@@ -34,7 +35,13 @@ const Login = () => {
         const data = await response.json()
         localStorage.setItem("user", JSON.stringify(data.user))
         localStorage.setItem("token", data.token)
-        router.push(`/profile/${data.user.id}`)
+        localStorage.setItem("session", JSON.stringify(data.user))
+
+        if (data.user.role === "role_user") {
+          router.push(`/profile/${data.user.id}`)
+        } else {
+          router.push(data.redirectUrl)
+        }
       } else {
         const error = await response.json()
 
@@ -44,6 +51,8 @@ const Login = () => {
           setErrorMessage(error.message || "Erreur de connexion")
         }
       }
+    } catch (error) {
+      setErrorMessage("Network error: Unable to reach the server.")
     } finally {
       setIsLoading(false)
     }

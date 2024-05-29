@@ -26,7 +26,9 @@ const prepareRouteRegister = ({ app }) => {
         passwordHash: hashedPassword,
         passwordSalt: salt,
         verifyToken: UserModel.generateVerifyToken(),
-        emailVerified: false
+        emailVerified: false,
+        isBanned: false,
+        bannedUntil: null
       })
 
       await sendVerificationEmail(newUser.email, newUser.verifyToken)

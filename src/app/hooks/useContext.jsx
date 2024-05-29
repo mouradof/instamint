@@ -24,6 +24,7 @@ export const AppContextProvider = props => {
   const { isPublicPage, ...otherProps } = props
   const [session, setSession] = useState(null)
   const [jwt, setJWT] = useState(null)
+  const [isLoading, setIsLoading] = useState(true)
 
   const apiClients = {}
   for (const apiKey in config) {
@@ -34,6 +35,8 @@ export const AppContextProvider = props => {
     const storedJwt = localStorage.getItem("instamint") || localStorage.getItem("token")
 
     if (!storedJwt) {
+      setIsLoading(false)
+
       return
     }
 
@@ -53,6 +56,8 @@ export const AppContextProvider = props => {
       localStorage.removeItem("instamint")
       localStorage.removeItem("token")
       localStorage.removeItem("session")
+    } finally {
+      setIsLoading(false)
     }
   }, [])
 
@@ -99,6 +104,14 @@ export const AppContextProvider = props => {
       postReportPost,
       deletePost
     }
+  }
+
+  if (isLoading) {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-white text-4xl font-bold">
+        <span className="animate-bounce">Loading...</span>
+      </div>
+    )
   }
 
   if (!isPublicPage && session === null) {

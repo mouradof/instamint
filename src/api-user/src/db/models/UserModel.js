@@ -27,13 +27,24 @@ class UserModel extends BaseModel {
         following: { type: "integer" },
         profileImage: { type: "string", minLength: 1, maxLength: 255 },
         coverImage: { type: "string", minLength: 1, maxLength: 255 },
-        lastLoginDate: { type: "string", format: "date-time" }
+        lastLoginDate: { type: "string", format: "date-time" },
+        role: { type: "string", enum: ["role_user", "role_admin", "role_superadmin"] },
+        isBanned: { type: "boolean", default: false },
+        bannedUntil: { type: ["string", "null"], format: "date-time" }
       }
     }
   }
 
   static generateVerifyToken() {
     return crypto.randomBytes(20).toString("hex")
+  }
+
+  static async updateBanStatus() {
+    const now = new Date().toISOString()
+    await UserModel.query().where("isBanned", true).andWhere("bannedUntil", "<", now).patch({
+      isBanned: false,
+      bannedUntil: null
+    })
   }
 }
 

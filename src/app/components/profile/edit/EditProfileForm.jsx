@@ -57,7 +57,6 @@ const EditProfileForm = ({
         </button>
         <button
           type="button"
-          // eslint-disable-next-line no-undef
           onClick={handleCancel}
           className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-gray-500"
         >
