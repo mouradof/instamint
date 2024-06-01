@@ -35,4 +35,6 @@ const Home = () => {
   )
 }
 
+Home.isPublicPage = false
+
 export default Home

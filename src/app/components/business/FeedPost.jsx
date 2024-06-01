@@ -83,7 +83,9 @@ const Feed = ({ type }) => {
               username={post.username}
               createdAt={post.createdAt}
               description={post.description}
-              imageUrl={post.imageUrl}
+              mediaData={post.mediaData}
+              location={post.location}
+              hashtags={post.hashtags}
               profileImage={post.profileImage}
               postId={post.postId}
               userId={post.userId}

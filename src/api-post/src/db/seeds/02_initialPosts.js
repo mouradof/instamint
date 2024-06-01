@@ -12,7 +12,11 @@ export const seed = async knex => {
       ownerId,
       createdAt: faker.date.recent(),
       description: faker.lorem.lines(2),
-      imageUrl: faker.image.imageUrl()
+      mediaData: faker.image.imageUrl(),
+      termsAccepted: true,
+      isDraft: false,
+      location: faker.address.city(),
+      hashtags: faker.lorem.words(5)
     })
   }
   await knex("posts").insert(postData)

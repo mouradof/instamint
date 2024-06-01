@@ -38,12 +38,13 @@ const prepareRoutesForYou = ({ app }) => {
         const directFollows = await FollowModel.query().where("followerId", userId)
         const followedIds = directFollows.map(user => user.followedId)
         const indirectFollows = await FollowModel.query().whereIn("followerId", followedIds)
-        const allFollowedIds = [...followedIds, ...indirectFollows.map(user => user.followedId)]
+        const allFollowedIds = [...followedIds, ...indirectFollows.map(user => user.followedId), userId]
 
         const allPosts = await PostModel.query()
           .whereIn("ownerId", allFollowedIds)
           .join("users", "posts.ownerId", "=", "users.id")
           .select("posts.*", "users.username", "users.profileImage")
+          .orderBy("posts.createdAt", "desc")
           .limit(10 * (page + 1))
 
         const formattedPosts = allPosts.map(post => ({
@@ -52,7 +53,9 @@ const prepareRoutesForYou = ({ app }) => {
           profileImage: post.profileImage,
           createdAt: post.createdAt,
           description: post.description,
-          imageUrl: post.imageUrl,
+          mediaData: post.mediaData,
+          location: post.location,
+          hashtags: post.hashtags,
           username: post.username,
           userId: post.userId
         }))
