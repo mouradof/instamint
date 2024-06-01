@@ -49,9 +49,3 @@ The academic setting, with its specific constraints and requirements, benefited 
 ## Conclusion
 
 Agile rituals played a crucial role in the success of the Instamint project. They not only enabled effective project management in a complex educational environment but also enhanced the professional skills of each developer. These methods, tailored to our specific context, demonstrated that even within a mandated framework, flexibility and communication remain key to success in developing innovative and competitive solutions. Instamint is thus a compelling testament to the fact that agility, when properly applied, can transform challenges into opportunities, even for a team facing multiple constraints in a work-study scenario.
-
-<figure style="text-align: center;">
-    <img src="../public/images/Instamint.png"
-         alt="Instamint Logo"
-         style="width: 50%; object-fit: contain;">
-</figure>
