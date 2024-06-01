@@ -1,0 +1,737 @@
+Nom du fichier: ./config.js
+Contenu:
+import knexfile from "./knexfile.js"
+import dotenv from "dotenv"
+import { resolve } from "path"
+
+dotenv.config({ path: resolve(".env") })
+
+const config = {
+  port: 4002,
+  db: knexfile,
+  security: {
+    password: {
+      saltlen: 512,
+      keylen: 512,
+      iterations: 100000,
+      digest: "sha512",
+      pepper: process.env.SECURITY__PASSWORD__PEPPER
+    }
+  }
+}
+export default config
+
+
+
+Nom du fichier: ./configAWS.cjs
+Contenu:
+const AWS = require("aws-sdk")
+const { config } = require("dotenv")
+
+config()
+
+AWS.config.update({
+  accessKeyId: process.env.ACCESS_KEY_ID_S3,
+  secretAccessKey: process.env.SECRET_ACCESS_KEY_S3,
+  region: "eu-west-3",
+  signatureVersion: "v4"
+})
+
+const s3 = new AWS.S3()
+
+module.exports = s3
+
+
+
+Nom du fichier: ./index.js
+Contenu:
+import { serve } from "@hono/node-server"
+import { Hono } from "hono"
+import { cors } from "hono/cors"
+import { logger } from "hono/logger"
+import knex from "knex"
+import { authMiddleware } from "./src/middleware/auth.js"
+import BaseModel from "./src/db/models/BaseModel.js"
+import config from "./config.js"
+import userRoutes from "./src/routes/user-routes.js"
+import prepareRouteRegister from "./src/routes/register-route.js"
+import prepareRouteLogin from "./src/routes/login-route.js"
+import prepareRouteVerify from "./src/routes/verify-route.js"
+import adminRoute from "./src/routes/admin/admin-route.js"
+import superAdminRoute from "./src/routes/superadmin/superadmin-route.js"
+import dotenv from "dotenv"
+
+dotenv.config()
+
+const db = knex(config.db)
+BaseModel.knex(db)
+
+const app = new Hono()
+
+app.use(logger())
+app.use(
+  cors({
+    origin: "*",
+    allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowHeaders: ["*"],
+    credentials: true
+  })
+)
+
+app.route("/api/user", userRoutes)
+app.use("/api/protected", authMiddleware)
+app.route("/admin", adminRoute)
+app.route("/superadmin", superAdminRoute)
+
+prepareRouteRegister({ app, db })
+prepareRouteLogin({ app, db })
+prepareRouteVerify({ app, db })
+
+serve({
+  fetch: app.fetch,
+  port: config.port
+})
+
+// eslint-disable-next-line no-console
+console.log(`Server listening on port ${config.port}`)
+
+
+
+Nom du fichier: ./knexfile.js
+Contenu:
+import { config } from "dotenv"
+import { resolve } from "path"
+
+config()
+
+const isMigration = process.env.KNEX_CONTEXT === "migration"
+
+const knexfile = {
+  client: "pg",
+  connection: {
+    host: isMigration ? process.env.DB_HOST_MIGRATIONS : process.env.DB_HOST_API,
+    port: process.env.DB_PORT,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_DATABASE
+  },
+  migrations: {
+    directory: resolve("src/db/migrations"),
+    stub: resolve("src/db/migration.stub")
+  },
+  seeds: {
+    directory: resolve("src/db/seeds")
+  }
+}
+
+export default knexfile
+
+
+
+Nom du fichier: ./prepareRoutes.js
+Contenu:
+import prepareRoutesUsers from "./src/routes/auth-routes.js"
+import prepareRouteLogin from "./src/routes/login-route.js"
+import prepareRouteRegister from "./src/routes/register-routes.js"
+import prepareRouteVerify from "./src/routes/verify-routes.js"
+
+const prepareRoutes = ctx => {
+  prepareRouteLogin(ctx)
+  prepareRouteRegister(ctx)
+  prepareRouteVerify(ctx)
+  prepareRoutesUsers(ctx)
+}
+
+export default prepareRoutes
+
+
+
+Nom du fichier: ./src/middleware/auth.js
+Contenu:
+import jwt from "jsonwebtoken"
+
+async function authMiddleware(ctx, next) {
+  const authHeader = ctx.req.headers.get("authorization")
+
+  if (!authHeader) {
+    ctx.status = 401
+
+    return ctx.json({ message: "Authorization header is missing" })
+  }
+
+  const token = authHeader.split(" ")[1]
+
+  if (!token) {
+    ctx.status = 401
+
+    return ctx.json({ message: "Auth token is not supplied" })
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET)
+    ctx.req.userData = decoded
+    await next()
+  } catch (error) {
+    ctx.status = 401
+
+    return ctx.json({
+      message: "Auth failed",
+      error: error.message
+    })
+  }
+}
+
+export { authMiddleware }
+
+
+
+Nom du fichier: ./src/routes/admin/admin-route.js
+Contenu:
+import { Hono } from "hono"
+import UserModel from "../../db/models/UserModel.js"
+
+const adminRoute = new Hono()
+
+adminRoute.post("/ban/:id", async c => {
+  const { id } = c.req.param()
+  const { duration } = await c.req.json()
+
+  let bannedUntil
+  const now = new Date()
+
+  switch (duration) {
+    case "10m":
+      bannedUntil = new Date(now.getTime() + 10 * 60 * 1000) // 10 minutes
+
+      break
+
+    case "12h":
+      bannedUntil = new Date(now.getTime() + 12 * 60 * 60 * 1000) // 12 hours
+
+      break
+
+    case "24h":
+      bannedUntil = new Date(now.getTime() + 24 * 60 * 60 * 1000) // 24 hours
+
+      break
+
+    case "1w":
+      bannedUntil = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000) // 1 week
+
+      break
+
+    case "1m":
+      bannedUntil = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000) // 1 month
+
+      break
+
+    case "forever":
+      bannedUntil = null // Permanent ban
+
+      break
+
+    default:
+      return c.json({ message: "Invalid ban duration" }, 400)
+  }
+
+  await UserModel.query().patchAndFetchById(id, {
+    isBanned: true,
+    bannedUntil: bannedUntil ? bannedUntil.toISOString() : null
+  })
+
+  return c.json({ message: "User banned successfully" })
+})
+
+adminRoute.post("/unban/:id", async c => {
+  const { id } = c.req.param()
+
+  await UserModel.query().patchAndFetchById(id, {
+    isBanned: false,
+    bannedUntil: null
+  })
+
+  return c.json({ message: "User unbanned successfully" })
+})
+
+adminRoute.get("/banned", async c => {
+  const bannedUsers = await UserModel.query().where("isBanned", true)
+
+  return c.json(bannedUsers)
+})
+
+export default adminRoute
+
+
+
+Nom du fichier: ./src/routes/login-route.js
+Contenu:
+import { Hono } from "hono"
+import bcrypt from "bcrypt"
+import { sign } from "hono/jwt"
+import UserModel from "../db/models/UserModel.js"
+
+const prepareRouteLogin = ({ app }) => {
+  const auth = new Hono()
+
+  auth.post("/login", async c => {
+    const body = await c.req.json()
+    const { email, password } = body
+
+    try {
+      const user = await UserModel.query().where({ email }).first()
+
+      if (!user) {
+        return c.json({ message: "Email or password is incorrect" }, 401)
+      }
+
+      // Met à jour le statut de bannissement si nécessaire
+      await UserModel.updateBanStatus(user.id)
+
+      // Rafraîchit les informations utilisateur après la mise à jour du statut de bannissement
+      const updatedUser = await UserModel.query().findById(user.id)
+
+      if (updatedUser.isBanned) {
+        return c.json({ message: "Account is banned" }, 403)
+      }
+
+      const match = await bcrypt.compare(password, updatedUser.passwordHash)
+
+      if (!match) {
+        return c.json({ message: "Email or password is incorrect" }, 401)
+      }
+
+      const now = new Date().toISOString()
+
+      const lastLoginDate = new Date(updatedUser.lastLoginDate)
+      const diffDays = Math.ceil((new Date(now) - lastLoginDate) / (1000 * 60 * 60 * 24))
+
+      if (diffDays > 15) {
+        await UserModel.query().deleteById(updatedUser.id)
+
+        return c.json({ message: "Account has been deleted due to inactivity" }, 401)
+      }
+
+      try {
+        await UserModel.query().patchAndFetchById(updatedUser.id, { lastLoginDate: now })
+      } catch (error) {
+        return c.json({ message: "Failed to update last login date", error: error.message }, 500)
+      }
+
+      if (!updatedUser.emailVerified) {
+        return c.json({ message: "Please verify your email address first" }, 401)
+      }
+
+      const payload = {
+        id: updatedUser.id,
+        username: updatedUser.username,
+        email: updatedUser.email,
+        role: updatedUser.role,
+        exp: Math.floor(Date.now() / 1000) + 60 * 5
+      }
+
+      const token = await sign(payload, process.env.JWT_SECRET)
+
+      let redirectUrl = "/profile"
+
+      if (updatedUser.role === "role_admin") {
+        redirectUrl = "/admin"
+      } else if (updatedUser.role === "role_superadmin") {
+        redirectUrl = "/superadmin"
+      }
+
+      return c.json(
+        {
+          message: "Auth successful",
+          token,
+          user: {
+            id: updatedUser.id,
+            username: updatedUser.username,
+            email: updatedUser.email,
+            profileImage: updatedUser.profileImage,
+            coverImage: updatedUser.coverImage,
+            bio: updatedUser.bio,
+            followers: updatedUser.followers,
+            following: updatedUser.following,
+            role: updatedUser.role
+          },
+          redirectUrl
+        },
+        200
+      )
+    } catch (error) {
+      return c.json({ message: "Authentication service unavailable", error: error.message }, 500)
+    }
+  })
+
+  app.route("/auth", auth)
+}
+
+export default prepareRouteLogin
+
+
+
+Nom du fichier: ./src/routes/register-route.js
+Contenu:
+import { Hono } from "hono"
+import bcrypt from "bcrypt"
+import UserModel from "../db/models/UserModel.js"
+import sendVerificationEmail from "../helpers/emailHelper.js"
+
+const prepareRouteRegister = ({ app }) => {
+  const auth = new Hono()
+
+  auth.post("/register", async c => {
+    const body = await c.req.json()
+    const { username, email, password } = body
+
+    try {
+      const existingUser = await UserModel.query().where({ email }).first()
+
+      if (existingUser) {
+        return c.json({ message: "Email already in use" }, 409)
+      }
+
+      const salt = await bcrypt.genSalt(10)
+      const hashedPassword = await bcrypt.hash(password, salt)
+
+      const newUser = await UserModel.query().insert({
+        username,
+        email,
+        passwordHash: hashedPassword,
+        passwordSalt: salt,
+        verifyToken: UserModel.generateVerifyToken(),
+        emailVerified: false,
+        isBanned: false,
+        bannedUntil: null
+      })
+
+      await sendVerificationEmail(newUser.email, newUser.verifyToken)
+
+      return c.json(
+        {
+          message: "User registered. Please check your email to verify your account."
+        },
+        201
+      )
+    } catch (error) {
+      return c.json({ message: "Error registering user", error: error.message }, 500)
+    }
+  })
+
+  app.route("/auth", auth)
+}
+
+export default prepareRouteRegister
+
+
+
+Nom du fichier: ./src/routes/superadmin/superadmin-route.js
+Contenu:
+import { Hono } from "hono"
+import UserModel from "../../db/models/UserModel.js"
+
+const superAdminRoute = new Hono()
+
+superAdminRoute.get("/", async ctx => {
+  const users = await UserModel.query()
+
+  return ctx.json(users)
+})
+
+superAdminRoute.put("/:id/role", async ctx => {
+  const { id } = ctx.req.param()
+  const { role } = await ctx.req.json()
+
+  const updatedUser = await UserModel.query().patchAndFetchById(id, { role })
+
+  if (!updatedUser) {
+    return ctx.json({ error: "User not found or role update failed" }, 404)
+  }
+
+  return ctx.json(updatedUser)
+})
+
+export default superAdminRoute
+
+
+
+Nom du fichier: ./src/routes/user-routes.js
+Contenu:
+import { Hono } from "hono"
+import UserModel from "../db/models/UserModel.js"
+import bcrypt from "bcrypt"
+
+const userRoutes = new Hono()
+
+userRoutes.get("/:id", async c => {
+  const id = c.req.param("id")
+
+  try {
+    const user = await UserModel.query().findById(id)
+
+    if (!user) {
+      return c.json({ message: "User not found" }, 404)
+    }
+
+    return c.json(user, 200)
+  } catch (error) {
+    return c.json({ message: "Error fetching user", error: error.message }, 500)
+  }
+})
+
+userRoutes.get("/search/:name", async c => {
+  const name = c.req.param("name").toLowerCase()
+
+  try {
+    const users = await UserModel.query().whereRaw("LOWER(username) LIKE ?", [`${name}%`])
+
+    if (users.length === 0) {
+      return c.json({ message: "No users found" }, 404)
+    }
+
+    return c.json(users, 200)
+  } catch (error) {
+    return c.json({ message: "Error fetching users", error: error.message }, 500)
+  }
+})
+
+userRoutes.put("/:id/change-password", async c => {
+  const id = c.req.param("id")
+  const { oldPassword, newPassword } = await c.req.json()
+
+  try {
+    const user = await UserModel.query().findById(id)
+
+    if (!user) {
+      return c.json({ message: "User not found" }, 404)
+    }
+
+    const validPassword = await bcrypt.compare(oldPassword, user.passwordHash)
+
+    if (!validPassword) {
+      return c.json({ message: "Old password is incorrect" }, 403)
+    }
+
+    const salt = await bcrypt.genSalt(10)
+    const hashedPassword = await bcrypt.hash(newPassword, salt)
+    await UserModel.query().patchAndFetchById(id, { passwordHash: hashedPassword })
+
+    return c.json({ message: "Password updated successfully. Please log in again.", logout: true }, 200)
+  } catch (error) {
+    return c.json({ message: "Error updating password", error: error.message }, 500)
+  }
+})
+
+userRoutes.put("/:id/update", async c => {
+  const id = c.req.param("id")
+  const body = await c.req.json()
+
+  if (!body.username || !body.bio) {
+    return c.json({ message: "Username and bio fields are required and cannot be empty" }, 400)
+  }
+
+  const existingUser = await UserModel.query().where("username", body.username).andWhere("id", "!=", id).first()
+
+  if (existingUser) {
+    return c.json({ message: "Username already exists" }, 409)
+  }
+
+  const updatedUser = await UserModel.query().patchAndFetchById(id, {
+    username: body.username,
+    bio: body.bio,
+    profileImage: body.profileImage,
+    coverImage: body.coverImage
+  })
+
+  if (!updatedUser) {
+    return c.json({ message: "User not found" }, 404)
+  }
+
+  return c.json(updatedUser, 200)
+})
+
+userRoutes.delete("/:id", async c => {
+  const id = c.req.param("id")
+  const { password } = await c.req.json()
+
+  try {
+    const user = await UserModel.query().findById(id)
+
+    if (!user) {
+      return c.json({ message: "User not found" }, 404)
+    }
+
+    const validPassword = await bcrypt.compare(password, user.passwordHash)
+
+    if (!validPassword) {
+      return c.json({ message: "Password is incorrect" }, 403)
+    }
+
+    await UserModel.query().deleteById(id)
+
+    return c.json({ message: "User deleted successfully" }, 200)
+  } catch (error) {
+    return c.json({ message: "Error deleting user", error: error.message }, 500)
+  }
+})
+
+export default userRoutes
+
+
+
+Nom du fichier: ./src/routes/verify-route.js
+Contenu:
+import { Hono } from "hono"
+import UserModel from "../db/models/UserModel.js"
+
+const prepareRouteVerify = ({ app }) => {
+  const auth = new Hono()
+
+  auth.get("/verify", async c => {
+    const { token } = c.req.query()
+
+    try {
+      const user = await UserModel.query().where({ verifyToken: token }).first()
+
+      if (!user) {
+        return c.json({ message: "Invalid token" }, 400)
+      }
+
+      await UserModel.query()
+
+        .findById(user.id)
+        .patch({ emailVerified: true, verifyToken: null })
+
+      return c.redirect("http://localhost:3000/login?verified=true")
+    } catch (error) {
+      return c.json({ message: "Error verifying email", error: error.message }, 500)
+    }
+  })
+
+  app.route("/auth", auth)
+}
+
+export default prepareRouteVerify
+
+
+
+Nom du fichier: ./src/routes/wallet-route.js
+Contenu:
+import { Hono } from "hono"
+import bcrypt from "bcrypt"
+import { sign } from "hono/jwt"
+import UserModel from "../db/models/UserModel.js"
+
+const prepareRouteWallet = ({ app }) => {
+  const auth = new Hono()
+
+  auth.post("/checkWallet", async c => {
+    const body = await c.req.json()
+    const { walletAddress } = body
+
+    try {
+      const user = await UserModel.query().where({ walletAddress }).first()
+
+      if (user) {
+        const payload = {
+          id: user.id,
+          username: user.username,
+          walletAddress: user.walletAddress,
+          exp: Math.floor(Date.now() / 1000) + 60 * 5
+        }
+
+        const token = await sign(payload, process.env.JWT_SECRET)
+
+        return c.json(
+          {
+            exists: true,
+            token,
+            user: {
+              id: user.id,
+              username: user.username,
+              email: user.email,
+              walletAddress: user.walletAddress,
+              profileImage: user.profileImage,
+              coverImage: user.coverImage,
+              bio: user.bio,
+              followers: user.followers,
+              following: user.following
+            }
+          },
+          200
+        )
+      } else {
+        return c.json({ exists: false })
+      }
+    } catch (error) {
+      return c.json({ message: "Error checking wallet", error: error.message }, 500)
+    }
+  })
+
+  auth.post("/registerWallet", async c => {
+    const body = await c.req.json()
+    const { username, email, password, walletAddress } = body
+
+    try {
+      const existingUser = await UserModel.query().where({ walletAddress }).first()
+
+      if (existingUser) {
+        return c.json({ message: "Wallet address already in use" }, 409)
+      }
+
+      let passwordHash = null
+      let salt = null
+
+      if (password) {
+        salt = await bcrypt.genSalt(10)
+        passwordHash = await bcrypt.hash(password, salt)
+      }
+
+      const newUser = await UserModel.query().insert({
+        username,
+        email,
+        passwordHash,
+        passwordSalt: salt,
+        walletAddress,
+        emailVerified: true // Assuming no email verification needed for wallet login
+      })
+
+      const payload = {
+        id: newUser.id,
+        username: newUser.username,
+        walletAddress: newUser.walletAddress,
+        exp: Math.floor(Date.now() / 1000) + 60 * 5
+      }
+
+      const token = await sign(payload, process.env.JWT_SECRET)
+
+      return c.json(
+        {
+          message: "User registered successfully",
+          token,
+          user: {
+            id: newUser.id,
+            username: newUser.username,
+            email: newUser.email,
+            walletAddress: newUser.walletAddress,
+            profileImage: newUser.profileImage,
+            coverImage: newUser.coverImage,
+            bio: newUser.bio,
+            followers: newUser.followers,
+            following: newUser.following
+          }
+        },
+        201
+      )
+    } catch (error) {
+      return c.json({ message: "Error registering user", error: error.message }, 500)
+    }
+  })
+
+  app.route("/auth", auth)
+}
+
+export default prepareRouteWallet
+
+
+
