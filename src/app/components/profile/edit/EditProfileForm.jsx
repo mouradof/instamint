@@ -8,7 +8,8 @@ const EditProfileForm = ({
   handleSubmit,
   loading,
   message,
-  handleCancel
+  handleCancel,
+  handleUseDefaultImagesChange
 }) => (
   <>
     {message && <Message type={message.type} text={message.text} />}
@@ -40,30 +41,47 @@ const EditProfileForm = ({
           required
         />
       </div>
-      <div className="flex flex-col">
-        <label htmlFor="profileImage" className="text-sm font-medium text-gray-700">
-          Profile Image:
-        </label>
+      <div className="flex items-center">
         <input
-          id="profileImage"
-          type="file"
-          name="profileImage"
-          onChange={e => handleImageChange(e, "profileImage")}
-          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+          id="useDefaultImages"
+          type="checkbox"
+          name="useDefaultImages"
+          checked={user.useDefaultImages}
+          onChange={handleUseDefaultImagesChange}
+          className="mr-2"
         />
-      </div>
-      <div className="flex flex-col">
-        <label htmlFor="coverImage" className="text-sm font-medium text-gray-700">
-          Cover Image:
+        <label htmlFor="useDefaultImages" className="text-sm font-medium text-gray-700">
+          Use Default Images
         </label>
-        <input
-          id="coverImage"
-          type="file"
-          name="coverImage"
-          onChange={e => handleImageChange(e, "coverImage")}
-          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-        />
       </div>
+      {!user.useDefaultImages && (
+        <>
+          <div className="flex flex-col">
+            <label htmlFor="profileImage" className="text-sm font-medium text-gray-700">
+              Profile Image:
+            </label>
+            <input
+              id="profileImage"
+              type="file"
+              name="profileImage"
+              onChange={e => handleImageChange(e, "profileImage")}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+          <div className="flex flex-col">
+            <label htmlFor="coverImage" className="text-sm font-medium text-gray-700">
+              Cover Image:
+            </label>
+            <input
+              id="coverImage"
+              type="file"
+              name="coverImage"
+              onChange={e => handleImageChange(e, "coverImage")}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+        </>
+      )}
       <div className="flex justify-between">
         <button
           type="submit"

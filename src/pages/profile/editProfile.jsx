@@ -9,7 +9,8 @@ const EditProfile = () => {
     username: "",
     bio: "",
     profileImage: "",
-    coverImage: ""
+    coverImage: "",
+    useDefaultImages: false
   })
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState(null)
@@ -40,7 +41,8 @@ const EditProfile = () => {
           username: data.username,
           bio: data.bio,
           profileImage: data.profileImage || "",
-          coverImage: data.coverImage || ""
+          coverImage: data.coverImage || "",
+          useDefaultImages: !data.profileImage && !data.coverImage
         })
       } catch {
         router.push("/login")
@@ -68,6 +70,13 @@ const EditProfile = () => {
     }))
   }
 
+  const handleUseDefaultImagesChange = e => {
+    setUser(prev => ({
+      ...prev,
+      useDefaultImages: e.target.checked
+    }))
+  }
+
   const handleSubmit = async e => {
     e.preventDefault()
     setLoading(true)
@@ -75,6 +84,7 @@ const EditProfile = () => {
     const formData = new FormData()
     formData.append("username", user.username)
     formData.append("bio", user.bio)
+    formData.append("useDefaultImages", user.useDefaultImages)
 
     if (user.profileImage instanceof File) {
       formData.append("profileImage", user.profileImage)
@@ -128,6 +138,7 @@ const EditProfile = () => {
             loading={loading}
             message={message}
             handleCancel={handleCancel}
+            handleUseDefaultImagesChange={handleUseDefaultImagesChange}
           />
         ) : (
           <Countdown countdown={countdown} setCountdown={setCountdown} userId={session.id} />

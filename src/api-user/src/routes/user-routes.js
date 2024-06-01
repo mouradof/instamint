@@ -2,10 +2,7 @@ import { Hono } from "hono"
 import pkg from "../../configAWS.cjs"
 import UserModel from "../db/models/UserModel.js"
 import { v4 as uuidv4 } from "uuid"
-import { z } from "zod"
 import bcrypt from "bcrypt"
-import { zValidator } from "@hono/zod-validator"
-import { numberValidator, stringValidator } from "./validators.js"
 
 const generateUniqueFileName = originalFileName => {
   const uniqueId = uuidv4()
@@ -75,31 +72,10 @@ userRoutes.put("/:id/change-password", async c => {
   }
 })
 
-const updateUserSchema = z.object({
-  username: stringValidator,
-  bio: stringValidator,
-  profileImage: z
-    .object({
-      name: stringValidator,
-      lastModified: numberValidator,
-      size: numberValidator,
-      type: stringValidator
-    })
-    .optional(),
-  coverImage: z
-    .object({
-      name: stringValidator,
-      lastModified: numberValidator,
-      size: numberValidator,
-      type: stringValidator
-    })
-    .optional()
-})
-
-userRoutes.put("/:id/update", zValidator("form", updateUserSchema), async c => {
+userRoutes.put("/:id/update", async c => {
   const id = c.req.param("id")
   const body = await c.req.parseBody({ all: true })
-  const { username, bio, profileImage, coverImage } = body
+  const { username, bio, profileImage, coverImage, useDefaultImages } = body
 
   if (!username || !bio) {
     return c.json({ message: "Username and bio fields are required and cannot be empty" }, 400)
@@ -113,30 +89,35 @@ userRoutes.put("/:id/update", zValidator("form", updateUserSchema), async c => {
 
   let profileImageUrl, coverImageUrl
 
-  if (profileImage) {
-    const uniqueProfileImageName = generateUniqueFileName(profileImage.name)
-    const profileImageBuffer = Buffer.from(await profileImage.arrayBuffer())
-    const profileImageParams = {
-      Bucket: process.env.BUCKET_NAME_S3,
-      Key: uniqueProfileImageName,
-      Body: profileImageBuffer,
-      ContentType: profileImage.type
+  if (useDefaultImages === "true") {
+    profileImageUrl = "/images/default-profile-picture.jpg"
+    coverImageUrl = "/images/default-cover-picture.jpg"
+  } else {
+    if (profileImage) {
+      const uniqueProfileImageName = generateUniqueFileName(profileImage.name)
+      const profileImageBuffer = Buffer.from(await profileImage.arrayBuffer())
+      const profileImageParams = {
+        Bucket: process.env.BUCKET_NAME_S3,
+        Key: uniqueProfileImageName,
+        Body: profileImageBuffer,
+        ContentType: profileImage.type
+      }
+      await pkg.upload(profileImageParams).promise()
+      profileImageUrl = `https://${process.env.BUCKET_NAME_S3}.s3.amazonaws.com/${uniqueProfileImageName}`
     }
-    await pkg.upload(profileImageParams).promise()
-    profileImageUrl = `https://${process.env.BUCKET_NAME_S3}.s3.amazonaws.com/${uniqueProfileImageName}`
-  }
 
-  if (coverImage) {
-    const uniqueCoverImageName = generateUniqueFileName(coverImage.name)
-    const coverImageBuffer = Buffer.from(await coverImage.arrayBuffer())
-    const coverImageParams = {
-      Bucket: process.env.BUCKET_NAME_S3,
-      Key: uniqueCoverImageName,
-      Body: coverImageBuffer,
-      ContentType: coverImage.type
+    if (coverImage) {
+      const uniqueCoverImageName = generateUniqueFileName(coverImage.name)
+      const coverImageBuffer = Buffer.from(await coverImage.arrayBuffer())
+      const coverImageParams = {
+        Bucket: process.env.BUCKET_NAME_S3,
+        Key: uniqueCoverImageName,
+        Body: coverImageBuffer,
+        ContentType: coverImage.type
+      }
+      await pkg.upload(coverImageParams).promise()
+      coverImageUrl = `https://${process.env.BUCKET_NAME_S3}.s3.amazonaws.com/${uniqueCoverImageName}`
     }
-    await pkg.upload(coverImageParams).promise()
-    coverImageUrl = `https://${process.env.BUCKET_NAME_S3}.s3.amazonaws.com/${uniqueCoverImageName}`
   }
 
   const updatedUser = await UserModel.query().patchAndFetchById(id, {
