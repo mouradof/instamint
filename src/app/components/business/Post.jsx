@@ -24,6 +24,10 @@ const Post = ({ postId, profileImage, username, ownerId, createdAt, description,
   } = useAppContext()
 
   useEffect(() => {
+    if (!postId) {
+      return
+    }
+
     const fetchComments = async () => {
       try {
         const response = await fetch(`http://localhost:4002/post/${postId}/comments`)

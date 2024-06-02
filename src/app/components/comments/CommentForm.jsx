@@ -14,7 +14,7 @@ const CommentForm = ({ postId, userId, onCommentAdded }) => {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ userId, content }) // Assurez-vous que userId est défini correctement
+        body: JSON.stringify({ userId, content })
       })
 
       if (!response.ok) {
