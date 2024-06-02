@@ -9,14 +9,13 @@ const EditProfile = () => {
     username: "",
     bio: "",
     profileImage: "",
-    coverImage: ""
+    coverImage: "",
+    useDefaultImages: false
   })
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState(null)
   const [success, setSuccess] = useState(false)
   const [countdown, setCountdown] = useState(5)
-  const [profileImageOption, setProfileImageOption] = useState("current")
-  const [coverImageOption, setCoverImageOption] = useState("current")
   const router = useRouter()
   const {
     state: { session },
@@ -42,7 +41,8 @@ const EditProfile = () => {
           username: data.username,
           bio: data.bio,
           profileImage: data.profileImage || "",
-          coverImage: data.coverImage || ""
+          coverImage: data.coverImage || "",
+          useDefaultImages: !data.profileImage && !data.coverImage
         })
       } catch {
         router.push("/login")
@@ -54,44 +54,6 @@ const EditProfile = () => {
     }
   }, [session, getUserProfile, router])
 
-  useEffect(() => {
-    if (profileImageOption === "random") {
-      setUser(prev => ({
-        ...prev,
-        profileImage: `https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/${Math.floor(Math.random() * 1000)}.jpg`
-      }))
-    } else if (profileImageOption === "default") {
-      setUser(prev => ({
-        ...prev,
-        profileImage: "/images/default-profile-picture.jpg"
-      }))
-    } else {
-      setUser(prev => ({
-        ...prev,
-        profileImage: JSON.parse(localStorage.getItem("user")).profileImage || ""
-      }))
-    }
-  }, [profileImageOption])
-
-  useEffect(() => {
-    if (coverImageOption === "random") {
-      setUser(prev => ({
-        ...prev,
-        coverImage: `https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/${Math.floor(Math.random() * 1000)}.jpg`
-      }))
-    } else if (coverImageOption === "default") {
-      setUser(prev => ({
-        ...prev,
-        coverImage: "/images/default-cover-picture.jpg"
-      }))
-    } else {
-      setUser(prev => ({
-        ...prev,
-        coverImage: JSON.parse(localStorage.getItem("user")).coverImage || ""
-      }))
-    }
-  }, [coverImageOption])
-
   const handleInputChange = e => {
     const { name, value } = e.target
     setUser(prev => ({
@@ -100,13 +62,41 @@ const EditProfile = () => {
     }))
   }
 
+  const handleImageChange = (e, type) => {
+    const file = e.target.files[0]
+    setUser(prev => ({
+      ...prev,
+      [type]: file
+    }))
+  }
+
+  const handleUseDefaultImagesChange = e => {
+    setUser(prev => ({
+      ...prev,
+      useDefaultImages: e.target.checked
+    }))
+  }
+
   const handleSubmit = async e => {
     e.preventDefault()
     setLoading(true)
 
+    const formData = new FormData()
+    formData.append("username", user.username)
+    formData.append("bio", user.bio)
+    formData.append("useDefaultImages", user.useDefaultImages)
+
+    if (user.profileImage instanceof File) {
+      formData.append("profileImage", user.profileImage)
+    }
+
+    if (user.coverImage instanceof File) {
+      formData.append("coverImage", user.coverImage)
+    }
+
     try {
       const userId = session.id
-      const [error, data] = await updateUserProfile({ userId, userData: user })
+      const [error, data] = await updateUserProfile({ userId, userData: formData })
 
       if (error) {
         throw new Error(error)
@@ -143,14 +133,12 @@ const EditProfile = () => {
           <EditProfileForm
             user={user}
             handleInputChange={handleInputChange}
+            handleImageChange={handleImageChange}
             handleSubmit={handleSubmit}
             loading={loading}
             message={message}
-            profileImageOption={profileImageOption}
-            setProfileImageOption={setProfileImageOption}
-            coverImageOption={coverImageOption}
-            setCoverImageOption={setCoverImageOption}
             handleCancel={handleCancel}
+            handleUseDefaultImagesChange={handleUseDefaultImagesChange}
           />
         ) : (
           <Countdown countdown={countdown} setCountdown={setCountdown} userId={session.id} />
