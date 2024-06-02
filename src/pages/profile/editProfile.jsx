@@ -58,7 +58,7 @@ const EditProfile = () => {
     if (profileImageOption === "random") {
       setUser(prev => ({
         ...prev,
-        profileImage: `https://source.unsplash.com/random/400x400?sig=${Math.floor(Math.random() * 1000)}`
+        profileImage: `https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/${Math.floor(Math.random() * 1000)}.jpg`
       }))
     } else if (profileImageOption === "default") {
       setUser(prev => ({
@@ -77,7 +77,7 @@ const EditProfile = () => {
     if (coverImageOption === "random") {
       setUser(prev => ({
         ...prev,
-        coverImage: `https://source.unsplash.com/random/1200x400?sig=${Math.floor(Math.random() * 1000)}`
+        coverImage: `https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/${Math.floor(Math.random() * 1000)}.jpg`
       }))
     } else if (coverImageOption === "default") {
       setUser(prev => ({
@@ -150,7 +150,7 @@ const EditProfile = () => {
             setProfileImageOption={setProfileImageOption}
             coverImageOption={coverImageOption}
             setCoverImageOption={setCoverImageOption}
-            handleCancel={handleCancel} // Passez handleCancel ici
+            handleCancel={handleCancel}
           />
         ) : (
           <Countdown countdown={countdown} setCountdown={setCountdown} userId={session.id} />
