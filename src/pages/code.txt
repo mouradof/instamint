@@ -1,0 +1,550 @@
+Nom du fichier: ./_app.jsx
+Contenu:
+import Layout from "@/app/layout/layout.jsx"
+import "@/app/styles/globals.css"
+import { AppContextProvider } from "@/app/hooks/useContext.jsx"
+
+function MyApp({ Component, pageProps }) {
+  return (
+    <AppContextProvider isPublicPage={Component.isPublicPage}>
+      <Layout>
+        <Component {...pageProps} />
+      </Layout>
+    </AppContextProvider>
+  )
+}
+
+export default MyApp
+
+
+
+Nom du fichier: ./logout/logout.jsx
+Contenu:
+import { useEffect } from "react"
+import { useRouter } from "next/router"
+
+const Logout = () => {
+  const router = useRouter()
+
+  useEffect(() => {
+    localStorage.removeItem("user")
+    localStorage.removeItem("token")
+    localStorage.removeItem("session")
+
+    router.push("/login")
+  }, [router])
+
+  return <div>Logging out... Please wait.</div>
+}
+
+export default Logout
+
+
+
+Nom du fichier: ./profile/[id].jsx
+Contenu:
+import React, { useState, useEffect } from "react"
+import { useRouter } from "next/router"
+import ProfileHeader from "@/app/components/profile/ProfileHeader.jsx"
+import ProfileContent from "@/app/components/profile/ProfileContent.jsx"
+import useAppContext from "@/app/hooks/useContext.jsx"
+
+const ProfilePage = () => {
+  const [user, setUser] = useState(null)
+  const [userPosts, setUserPosts] = useState([])
+  const router = useRouter()
+  const {
+    state: { session },
+    action: { getUserProfile, getUserPosts }
+  } = useAppContext()
+
+  useEffect(() => {
+    if (!session) {
+      router.push("/login")
+
+      return
+    }
+
+    const fetchUserData = async () => {
+      try {
+        const userId = router.query.id
+
+        if (!userId) {
+          return
+        }
+
+        const [profileError, profileData] = await getUserProfile({ userId })
+
+        if (profileError) {
+          throw new Error(profileError)
+        }
+
+        setUser(profileData)
+
+        const [postsError, postsData] = await getUserPosts({ userId })
+
+        if (postsError) {
+          throw new Error(postsError)
+        }
+
+        setUserPosts(postsData)
+      } catch (err) {
+        router.push("/login")
+      }
+    }
+
+    fetchUserData()
+  }, [session, router.query.id, getUserProfile, getUserPosts, router])
+
+  if (!session) {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-white text-4xl font-bold">
+        <span className="animate-bounce">Loading...</span>
+      </div>
+    )
+  }
+
+  return (
+    <div className="flex flex-col items-center w-full">
+      {user ? (
+        <>
+          <ProfileHeader user={user} />
+          <ProfileContent user={user} posts={userPosts} />
+        </>
+      ) : (
+        <p>Loading...</p>
+      )}
+    </div>
+  )
+}
+
+export default ProfilePage
+
+
+
+Nom du fichier: ./profile/changePassword.jsx
+Contenu:
+import React, { useState, useEffect } from "react"
+import { useRouter } from "next/router"
+import useAppContext from "@/app/hooks/useContext.jsx"
+import Toast from "@/app/components/common/Toast.jsx"
+import PasswordChangeForm from "@/app/components/profile/PasswordChangeForm.jsx"
+import PasswordChangeSuccessMessage from "@/app/components/profile/PasswordChangeSuccessMessage.jsx"
+
+const ChangePassword = () => {
+  const [passwords, setPasswords] = useState({
+    oldPassword: "",
+    newPassword: "",
+    confirmPassword: ""
+  })
+  const [loading, setLoading] = useState(false)
+  const [message, setMessage] = useState(null)
+  const [success, setSuccess] = useState(false)
+  const [countdown, setCountdown] = useState(5)
+  const router = useRouter()
+  const {
+    state: { session },
+    action: { changePassword }
+  } = useAppContext()
+
+  useEffect(() => {
+    if (!session) {
+      router.push("/login")
+    }
+  }, [session, router])
+
+  const handleChange = e => {
+    const { name, value } = e.target
+    setPasswords(prev => ({
+      ...prev,
+      [name]: value
+    }))
+  }
+
+  const handleSubmit = async e => {
+    e.preventDefault()
+    setLoading(true)
+
+    if (passwords.newPassword !== passwords.confirmPassword) {
+      setMessage({ text: "New passwords do not match!", type: "error" })
+      setLoading(false)
+
+      return
+    }
+
+    const passwordRegex = /^(?=.*[A-Z])(?=.*[!@#$%^&*])(?=.{8,})/
+
+    if (!passwordRegex.test(passwords.newPassword)) {
+      setMessage({
+        text: "Password must be at least 8 characters long, contain 1 uppercase letter and 1 symbol.",
+        type: "error"
+      })
+      setLoading(false)
+
+      return
+    }
+
+    try {
+      const [error, response] = await changePassword({
+        idUser: session.id,
+        oldPassword: passwords.oldPassword,
+        newPassword: passwords.newPassword
+      })
+
+      if (error) {
+        setMessage({ text: error, type: "error" })
+        setLoading(false)
+
+        return
+      }
+
+      setMessage({ text: response.message, type: "success" })
+      setSuccess(true)
+
+      const countdownInterval = setInterval(() => {
+        setCountdown(prevCountdown => prevCountdown - 1)
+      }, 1000)
+
+      setTimeout(() => {
+        clearInterval(countdownInterval)
+        localStorage.removeItem("user")
+        localStorage.removeItem("token")
+        router.push("/login")
+      }, 5000)
+    } catch (error) {
+      setMessage({ text: "Failed to update password. Please try again.", type: "error" })
+      setLoading(false)
+    }
+  }
+
+  const handleCancel = () => {
+    const userId = session?.id
+    router.push(`/profile/${userId}`)
+  }
+
+  return (
+    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+      <div className="bg-white shadow-lg rounded-lg p-8 max-w-md w-full">
+        <h1 className="text-2xl font-bold text-blue-600 mb-4">Change Password</h1>
+        {!success ? (
+          <>
+            {message && (
+              <div
+                className={`mb-4 p-4 rounded ${message.type === "success" ? "bg-green-500 text-white" : "bg-red-500 text-white"}`}
+              >
+                {message.text}
+              </div>
+            )}
+            <PasswordChangeForm
+              passwords={passwords}
+              handleChange={handleChange}
+              handleSubmit={handleSubmit}
+              handleCancel={handleCancel}
+              loading={loading}
+            />
+          </>
+        ) : (
+          <PasswordChangeSuccessMessage countdown={countdown} />
+        )}
+      </div>
+      {message && <Toast message={message.text} isSuccess={message.type === "success"} />}
+    </div>
+  )
+}
+
+export default ChangePassword
+
+
+
+Nom du fichier: ./profile/deleteProfile.jsx
+Contenu:
+import React, { useState } from "react"
+import useAppContext from "@/app/hooks/useContext.jsx"
+import { useRouter } from "next/router"
+import DeleteProfileForm from "@/app/components/profile/delete/DeleteProfileForm"
+import DeleteProfileMessage from "@/app/components/profile/delete/DeleteProfileMessage"
+import DeleteProfileCountdown from "@/app/components/profile/delete/DeleteProfileCountdown"
+
+const DeleteProfile = () => {
+  const {
+    state: { session },
+    action: { deleteUserProfile }
+  } = useAppContext()
+  const [loading, setLoading] = useState(false)
+  const [message, setMessage] = useState(null)
+  const [success, setSuccess] = useState(false)
+  const [countdown, setCountdown] = useState(5)
+  const router = useRouter()
+
+  const handleDelete = async password => {
+    setLoading(true)
+
+    try {
+      // eslint-disable-next-line no-unused-vars
+      const [error, data] = await deleteUserProfile({ userId: session.id, password })
+
+      if (error) {
+        throw new Error(error)
+      }
+
+      setSuccess(true)
+      setMessage("Account deleted successfully!")
+      setTimeout(() => {
+        router.push("/login")
+      }, 5000)
+    } catch (error) {
+      setMessage(error.message || "Error deleting account. Please try again.")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+      <div className="bg-white shadow-lg rounded-lg p-8 max-w-md w-full">
+        {!success ? (
+          <DeleteProfileForm
+            onDelete={handleDelete}
+            loading={loading}
+            message={message}
+            success={success}
+            router={router}
+            session={session}
+          />
+        ) : (
+          <>
+            <DeleteProfileMessage countdown={countdown} />
+            <DeleteProfileCountdown countdown={countdown} setCountdown={setCountdown} />
+          </>
+        )}
+      </div>
+    </div>
+  )
+}
+
+export default DeleteProfile
+
+
+
+Nom du fichier: ./profile/editProfile.jsx
+Contenu:
+import React, { useState, useEffect } from "react"
+import { useRouter } from "next/router"
+import useAppContext from "@/app/hooks/useContext.jsx"
+import EditProfileForm from "@/app/components/profile/edit/EditProfileForm"
+import Countdown from "@/app/components/profile/edit/Countdown"
+
+const EditProfile = () => {
+  const [user, setUser] = useState({
+    username: "",
+    bio: "",
+    profileImage: "",
+    coverImage: "",
+    useDefaultImages: false
+  })
+  const [loading, setLoading] = useState(false)
+  const [message, setMessage] = useState(null)
+  const [success, setSuccess] = useState(false)
+  const [countdown, setCountdown] = useState(5)
+  const router = useRouter()
+  const {
+    state: { session },
+    action: { updateUserProfile, getUserProfile }
+  } = useAppContext()
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const userId = session.id
+
+        if (!userId) {
+          throw new Error("No user ID found")
+        }
+
+        const [error, data] = await getUserProfile({ userId })
+
+        if (error) {
+          throw new Error(error)
+        }
+
+        setUser({
+          username: data.username,
+          bio: data.bio,
+          profileImage: data.profileImage || "",
+          coverImage: data.coverImage || "",
+          useDefaultImages: !data.profileImage && !data.coverImage
+        })
+      } catch {
+        router.push("/login")
+      }
+    }
+
+    if (session) {
+      fetchUserData()
+    }
+  }, [session, getUserProfile, router])
+
+  const handleInputChange = e => {
+    const { name, value } = e.target
+    setUser(prev => ({
+      ...prev,
+      [name]: value
+    }))
+  }
+
+  const handleImageChange = (e, type) => {
+    const file = e.target.files[0]
+    setUser(prev => ({
+      ...prev,
+      [type]: file
+    }))
+  }
+
+  const handleUseDefaultImagesChange = e => {
+    setUser(prev => ({
+      ...prev,
+      useDefaultImages: e.target.checked
+    }))
+  }
+
+  const handleSubmit = async e => {
+    e.preventDefault()
+    setLoading(true)
+
+    const formData = new FormData()
+    formData.append("username", user.username)
+    formData.append("bio", user.bio)
+    formData.append("useDefaultImages", user.useDefaultImages)
+
+    if (user.profileImage instanceof File) {
+      formData.append("profileImage", user.profileImage)
+    }
+
+    if (user.coverImage instanceof File) {
+      formData.append("coverImage", user.coverImage)
+    }
+
+    try {
+      const userId = session.id
+      const [error, data] = await updateUserProfile({ userId, userData: formData })
+
+      if (error) {
+        throw new Error(error)
+      }
+
+      setMessage({ text: "Profile updated successfully!", type: "success" })
+      setSuccess(true)
+      localStorage.setItem("user", JSON.stringify({ ...JSON.parse(localStorage.getItem("user")), ...data }))
+
+      const countdownInterval = setInterval(() => {
+        setCountdown(prevCountdown => prevCountdown - 1)
+      }, 1000)
+
+      setTimeout(() => {
+        clearInterval(countdownInterval)
+        router.push(`/profile/${userId}`)
+      }, 5000)
+    } catch (error) {
+      setMessage({ text: error.message || "Failed to update profile. Please try again.", type: "error" })
+      setLoading(false)
+    }
+  }
+
+  const handleCancel = () => {
+    const userId = session.id
+    router.push(`/profile/${userId}`)
+  }
+
+  return (
+    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+      <div className="bg-white shadow-lg rounded-lg p-8 max-w-md w-full">
+        <h1 className="text-2xl font-bold text-blue-600 mb-4">Edit Profile</h1>
+        {!success ? (
+          <EditProfileForm
+            user={user}
+            handleInputChange={handleInputChange}
+            handleImageChange={handleImageChange}
+            handleSubmit={handleSubmit}
+            loading={loading}
+            message={message}
+            handleCancel={handleCancel}
+            handleUseDefaultImagesChange={handleUseDefaultImagesChange}
+          />
+        ) : (
+          <Countdown countdown={countdown} setCountdown={setCountdown} userId={session.id} />
+        )}
+      </div>
+    </div>
+  )
+}
+
+export default EditProfile
+
+
+
+Nom du fichier: ./user/[id].jsx
+Contenu:
+import React, { useState, useEffect } from "react"
+import { useRouter } from "next/router"
+import ProfileHeader from "@/app/components/profile/ProfileHeader.jsx"
+import ProfileContent from "@/app/components/profile/ProfileContent.jsx"
+import useAppContext from "@/app/hooks/useContext.jsx"
+
+const ProfilePage = () => {
+  const [user, setUser] = useState(null)
+  const [userPosts, setUserPosts] = useState([])
+  const router = useRouter()
+  const {
+    state: { session },
+    action: { getUserProfile, getUserPosts }
+  } = useAppContext()
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const userId = router.query.id
+        const [error, data] = await getUserProfile({ userId })
+
+        if (error) {
+          throw new Error(error)
+        }
+
+        setUser(data)
+
+        const [postsError, postsData] = await getUserPosts({ userId })
+
+        if (postsError) {
+          throw new Error(postsError)
+        }
+
+        setUserPosts(postsData)
+      } catch (err) {
+        router.push("/login")
+      }
+    }
+
+    fetchUserData()
+  }, [router.query.id, getUserProfile, getUserPosts, router])
+
+  if (!user) {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-white text-4xl font-bold">
+        <span className="animate-bounce">Loading...</span>
+      </div>
+    )
+  }
+
+  const isOwnProfile = session && session.user && session.user.id === user.id
+
+  return (
+    <div className="flex flex-col items-center w-full">
+      <ProfileHeader user={user} readOnly={!isOwnProfile} />
+      <ProfileContent user={user} posts={userPosts} readOnly={!isOwnProfile} />
+    </div>
+  )
+}
+
+export default ProfilePage
+
+
+

@@ -1180,17 +1180,29 @@ postRoutes.get("/:postId/comments", async c => {
   }
 
   try {
-    const comments = await CommentModel.query().where({ postId })
+    const comments = await CommentModel.query()
+      .where({ postId })
+      .join("users", "comments.userId", "users.id")
+      .select("comments.*", "users.username", "users.profileImage")
 
     return c.json(comments)
   } catch (error) {
-    return c.json({ error: "Failed to fetch comments" }, 500)
+    return c.json({ error: "Failed to fetch comments", details: error.message }, 500)
   }
 })
 
 postRoutes.post("/:postId/comments", async c => {
   const postId = parseInt(c.req.param("postId"), 10)
-  const { userId, content } = await c.req.json()
+
+  let commentData
+
+  try {
+    commentData = await c.req.json()
+  } catch (error) {
+    return c.json({ error: "Invalid JSON" }, 400)
+  }
+
+  const { userId, content } = commentData
 
   if (!postId || !userId || !content) {
     return c.json({ error: "Post ID, User ID, and content are required" }, 400)
@@ -1203,7 +1215,14 @@ postRoutes.post("/:postId/comments", async c => {
       content
     })
 
-    return c.json(newComment)
+    // Récupérer les informations de l'utilisateur pour le nouveau commentaire
+    const addedComment = await CommentModel.query()
+      .where("comments.id", newComment.id)
+      .join("users", "comments.userId", "users.id")
+      .select("comments.*", "users.username", "users.profileImage")
+      .first()
+
+    return c.json(addedComment, 200)
   } catch (error) {
     return c.json({ error: "Failed to add comment", details: error.message }, 500)
   }

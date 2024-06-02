@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { ChatBubbleOvalLeftIcon, EllipsisHorizontalIcon } from "@heroicons/react/24/outline"
 import usePostInteractions from "../../hooks/usePostInteractions.jsx"
 import { formatDistanceToNow } from "date-fns"
@@ -7,18 +7,40 @@ import PostOptionsPopup from "../business/OptionsPopupPost.jsx"
 import ReportModal from "./ReportModalPost.jsx"
 import DeleteModalPost from "./DeleteModalPost.jsx"
 import useAppContext from "@/app/hooks/useContext.jsx"
+import CommentList from "../comments/CommentList.jsx"
+import CommentForm from "../comments/CommentForm.jsx"
 
 const Post = ({ postId, profileImage, username, ownerId, createdAt, description, imageUrl }) => {
   const [showOptions, setShowOptions] = useState(false)
   const [showReportModal, setShowReportModal] = useState(false)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [showComments, setShowComments] = useState(false)
   const { isLiked, likeCount, toggleLike, error } = usePostInteractions(postId)
+  const [comments, setComments] = useState([])
+  const [commentSuccess, setCommentSuccess] = useState("")
 
   const {
     state: { session }
-    // This is not dead code, we only comment it out to avoid making too many requests to the bucket because we are limited to 20,000 requests in the free version
-    //action: { getImagesBucket }
   } = useAppContext()
+
+  useEffect(() => {
+    const fetchComments = async () => {
+      try {
+        const response = await fetch(`http://localhost:4002/post/${postId}/comments`)
+        const data = await response.json()
+
+        if (Array.isArray(data)) {
+          setComments(data)
+        } else {
+          setComments([])
+        }
+      } catch (error) {
+        setComments([])
+      }
+    }
+
+    fetchComments()
+  }, [postId])
 
   const handleReportClick = shouldShow => {
     setShowReportModal(shouldShow)
@@ -30,6 +52,14 @@ const Post = ({ postId, profileImage, username, ownerId, createdAt, description,
     setShowOptions(false)
   }
 
+  const handleCommentAdded = newComment => {
+    setComments([newComment, ...comments])
+    setCommentSuccess("Comment added successfully!")
+    setTimeout(() => {
+      setCommentSuccess("")
+    }, 3000)
+  }
+
   const isAuthor = session.id === ownerId
 
   const formattedTime = formatDistanceToNow(new Date(createdAt), {
@@ -38,8 +68,6 @@ const Post = ({ postId, profileImage, username, ownerId, createdAt, description,
 
   const mintIcon = "/images/mint.png"
   const mintIconSolid = "/images/mintSolid.png"
-  // const mintIcon = {getImagesBucket("mint.png")}
-  // const mintIconSolid = getImagesBucket("mintSolid.png")}
 
   return (
     <div className="border-b border-gray-200 px-4 py-4 bg-white">
@@ -82,14 +110,25 @@ const Post = ({ postId, profileImage, username, ownerId, createdAt, description,
                 />
                 <span className={`ml-1 ${isLiked ? "text-green-500" : "text-gray-500"}`}>{likeCount}</span>
               </button>
-              <button className="flex items-center space-x-1 text-gray-500">
+              <button
+                onClick={() => setShowComments(!showComments)}
+                className="flex items-center space-x-1 text-gray-500"
+              >
                 <ChatBubbleOvalLeftIcon className="h-5 w-5" />
+                <span className="ml-1">{comments.length}</span>
               </button>
             </div>
           </div>
+          {showComments && (
+            <>
+              <CommentList comments={comments} />
+              <CommentForm postId={postId} userId={session.id} onCommentAdded={handleCommentAdded} />
+            </>
+          )}
         </div>
       </div>
       {error && <Toast message={error} isSuccess={false} />}
+      {commentSuccess && <Toast message={commentSuccess} isSuccess={true} />}
     </div>
   )
 }

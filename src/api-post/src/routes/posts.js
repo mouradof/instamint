@@ -1,3 +1,5 @@
+// src/routes/posts.js
+
 import { Hono } from "hono"
 import PostModel from "../db/models/PostModel.js"
 import CommentModel from "../db/models/CommentModel.js"
