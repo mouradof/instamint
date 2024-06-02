@@ -16,7 +16,11 @@ const updateUserProfile =
     userId = parseInt(userId)
 
     try {
-      const { data } = await apiUser.put(routes.apiUser.updateProfile(userId), userData)
+      const { data } = await apiUser.put(routes.apiUser.updateProfile(userId), userData, {
+        headers: {
+          "Content-Type": "multipart/form-data"
+        }
+      })
 
       return [null, data]
     } catch (err) {

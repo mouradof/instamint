@@ -1,6 +1,15 @@
 import { Hono } from "hono"
+import pkg from "../../configAWS.cjs"
 import UserModel from "../db/models/UserModel.js"
+import { v4 as uuidv4 } from "uuid"
 import bcrypt from "bcrypt"
+
+const generateUniqueFileName = originalFileName => {
+  const uniqueId = uuidv4()
+  const fileExtension = originalFileName.split(".").pop()
+
+  return `${uniqueId}.${fileExtension}`
+}
 
 const userRoutes = new Hono()
 
@@ -65,23 +74,57 @@ userRoutes.put("/:id/change-password", async c => {
 
 userRoutes.put("/:id/update", async c => {
   const id = c.req.param("id")
-  const body = await c.req.json()
+  const body = await c.req.parseBody({ all: true })
+  const { username, bio, profileImage, coverImage, useDefaultImages } = body
 
-  if (!body.username || !body.bio) {
+  if (!username || !bio) {
     return c.json({ message: "Username and bio fields are required and cannot be empty" }, 400)
   }
 
-  const existingUser = await UserModel.query().where("username", body.username).andWhere("id", "!=", id).first()
+  const existingUser = await UserModel.query().where("username", username).andWhere("id", "!=", id).first()
 
   if (existingUser) {
     return c.json({ message: "Username already exists" }, 409)
   }
 
+  let profileImageUrl, coverImageUrl
+
+  if (useDefaultImages === "true") {
+    profileImageUrl = "/images/default-profile-picture.jpg"
+    coverImageUrl = "/images/default-cover-picture.jpg"
+  } else {
+    if (profileImage) {
+      const uniqueProfileImageName = generateUniqueFileName(profileImage.name)
+      const profileImageBuffer = Buffer.from(await profileImage.arrayBuffer())
+      const profileImageParams = {
+        Bucket: process.env.BUCKET_NAME_S3,
+        Key: uniqueProfileImageName,
+        Body: profileImageBuffer,
+        ContentType: profileImage.type
+      }
+      await pkg.upload(profileImageParams).promise()
+      profileImageUrl = `https://${process.env.BUCKET_NAME_S3}.s3.amazonaws.com/${uniqueProfileImageName}`
+    }
+
+    if (coverImage) {
+      const uniqueCoverImageName = generateUniqueFileName(coverImage.name)
+      const coverImageBuffer = Buffer.from(await coverImage.arrayBuffer())
+      const coverImageParams = {
+        Bucket: process.env.BUCKET_NAME_S3,
+        Key: uniqueCoverImageName,
+        Body: coverImageBuffer,
+        ContentType: coverImage.type
+      }
+      await pkg.upload(coverImageParams).promise()
+      coverImageUrl = `https://${process.env.BUCKET_NAME_S3}.s3.amazonaws.com/${uniqueCoverImageName}`
+    }
+  }
+
   const updatedUser = await UserModel.query().patchAndFetchById(id, {
-    username: body.username,
-    bio: body.bio,
-    profileImage: body.profileImage,
-    coverImage: body.coverImage
+    username,
+    bio,
+    profileImage: profileImageUrl,
+    coverImage: coverImageUrl
   })
 
   if (!updatedUser) {
