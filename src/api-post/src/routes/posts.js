@@ -108,15 +108,20 @@ postRoutes.put("/:postId/comments/:commentId", async c => {
 
   try {
     const updatedComment = await CommentModel.query()
+      .patchAndFetchById(commentId, { content, updatedAt: db.fn.now() })
       .where({ id: commentId, userId, postId })
-      .update({ content, updatedAt: db.fn.now() })
-      .returning("*")
 
-    if (updatedComment.length === 0) {
+    if (!updatedComment) {
       return c.json({ error: "Comment not found or not authorized" }, 404)
     }
 
-    return c.json(updatedComment[0], 200)
+    const updatedCommentWithUser = await CommentModel.query()
+      .where("comments.id", commentId)
+      .join("users", "comments.userId", "users.id")
+      .select("comments.*", "users.username", "users.profileImage")
+      .first()
+
+    return c.json(updatedCommentWithUser, 200)
   } catch (error) {
     return c.json({ error: "Failed to update comment", details: error.message }, 500)
   }

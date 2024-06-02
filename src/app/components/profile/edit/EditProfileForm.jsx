@@ -24,7 +24,7 @@ const EditProfileForm = ({
 
     if (file && !validateImage(file)) {
       setErrorMessage("Please upload a valid image file (JPEG, PNG, GIF).")
-      e.target.value = null // Clear the input
+      e.target.value = null
 
       return
     }

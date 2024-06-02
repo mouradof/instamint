@@ -26,7 +26,7 @@ const Comment = ({ comment, onCommentUpdated, onCommentDeleted }) => {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ userId: session.id, postId, content: editContent }) // Assurez-vous que postId et userId sont inclus
+        body: JSON.stringify({ userId: session.id, postId, content: editContent })
       })
 
       if (!response.ok) {

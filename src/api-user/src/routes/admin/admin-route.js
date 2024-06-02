@@ -12,32 +12,32 @@ adminRoute.post("/ban/:id", async c => {
 
   switch (duration) {
     case "10m":
-      bannedUntil = new Date(now.getTime() + 10 * 60 * 1000) // 10 minutes
+      bannedUntil = new Date(now.getTime() + 10 * 60 * 1000)
 
       break
 
     case "12h":
-      bannedUntil = new Date(now.getTime() + 12 * 60 * 60 * 1000) // 12 hours
+      bannedUntil = new Date(now.getTime() + 12 * 60 * 60 * 1000)
 
       break
 
     case "24h":
-      bannedUntil = new Date(now.getTime() + 24 * 60 * 60 * 1000) // 24 hours
+      bannedUntil = new Date(now.getTime() + 24 * 60 * 60 * 1000)
 
       break
 
     case "1w":
-      bannedUntil = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000) // 1 week
+      bannedUntil = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000)
 
       break
 
     case "1m":
-      bannedUntil = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000) // 1 month
+      bannedUntil = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000)
 
       break
 
     case "forever":
-      bannedUntil = null // Permanent ban
+      bannedUntil = null
 
       break
 

@@ -29,7 +29,6 @@ const prepareRouteRegister = ({ app }) => {
       const salt = await bcrypt.genSalt(10)
       const hashedPassword = await bcrypt.hash(password, salt)
 
-      // Define default image paths
       let profileImageUrl = "/images/default-profile-picture.jpg"
       let coverImageUrl = "/images/default-cover-picture.jpg"
 
