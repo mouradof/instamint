@@ -38,7 +38,6 @@ routesWithCors.forEach(route => {
 })
 
 prepareRoutes({ app, db })
-
 app.route("/post", postRoutes)
 
 serve({
