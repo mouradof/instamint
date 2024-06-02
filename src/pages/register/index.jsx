@@ -24,14 +24,30 @@ const Register = () => {
     return emailRegex.test(email)
   }
 
+  const validateImage = file => {
+    const validTypes = ["image/jpeg", "image/png", "image/gif"]
+
+    return validTypes.includes(file.type)
+  }
+
   const handleImageChange = e => {
     const { name, files } = e.target
+    const file = files[0]
+
+    if (file && !validateImage(file)) {
+      setErrorMessage("Please upload a valid image file (JPEG, PNG, GIF).")
+      e.target.value = null // Clear the input
+
+      return
+    }
 
     if (name === "profileImage") {
-      setProfileImage(files[0])
+      setProfileImage(file)
     } else if (name === "coverImage") {
-      setCoverImage(files[0])
+      setCoverImage(file)
     }
+
+    setErrorMessage("")
   }
 
   const handleNextStep = () => {
