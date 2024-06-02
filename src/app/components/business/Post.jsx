@@ -64,6 +64,14 @@ const Post = ({ postId, profileImage, username, ownerId, createdAt, description,
     }, 3000)
   }
 
+  const handleCommentUpdated = updatedComment => {
+    setComments(comments.map(comment => (comment.id === updatedComment.id ? updatedComment : comment)))
+  }
+
+  const handleCommentDeleted = commentId => {
+    setComments(comments.filter(comment => comment.id !== commentId))
+  }
+
   const isAuthor = session.id === ownerId
 
   const formattedTime = formatDistanceToNow(new Date(createdAt), {
@@ -125,7 +133,11 @@ const Post = ({ postId, profileImage, username, ownerId, createdAt, description,
           </div>
           {showComments && (
             <>
-              <CommentList comments={comments} />
+              <CommentList
+                comments={comments}
+                onCommentUpdated={handleCommentUpdated}
+                onCommentDeleted={handleCommentDeleted}
+              />
               <CommentForm postId={postId} userId={session.id} onCommentAdded={handleCommentAdded} />
             </>
           )}

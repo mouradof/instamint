@@ -1,5 +1,3 @@
-// src/routes/posts.js
-
 import { Hono } from "hono"
 import PostModel from "../db/models/PostModel.js"
 import CommentModel from "../db/models/CommentModel.js"
@@ -8,7 +6,7 @@ import knex from "knex"
 import config from "../../config.js"
 
 const db = knex(config.db)
-BaseModel.knex(db) // Lier l'instance de Knex ici également
+BaseModel.knex(db)
 
 const postRoutes = new Hono()
 
@@ -78,7 +76,6 @@ postRoutes.post("/:postId/comments", async c => {
       content
     })
 
-    // Récupérer les informations de l'utilisateur pour le nouveau commentaire
     const addedComment = await CommentModel.query()
       .where("comments.id", newComment.id)
       .join("users", "comments.userId", "users.id")
@@ -88,6 +85,71 @@ postRoutes.post("/:postId/comments", async c => {
     return c.json(addedComment, 200)
   } catch (error) {
     return c.json({ error: "Failed to add comment", details: error.message }, 500)
+  }
+})
+
+postRoutes.put("/:postId/comments/:commentId", async c => {
+  const postId = parseInt(c.req.param("postId"), 10)
+  const commentId = parseInt(c.req.param("commentId"), 10)
+
+  let commentData
+
+  try {
+    commentData = await c.req.json()
+  } catch (error) {
+    return c.json({ error: "Invalid JSON" }, 400)
+  }
+
+  const { userId, content } = commentData
+
+  if (!postId || !commentId || !userId || !content) {
+    return c.json({ error: "Post ID, Comment ID, User ID, and content are required" }, 400)
+  }
+
+  try {
+    const updatedComment = await CommentModel.query()
+      .where({ id: commentId, userId, postId })
+      .update({ content, updatedAt: db.fn.now() })
+      .returning("*")
+
+    if (updatedComment.length === 0) {
+      return c.json({ error: "Comment not found or not authorized" }, 404)
+    }
+
+    return c.json(updatedComment[0], 200)
+  } catch (error) {
+    return c.json({ error: "Failed to update comment", details: error.message }, 500)
+  }
+})
+
+postRoutes.delete("/:postId/comments/:commentId", async c => {
+  const postId = parseInt(c.req.param("postId"), 10)
+  const commentId = parseInt(c.req.param("commentId"), 10)
+
+  let commentData
+
+  try {
+    commentData = await c.req.json()
+  } catch (error) {
+    return c.json({ error: "Invalid JSON" }, 400)
+  }
+
+  const { userId } = commentData
+
+  if (!postId || !commentId || !userId) {
+    return c.json({ error: "Post ID, Comment ID, and User ID are required" }, 400)
+  }
+
+  try {
+    const deletedComment = await CommentModel.query().where({ id: commentId, userId }).delete()
+
+    if (!deletedComment) {
+      return c.json({ error: "Comment not found or not authorized" }, 404)
+    }
+
+    return c.json({ success: true, message: "Comment deleted successfully" }, 200)
+  } catch (error) {
+    return c.json({ error: "Failed to delete comment", details: error.message }, 500)
   }
 })
 
