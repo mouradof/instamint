@@ -12,7 +12,6 @@ const prepareRoutesTeabags = ({ app }) => {
   const teabagSchema = z.object({
     userId: idValidator
   })
-  // Assuming that i'm doing this request with a flat data. I'm waiting for tokken
   teabagsData.get("/teabags/:userId", zValidator("param", teabagSchema), async c => {
     try {
       const userId = c.req.valid("param").userId

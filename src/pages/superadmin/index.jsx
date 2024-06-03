@@ -4,7 +4,7 @@ import { useRouter } from "next/router"
 const SuperAdminPage = () => {
   const [users, setUsers] = useState([])
   // eslint-disable-next-line no-unused-vars
-  const [filteredUsers, setFilteredUsers] = useState([]) // Corrected declaration
+  const [filteredUsers, setFilteredUsers] = useState([])
   const [filterRole, setFilterRole] = useState("")
   const [selectedUser, setSelectedUser] = useState(null)
   const [newRole, setNewRole] = useState("")

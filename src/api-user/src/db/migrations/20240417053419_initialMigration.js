@@ -59,7 +59,6 @@ export const down = async knex => {
   await knex.schema.dropTableIfExists("users")
   await knex.schema.dropTableIfExists("roles")
 
-  // Recreate foreign keys
   for (const { table, column, columns } of tablesWithForeignKeys) {
     if (column) {
       await knex.schema.alterTable(table, tbl => {
