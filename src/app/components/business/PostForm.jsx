@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react"
 import useAppContext from "@/app/hooks/useContext.jsx"
 import Toast from "../common/Toast.jsx"
 import { useRouter } from "next/router"
+import { PlusIcon } from "@heroicons/react/24/outline"
+import { BookmarkIcon as BookmarkIconSolid } from "@heroicons/react/24/solid"
 
 const PostForm = () => {
   const {
@@ -97,7 +99,9 @@ const PostForm = () => {
         formData
       })
 
-      const message = isDraft ? "Draft saved successfully!" : "Post published successfully!"
+      const message = isDraft
+        ? "Draft saved successfully! Please wait a few moments..."
+        : "Post published successfully! Please wait a few moments..."
       showToast(message, true)
       setTimeout(() => {
         if (response.success) {
@@ -166,7 +170,17 @@ const PostForm = () => {
               className={`px-4 py-2 text-white rounded ${colorButton()}`}
               disabled={validationMode === "None"}
             >
-              {validationMode === "Publish" ? "Publish" : "Draft"}
+              {validationMode === "Publish" ? (
+                <div className="flex justify-center items-center">
+                  <PlusIcon className="h-5 w-5 mr-2" aria-hidden="true" />
+                  Publish
+                </div>
+              ) : (
+                <div className="flex justify-center items-center">
+                  <BookmarkIconSolid className="h-5 w-5 mr-2" aria-hidden="true" />
+                  Draft
+                </div>
+              )}
             </button>
           </div>
         </form>
