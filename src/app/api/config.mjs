@@ -20,7 +20,7 @@ const config = {
     timeout: 5000,
     retryAttempts: 3,
     defaultHeaders: {
-      "Content-Type": "application/json"
+      "Content-Type": "multipart/form-data"
     }
   },
   apiNotification: {

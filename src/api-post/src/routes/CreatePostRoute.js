@@ -2,9 +2,17 @@ import { Hono } from "hono"
 import { z } from "zod"
 import { zValidator } from "@hono/zod-validator"
 import PostModel from "../db/models/PostModel.js"
-import { booleanValidator, stringValidator } from "./validators.js"
+import { stringValidator } from "./validators.js"
 import { HTTP_STATUS_CODES, HTTP_ERRORS } from "../errors.js"
-import { uploadImageToAzure } from "../services/azure-uploader.js"
+import pkg from "../../configAWS.cjs"
+import { v4 as uuidv4 } from "uuid"
+
+const generateUniqueFileName = originalFileName => {
+  const uniqueId = uuidv4()
+  const fileExtension = originalFileName.split(".").pop()
+
+  return `${uniqueId}.${fileExtension}`
+}
 
 const fileTypeValidator = z.enum(["image/png", "image/webp", "audio/ogg", "audio/flac", "video/h264"])
 const fileSizeValidator = z.number().min(1).max(1_000_000_000)
@@ -12,63 +20,63 @@ const fileSizeValidator = z.number().min(1).max(1_000_000_000)
 const prepareRoutesPost = ({ app }) => {
   const postData = new Hono()
 
+  const mediaDataSchema = z
+    .object({
+      name: stringValidator,
+      size: fileSizeValidator,
+      type: fileTypeValidator
+    })
+    .nullable()
+    .optional()
+
   const postSchema = z.object({
-    description: stringValidator,
-    mediaData: z
-      .object({
-        name: stringValidator.optional(),
-        size: fileSizeValidator.optional(),
-        type: fileTypeValidator.optional(),
-        path: stringValidator.optional()
-      })
-      .optional(),
-    termsAccepted: booleanValidator.optional(),
-    isDraft: booleanValidator.optional(),
+    description: stringValidator.optional(),
+    mediaData: mediaDataSchema,
+    useDefaultImages: stringValidator.optional(),
+    isDraft: stringValidator,
     location: stringValidator.optional(),
     hashtags: stringValidator.optional()
   })
 
-  postData.post("/posts/:userId", zValidator("form", postSchema), async c => {
+  postData.post("/post/:userId", zValidator("form", postSchema), async c => {
     const userId = c.req.param("userId")
     const body = await c.req.parseBody({ all: true })
-    const { description, mediaData, termsAccepted, isDraft, location, hashtags } = body
-
-    let mediaUrl = null
+    const { description, mediaData, useDefaultImages, location, hashtags } = body
+    const isDraft = body.isDraft === "true"
 
     try {
-      if (mediaData) {
-        if (mediaData instanceof File) {
-          const arrayBuffer = await mediaData.arrayBuffer()
-          const buffer = Buffer.from(arrayBuffer)
-          mediaUrl = await uploadImageToAzure(
-            buffer.toString("base64"),
-            mediaData.name,
-            process.env.AZURE_ACCOUNT_NAME,
-            process.env.AZURE_ACCOUNT_KEY,
-            process.env.AZURE_CONTAINER_NAME
-          )
-        } else {
-          return c.json({
-            success: false,
-            message: HTTP_ERRORS.UNSUPPORTED_FILE_FORMAT
-          })
+      let mediaUrl
+
+      if (useDefaultImages === "true") {
+        mediaUrl = "/images/default-post-image.jpg"
+      } else if (mediaData && mediaData.name) {
+        const uniqueMediaName = generateUniqueFileName(mediaData.name)
+        const mediaBuffer = Buffer.from(await mediaData.arrayBuffer())
+        const mediaParams = {
+          Bucket: process.env.BUCKET_NAME_S3,
+          Key: uniqueMediaName,
+          Body: mediaBuffer,
+          ContentType: mediaData.type
         }
+        await pkg.upload(mediaParams).promise()
+        mediaUrl = `https://${process.env.BUCKET_NAME_S3}.s3.amazonaws.com/${uniqueMediaName}`
+      } else {
+        mediaUrl = null
       }
 
       const newPost = await PostModel.query().insert({
         ownerId: userId,
-        description,
+        description: description || "",
         mediaData: mediaUrl,
-        termsAccepted,
-        isDraft: isDraft || false,
-        location,
-        hashtags
+        isDraft,
+        location: location || null,
+        hashtags: hashtags || null
       })
 
       return c.json(
         {
           success: true,
-          message: HTTP_ERRORS.POST_CREATED_SUCCESS,
+          message: `${HTTP_ERRORS.CREATE_POST_SUCCESS}: ${newPost.id}`,
           postId: newPost.id
         },
         HTTP_STATUS_CODES.CREATED

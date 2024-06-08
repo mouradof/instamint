@@ -42,6 +42,7 @@ const prepareRoutesForYou = ({ app }) => {
 
         const allPosts = await PostModel.query()
           .whereIn("ownerId", allFollowedIds)
+          .where("isDraft", false)
           .join("users", "posts.ownerId", "=", "users.id")
           .select("posts.*", "users.username", "users.profileImage")
           .orderBy("posts.createdAt", "desc")

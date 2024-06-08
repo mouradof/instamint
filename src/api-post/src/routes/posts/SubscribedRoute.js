@@ -43,6 +43,7 @@ const prepareRoutesSubscribed = ({ app }) => {
 
         const followedPosts = await PostModel.query()
           .whereIn("ownerId", followedIds.concat(userId))
+          .where("isDraft", false)
           .join("users", "posts.ownerId", "=", "users.id")
           .select(
             "posts.id as postId",

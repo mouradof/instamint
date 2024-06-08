@@ -8,7 +8,7 @@ import ReportModal from "./ReportModalPost.jsx"
 import DeleteModalPost from "./DeleteModalPost.jsx"
 import useAppContext from "@/app/hooks/useContext.jsx"
 
-const Post = ({ postId, profileImage, username, ownerId, createdAt, description, mediaData, location }) => {
+const Post = ({ postId, profileImage, username, ownerId, createdAt, description, mediaData, location, hashtags }) => {
   const [showOptions, setShowOptions] = useState(false)
   const [showReportModal, setShowReportModal] = useState(false)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
@@ -16,8 +16,6 @@ const Post = ({ postId, profileImage, username, ownerId, createdAt, description,
 
   const {
     state: { session }
-    // This is not dead code, we only comment it out to avoid making too many requests to the bucket because we are limited to 20,000 requests in the free version
-    //action: { getImagesBucket }
   } = useAppContext()
 
   const handleReportClick = shouldShow => {
@@ -38,8 +36,6 @@ const Post = ({ postId, profileImage, username, ownerId, createdAt, description,
 
   const mintIcon = "/images/mint.png"
   const mintIconSolid = "/images/mintSolid.png"
-  // const mintIcon = {getImagesBucket("mint.png")}
-  // const mintIconSolid = getImagesBucket("mintSolid.png")}
 
   return (
     <div className="border-b border-gray-200 px-4 py-4 bg-white">
@@ -93,6 +89,11 @@ const Post = ({ postId, profileImage, username, ownerId, createdAt, description,
               )}
             </div>
           </div>
+          {hashtags && (
+            <div className="flex justify-left mt-2">
+              <span className="text-xs text-green-500">{hashtags}</span>
+            </div>
+          )}
         </div>
       </div>
       {error && <Toast message={error} isSuccess={false} />}

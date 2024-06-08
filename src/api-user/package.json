@@ -23,6 +23,7 @@
     "@aws-sdk/client-s3": "^3.588.0",
     "@hono/node-server": "^1.10.0",
     "@hono/zod-validator": "^0.2.1",
+    "aws-sdk": "^2.1603.0",
     "axios": "^1.6.8",
     "bcrypt": "^5.1.1",
     "chart.js": "^4.4.3",
