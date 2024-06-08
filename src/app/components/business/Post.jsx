@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { ChatBubbleOvalLeftIcon, EllipsisHorizontalIcon, MapPinIcon } from "@heroicons/react/24/outline"
 import usePostInteractions from "../../hooks/usePostInteractions.jsx"
 import { formatDistanceToNow } from "date-fns"
@@ -7,16 +7,44 @@ import PostOptionsPopup from "../business/OptionsPopupPost.jsx"
 import ReportModal from "./ReportModalPost.jsx"
 import DeleteModalPost from "./DeleteModalPost.jsx"
 import useAppContext from "@/app/hooks/useContext.jsx"
+import CommentList from "../comments/CommentList.jsx"
+import CommentForm from "../comments/CommentForm.jsx"
 
 const Post = ({ postId, profileImage, username, ownerId, createdAt, description, mediaData, location, hashtags }) => {
   const [showOptions, setShowOptions] = useState(false)
   const [showReportModal, setShowReportModal] = useState(false)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [showComments, setShowComments] = useState(false)
   const { isLiked, likeCount, toggleLike, error } = usePostInteractions(postId)
+  const [comments, setComments] = useState([])
+  const [commentSuccess, setCommentSuccess] = useState("")
 
   const {
     state: { session }
   } = useAppContext()
+
+  useEffect(() => {
+    if (!postId) {
+      return
+    }
+
+    const fetchComments = async () => {
+      try {
+        const response = await fetch(`http://localhost:4002/post/${postId}/comments`)
+        const data = await response.json()
+
+        if (Array.isArray(data)) {
+          setComments(data)
+        } else {
+          setComments([])
+        }
+      } catch (error) {
+        setComments([])
+      }
+    }
+
+    fetchComments()
+  }, [postId])
 
   const handleReportClick = shouldShow => {
     setShowReportModal(shouldShow)
@@ -26,6 +54,22 @@ const Post = ({ postId, profileImage, username, ownerId, createdAt, description,
   const handleDeleteClick = () => {
     setShowDeleteModal(true)
     setShowOptions(false)
+  }
+
+  const handleCommentAdded = newComment => {
+    setComments([newComment, ...comments])
+    setCommentSuccess("Comment added successfully!")
+    setTimeout(() => {
+      setCommentSuccess("")
+    }, 3000)
+  }
+
+  const handleCommentUpdated = updatedComment => {
+    setComments(comments.map(comment => (comment.id === updatedComment.id ? updatedComment : comment)))
+  }
+
+  const handleCommentDeleted = commentId => {
+    setComments(comments.filter(comment => comment.id !== commentId))
   }
 
   const isAuthor = session.id === ownerId
@@ -78,8 +122,12 @@ const Post = ({ postId, profileImage, username, ownerId, createdAt, description,
                 />
                 <span className={`ml-1 ${isLiked ? "text-green-500" : "text-gray-500"}`}>{likeCount}</span>
               </button>
-              <button className="flex items-center space-x-1 text-gray-500">
+              <button
+                onClick={() => setShowComments(!showComments)}
+                className="flex items-center space-x-1 text-gray-500"
+              >
                 <ChatBubbleOvalLeftIcon className="h-5 w-5" />
+                <span className="ml-1">{comments.length}</span>
               </button>
               {location && (
                 <div className="flex items-center space-x-1 ml-4 text-gray-500">
@@ -94,9 +142,20 @@ const Post = ({ postId, profileImage, username, ownerId, createdAt, description,
               <span className="text-xs text-green-500">{hashtags}</span>
             </div>
           )}
+          {showComments && (
+            <>
+              <CommentList
+                comments={comments}
+                onCommentUpdated={handleCommentUpdated}
+                onCommentDeleted={handleCommentDeleted}
+              />
+              <CommentForm postId={postId} userId={session.id} onCommentAdded={handleCommentAdded} />
+            </>
+          )}
         </div>
       </div>
       {error && <Toast message={error} isSuccess={false} />}
+      {commentSuccess && <Toast message={commentSuccess} isSuccess={true} />}
     </div>
   )
 }

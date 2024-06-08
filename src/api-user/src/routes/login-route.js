@@ -17,10 +17,8 @@ const prepareRouteLogin = ({ app }) => {
         return c.json({ message: "Email or password is incorrect" }, 401)
       }
 
-      // Met à jour le statut de bannissement si nécessaire
       await UserModel.updateBanStatus(user.id)
 
-      // Rafraîchit les informations utilisateur après la mise à jour du statut de bannissement
       const updatedUser = await UserModel.query().findById(user.id)
 
       if (updatedUser.isBanned) {

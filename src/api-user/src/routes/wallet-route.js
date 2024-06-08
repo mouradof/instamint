@@ -74,7 +74,7 @@ const prepareRouteWallet = ({ app }) => {
         passwordHash,
         passwordSalt: salt,
         walletAddress,
-        emailVerified: true // Assuming no email verification needed for wallet login
+        emailVerified: true
       })
 
       const payload = {
