@@ -1,10 +1,10 @@
 import { Hono } from "hono"
 import { z } from "zod"
-import { idValidator, stringValidator } from "../validators.js"
+import { idValidator, stringValidator } from "./validators.js"
 import { zValidator } from "@hono/zod-validator"
-import FollowModel from "../../db/models/FollowModel.js"
-import PostModel from "../../db/models/PostModel.js"
-import { HTTP_STATUS_CODES, HTTP_ERRORS } from "../../errors.js"
+import FollowModel from "../db/models/FollowModel.js"
+import PostModel from "../db/models/PostModel.js"
+import { HTTP_STATUS_CODES, HTTP_ERRORS } from "../errors.js"
 
 const prepareRoutesSubscribed = ({ app }) => {
   const subscribedData = new Hono()

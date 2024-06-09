@@ -1,9 +1,9 @@
 import { Hono } from "hono"
 import { z } from "zod"
-import { idValidator, stringValidator } from "../validators.js"
+import { idValidator, stringValidator } from "./validators.js"
 import { zValidator } from "@hono/zod-validator"
-import { HTTP_STATUS_CODES } from "../../errors.js"
-import ReportModel from "../../db/models/ReportModel.js"
+import { HTTP_STATUS_CODES } from "../errors.js"
+import ReportModel from "../db/models/ReportModel.js"
 
 const prepareRoutesReport = ({ app }) => {
   const reportData = new Hono()

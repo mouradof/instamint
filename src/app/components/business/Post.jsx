@@ -110,6 +110,11 @@ const Post = ({ postId, profileImage, username, ownerId, createdAt, description,
               <img src={mediaData} alt="Post image" width={399} height={399} className="rounded-lg" />
             </div>
           )}
+          {hashtags && (
+            <div className="flex justify-left mt-2">
+              <span className="text-xs text-green-500">{hashtags}</span>
+            </div>
+          )}
           <div className="flex justify-between items-center mt-2">
             <div className="flex space-x-4">
               <button onClick={toggleLike} className="flex items-center space-x-1 text-gray-500">
@@ -137,11 +142,6 @@ const Post = ({ postId, profileImage, username, ownerId, createdAt, description,
               )}
             </div>
           </div>
-          {hashtags && (
-            <div className="flex justify-left mt-2">
-              <span className="text-xs text-green-500">{hashtags}</span>
-            </div>
-          )}
           {showComments && (
             <>
               <CommentList
