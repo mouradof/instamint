@@ -27,7 +27,7 @@ const Footer = ({ toggleSearch }) => {
   }
 
   return (
-    <footer className="fixed inset-x-0 bottom-0 bg-white border-t border-gray-200 z-50">
+    <footer className="fixed inset-x-0 bottom-0 bg-white border-t border-gray-200 z-40">
       <div className="flex justify-evenly items-center max-w-2xl mx-auto p-5">
         <button onClick={() => navigate("home")}>
           {router.pathname === "/home" ? (

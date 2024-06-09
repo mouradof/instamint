@@ -8,11 +8,16 @@ export const seed = async knex => {
 
   for (let i = 1; i <= 30; i += 1) {
     const ownerId = faker.number.int({ min: 1, max: users.length })
+    const numberOfHashtags = faker.number.int({ min: 0, max: 5 })
+    const hashtags = Array.from({ length: numberOfHashtags }, () => `#${faker.lorem.word()}`).join(" ")
     postData.push({
       ownerId,
       createdAt: faker.date.recent(),
       description: faker.lorem.lines(2),
-      imageUrl: faker.image.imageUrl()
+      mediaData: faker.image.imageUrl(),
+      isDraft: false,
+      location: faker.address.city(),
+      hashtags
     })
   }
   await knex("posts").insert(postData)

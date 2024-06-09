@@ -1,9 +1,9 @@
 import { Hono } from "hono"
 import { z } from "zod"
-import { idValidator } from "../validators.js"
+import { idValidator } from "./validators.js"
 import { zValidator } from "@hono/zod-validator"
-import PostModel from "../../db/models/PostModel.js"
-import { HTTP_STATUS_CODES, HTTP_ERRORS } from "../../errors.js"
+import PostModel from "../db/models/PostModel.js"
+import { HTTP_STATUS_CODES, HTTP_ERRORS } from "../errors.js"
 
 const prepareRoutesDeletePost = ({ app }) => {
   const DeletePostData = new Hono()

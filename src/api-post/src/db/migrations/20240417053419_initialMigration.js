@@ -3,8 +3,11 @@ export const up = async knex => {
     table.increments("id").primary()
     table.integer("ownerId").unsigned().references("id").inTable("users").onDelete("SET NULL")
     table.datetime("createdAt", { precision: 3 }).defaultTo(knex.fn.now(3))
-    table.text("description").notNullable().defaultTo("")
-    table.string("imageUrl").notNullable()
+    table.text("description").nullable().defaultTo("")
+    table.text("mediaData").nullable()
+    table.boolean("isDraft").notNullable().defaultTo(false)
+    table.string("location").nullable()
+    table.string("hashtags").nullable()
   })
 
   await knex.schema.createTable("likes", table => {

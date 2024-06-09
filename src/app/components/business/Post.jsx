@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react"
-import { ChatBubbleOvalLeftIcon, EllipsisHorizontalIcon } from "@heroicons/react/24/outline"
+import { ChatBubbleOvalLeftIcon, EllipsisHorizontalIcon, MapPinIcon } from "@heroicons/react/24/outline"
 import usePostInteractions from "../../hooks/usePostInteractions.jsx"
 import { formatDistanceToNow } from "date-fns"
 import Toast from "../common/Toast.jsx"
@@ -10,7 +10,7 @@ import useAppContext from "@/app/hooks/useContext.jsx"
 import CommentList from "../comments/CommentList.jsx"
 import CommentForm from "../comments/CommentForm.jsx"
 
-const Post = ({ postId, profileImage, username, ownerId, createdAt, description, imageUrl }) => {
+const Post = ({ postId, profileImage, username, ownerId, createdAt, description, mediaData, location, hashtags }) => {
   const [showOptions, setShowOptions] = useState(false)
   const [showReportModal, setShowReportModal] = useState(false)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
@@ -105,9 +105,14 @@ const Post = ({ postId, profileImage, username, ownerId, createdAt, description,
           <ReportModal isOpen={showReportModal} onClose={() => setShowReportModal(false)} postId={postId} />
           <DeleteModalPost isOpen={showDeleteModal} onClose={() => setShowDeleteModal(false)} postId={postId} />
           {description && <p className="text-sm text-gray-800">{description}</p>}
-          {imageUrl && (
+          {mediaData && (
             <div className="relative w-full mt-2">
-              <img src={imageUrl} alt="Post image" width={399} height={399} className="rounded-lg" />
+              <img src={mediaData} alt="Post image" width={399} height={399} className="rounded-lg" />
+            </div>
+          )}
+          {hashtags && (
+            <div className="flex justify-left mt-2">
+              <span className="text-xs text-green-500">{hashtags}</span>
             </div>
           )}
           <div className="flex justify-between items-center mt-2">
@@ -129,6 +134,12 @@ const Post = ({ postId, profileImage, username, ownerId, createdAt, description,
                 <ChatBubbleOvalLeftIcon className="h-5 w-5" />
                 <span className="ml-1">{comments.length}</span>
               </button>
+              {location && (
+                <div className="flex items-center space-x-1 ml-4 text-gray-500">
+                  <MapPinIcon className="h-5 w-5 text-gray-500" />
+                  <span className="text-sm text-gray-500">{location}</span>
+                </div>
+              )}
             </div>
           </div>
           {showComments && (

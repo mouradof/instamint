@@ -1,9 +1,9 @@
 import { Hono } from "hono"
 import { z } from "zod"
 import { zValidator } from "@hono/zod-validator"
-import { idValidator } from "../validators.js"
-import { HTTP_STATUS_CODES, HTTP_ERRORS } from "../../errors.js"
-import LikeModel from "../../db/models/LikeModel.js"
+import { idValidator } from "./validators.js"
+import { HTTP_STATUS_CODES, HTTP_ERRORS } from "../errors.js"
+import LikeModel from "../db/models/LikeModel.js"
 
 const prepareRoutesLike = ({ app }) => {
   const likeData = new Hono()

@@ -80,7 +80,7 @@ const ProfileContent = ({ user, posts, readOnly }) => {
             username={user.username}
             createdAt={post.createdAt}
             description={post.description}
-            imageUrl={post.imageUrl}
+            mediaData={post.mediaData}
             profileImage={user.profileImage}
           />
         ))}

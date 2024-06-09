@@ -17,6 +17,7 @@ import changeUserPasswordService from "@/app/services/profile/changeUserPassword
 import deleteUserProfileService from "@/app/services/profile/deleteUserProfile.mjs"
 import getUserPostsService from "@/app/services/posts/getUserPosts.mjs"
 import deletePostService from "@/app/services/posts/deletePost.mjs"
+import createPostService from "@/app/services/posts/createPost.mjs"
 
 const AppContext = createContext()
 
@@ -79,6 +80,7 @@ export const AppContextProvider = props => {
   const postLikePost = postLikePostService({ apiClients })
   const postReportPost = postReportPostService({ apiClients })
   const deletePost = deletePostService({ apiClients })
+  const createPost = createPostService({ apiClients })
   const getUserProfile = getUserProfileService({ apiClients })
   const updateUserProfile = updateUserProfileService({ apiClients })
   const changePassword = changeUserPasswordService({ apiClients })
@@ -102,7 +104,8 @@ export const AppContextProvider = props => {
       postLikePost,
       getUserPosts,
       postReportPost,
-      deletePost
+      deletePost,
+      createPost
     }
   }
 

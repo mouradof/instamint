@@ -4,6 +4,17 @@ import Toast from "../common/Toast.jsx"
 import useAppContext from "@/app/hooks/useContext.jsx"
 import { CheckIcon } from "@heroicons/react/24/outline"
 
+const REPORT_REASONS = [
+  "Hate",
+  "Inappropriate behavior and harassment",
+  "Violent speech",
+  "Sensitive or inconvenient media",
+  "Identity theft",
+  "Violent and hateful entities",
+  "Spam",
+  "I just don't like that"
+]
+
 const ReportModal = ({ isOpen, onClose, postId }) => {
   const {
     state: { session },
@@ -49,16 +60,7 @@ const ReportModal = ({ isOpen, onClose, postId }) => {
       {!isSubmitted ? (
         <form onSubmit={handleSubmit}>
           <div className="flex flex-col space-y-4">
-            {[
-              "Hate",
-              "Inappropriate behavior and harassment",
-              "Violent speech",
-              "Sensitive or inconvenient media",
-              "Identity theft",
-              "Violent and hateful entities",
-              "Spam",
-              "I just don't like that"
-            ].map(option => (
+            {REPORT_REASONS.map(option => (
               <label key={option} className="inline-flex items-center">
                 <input
                   type="radio"

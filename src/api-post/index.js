@@ -7,6 +7,7 @@ import BaseModel from "./src/db/models/BaseModel.js"
 import config from "./config.js"
 import prepareRoutes from "./prepareRoutes.js"
 import postRoutes from "./src/routes/posts.js"
+import "dotenv/config"
 
 const db = knex(config.db)
 BaseModel.knex(db)
@@ -24,6 +25,7 @@ const corsMiddleware = cors({
 app.use("*", corsMiddleware)
 
 const routesWithCors = [
+  "/posts/:userId",
   "/post/for-you/:id",
   "/post/subscribed/:id",
   "/post/:postId/:userId",

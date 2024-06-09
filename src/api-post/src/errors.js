@@ -3,7 +3,8 @@ const HTTP_STATUS_CODES = {
   BAD_REQUEST: 400,
   NOT_FOUND: 404,
   INTERNAL_SERVER_ERROR: 500,
-  OK: 200
+  OK: 200,
+  CREATED: 201
 }
 
 const HTTP_ERRORS = {
@@ -21,7 +22,10 @@ const HTTP_ERRORS = {
   LIKE_REMOVED: "Like removed from post",
   NOT_AUTHORIZED_OR_NOT_FOUND: "Not authorized to delete this post or post not found",
   POST_DELETED: "Post successfully deleted",
-  DELETE_POST_FAILED: "Failed to delete post"
+  DELETE_POST_FAILED: "Failed to delete post",
+  CREATE_POST_FAILED: "Failed to create post",
+  UNSUPPORTED_FILE_FORMAT: "Unsupported file format or missing path.",
+  POST_CREATED_SUCCESS: "Post created successfully!"
 }
 
 export { HTTP_STATUS_CODES, HTTP_ERRORS }
