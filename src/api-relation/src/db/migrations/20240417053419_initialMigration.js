@@ -16,9 +16,17 @@ export const up = async knex => {
     table.integer("teabagId").unsigned().references("id").inTable("teabags").onDelete("CASCADE")
     table.unique(["userId", "teabagId"])
   })
+
+  await knex.schema.createTable("follows", function (table) {
+    table.increments("id").primary();
+    table.integer("followerId").unsigned().references("id").inTable("users").onDelete("CASCADE");
+    table.integer("followedId").unsigned().references("id").inTable("users").onDelete("CASCADE");
+    table.unique(["followerId", "followedId"]);
+  });
 }
 
 export const down = async knex => {
   await knex.raw('DROP TABLE IF EXISTS "groupMembers" CASCADE')
   await knex.raw('DROP TABLE IF EXISTS "teabags" CASCADE')
+  await knex.raw('DROP TABLE IF EXISTS "follows" CASCADE')
 }
