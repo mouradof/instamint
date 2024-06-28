@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-notification
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: api-notification
+  template:
+    metadata:
+      labels:
+        app: api-notification
+    spec:
+      containers:
+        - name: api-notification
+          image: <your-registry>/api-notification:latest
+          ports:
+            - containerPort: 4003
+          env:
+            - name: DATABASE_URL
+              value: ${DATABASE_URL}
+          volumeMounts:
+            - mountPath: /usr/src/app
+              name: app-volume
+      volumes:
+        - name: app-volume
+          hostPath:
+            path: /path/to/src/api-notification

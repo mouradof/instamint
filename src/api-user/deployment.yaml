@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-user
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: api-user
+  template:
+    metadata:
+      labels:
+        app: api-user
+    spec:
+      containers:
+        - name: api-user
+          image: mouradof/api-user:latest
+          ports:
+            - containerPort: 4000
+          env:
+            - name: DATABASE_URL
+              value: ${DATABASE_URL}
+          volumeMounts:
+            - mountPath: /usr/src/app
+              name: app-volume
+      volumes:
+        - name: app-volume
+          hostPath:
+            path: /path/to/src/api-user

@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-post
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: api-post
+  template:
+    metadata:
+      labels:
+        app: api-post
+    spec:
+      containers:
+        - name: api-post
+          image: mouradof/api-post:latest
+          ports:
+            - containerPort: 4002
+          env:
+            - name: DATABASE_URL
+              value: ${DATABASE_URL}
+          volumeMounts:
+            - mountPath: /usr/src/app
+              name: app-volume
+      volumes:
+        - name: app-volume
+          hostPath:
+            path: /path/to/src/api-post

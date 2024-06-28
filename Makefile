@@ -52,4 +52,4 @@ run_all_apis:
 		fi; \
 	done
 
-run: docker_build run_all_apis
+run: docker_run run_all_apis
