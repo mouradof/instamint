@@ -1,6 +1,7 @@
 import BaseModel from "./BaseModel.js"
 import UserModel from "./UserModel.js"
 import GroupMemberModel from "./GroupMemberModel.js"
+import PostModel from "./PostModel.js"
 
 class TeabagModel extends BaseModel {
   static tableName = "teabags"
@@ -21,6 +22,14 @@ class TeabagModel extends BaseModel {
         join: {
           from: "teabags.id",
           to: "groupMembers.teabagId"
+        }
+      },
+      posts: {
+        relation: BaseModel.HasManyRelation,
+        modelClass: PostModel,
+        join: {
+          from: "teabags.id",
+          to: "posts.teabagId"
         }
       }
     }
