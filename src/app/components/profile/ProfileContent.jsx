@@ -1,6 +1,7 @@
-import React from "react"
+import React, { useState } from "react"
 import Post from "@/app/components/business/Post.jsx"
 import { useRouter } from "next/router"
+import useAppContext from "@/app/context/AppContext"
 
 const formatNumber = num => {
   if (num >= 1000000000) {
@@ -17,6 +18,18 @@ const formatNumber = num => {
 const ProfileContent = ({ user, posts, readOnly }) => {
   const postsCount = posts.length
   const router = useRouter()
+  const { action } = useAppContext()
+  const [isFollowing, setIsFollowing] = useState(false) // État pour gérer le suivi
+
+  const handleFollow = async () => {
+    await action.followUser({ userId: user.id })
+    setIsFollowing(true)
+  }
+
+  const handleUnfollow = async () => {
+    await action.unfollowUser({ userId: user.id })
+    setIsFollowing(false)
+  }
 
   return (
     <div className="mt-4 px-4 flex flex-col items-start" style={{ padding: "10px" }}>
@@ -63,9 +76,23 @@ const ProfileContent = ({ user, posts, readOnly }) => {
             </>
           ) : (
             <>
-              <button className="text-white py-2 px-4 rounded" style={{ backgroundColor: "#16502d" }}>
-                Follow
-              </button>
+              {isFollowing ? (
+                <button
+                  className="text-white py-2 px-4 rounded"
+                  style={{ backgroundColor: "#16502d" }}
+                  onClick={handleUnfollow}
+                >
+                  Unfollow
+                </button>
+              ) : (
+                <button
+                  className="text-white py-2 px-4 rounded"
+                  style={{ backgroundColor: "#16502d" }}
+                  onClick={handleFollow}
+                >
+                  Follow
+                </button>
+              )}
               <button className="bg-gray-300 text-gray-800 py-2 px-4 rounded">Message</button>
             </>
           )}

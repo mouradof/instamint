@@ -17,6 +17,12 @@ const routes = {
     teabags: {
       userTeabags: idUser => createRouteWithQueryParams(`/teabags/${idUser}`),
       userCreateTeabag: idUser => createRouteWithQueryParams(`teabags/${idUser}/createTeabag`)
+    },
+    follow: {
+      followUser: userId => `/relation/follow/${userId}`,
+      unfollowUser: userId => `/relation/unfollow/${userId}`,
+      followers: userId => createRouteWithQueryParams(`/relation/followers/${userId}`),
+      following: userId => createRouteWithQueryParams(`/relation/following/${userId}`)
     }
   },
   apiUser: {

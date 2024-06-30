@@ -1,6 +1,7 @@
+import FollowModel from "./FollowModel.js"
 import BaseModel from "./BaseModel.js"
-import TeabagModel from "./TeabagModel.js"
 import GroupMemberModel from "./GroupMemberModel.js"
+import TeabagModel from "./TeabagModel.js"
 
 class UserModel extends BaseModel {
   static tableName = "users"
@@ -21,6 +22,22 @@ class UserModel extends BaseModel {
         join: {
           from: "users.id",
           to: "groupMembers.userId"
+        }
+      },
+      followers: {
+        relation: BaseModel.HasManyRelation,
+        modelClass: FollowModel,
+        join: {
+          from: "users.id",
+          to: "follows.followedId"
+        }
+      },
+      following: {
+        relation: BaseModel.HasManyRelation,
+        modelClass: FollowModel,
+        join: {
+          from: "users.id",
+          to: "follows.followerId"
         }
       }
     }

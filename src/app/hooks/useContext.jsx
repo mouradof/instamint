@@ -18,6 +18,10 @@ import deleteUserProfileService from "@/app/services/profile/deleteUserProfile.m
 import getUserPostsService from "@/app/services/posts/getUserPosts.mjs"
 import deletePostService from "@/app/services/posts/deletePost.mjs"
 import createPostService from "@/app/services/posts/createPost.mjs"
+import followUserService from "@/app/services/follow/follow.mjs"
+import unfollowUserService from "@/app/services/follow/unfollow.mjs"
+import getFollowersService from "@/app/services/follow/getFollowers.mjs"
+import getFollowingService from "@/app/services/follow/getFollowing.mjs"
 
 const AppContext = createContext()
 
@@ -86,6 +90,10 @@ export const AppContextProvider = props => {
   const changePassword = changeUserPasswordService({ apiClients })
   const deleteUserProfile = deleteUserProfileService({ apiClients })
   const getUserPosts = getUserPostsService({ apiClients })
+  const followUser = followUserService({ apiClients })
+  const unfollowUser = unfollowUserService({ apiClients })
+  const getFollowers = getFollowersService({ apiClients })
+  const getFollowing = getFollowingService({ apiClients })
 
   const appContextValue = {
     state: { session },
@@ -105,7 +113,11 @@ export const AppContextProvider = props => {
       getUserPosts,
       postReportPost,
       deletePost,
-      createPost
+      createPost,
+      followUser,
+      unfollowUser,
+      getFollowers,
+      getFollowing
     }
   }
 
