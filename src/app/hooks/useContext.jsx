@@ -18,6 +18,8 @@ import deleteUserProfileService from "@/app/services/profile/deleteUserProfile.m
 import getUserPostsService from "@/app/services/posts/getUserPosts.mjs"
 import deletePostService from "@/app/services/posts/deletePost.mjs"
 import createPostService from "@/app/services/posts/createPost.mjs"
+import getTeabagByIdService from "@/app/services/getTeabagById.js"
+import getTeabagPostsService from "@/app/services/getTeabagPosts.js"
 
 const AppContext = createContext()
 
@@ -86,6 +88,8 @@ export const AppContextProvider = props => {
   const changePassword = changeUserPasswordService({ apiClients })
   const deleteUserProfile = deleteUserProfileService({ apiClients })
   const getUserPosts = getUserPostsService({ apiClients })
+  const getTeabagById = getTeabagByIdService({ apiClients })
+  const getTeabagPosts = getTeabagPostsService({ apiClients })
 
   const appContextValue = {
     state: { session },
@@ -105,7 +109,9 @@ export const AppContextProvider = props => {
       getUserPosts,
       postReportPost,
       deletePost,
-      createPost
+      createPost,
+      getTeabagById,
+      getTeabagPosts
     }
   }
 

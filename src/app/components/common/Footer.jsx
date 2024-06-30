@@ -7,7 +7,7 @@ import {
   UserCircleIcon as UserCircleIconSolid
 } from "@heroicons/react/24/solid"
 import { useRouter } from "next/router"
-import useAppContext from "../../hooks/useContext"
+import useAppContext from "../../hooks/useContext.jsx"
 
 const Footer = ({ toggleSearch }) => {
   const router = useRouter()
@@ -43,7 +43,7 @@ const Footer = ({ toggleSearch }) => {
             <MagnifyingGlassIcon className="h-7 w-7 text-gray-500" />
           )}
         </button>
-        <button onClick={() => navigate("groups")}>
+        <button onClick={() => navigate("/teabag/index.jsx")}>
           {router.pathname === "/groups" ? (
             <UserGroupIconSolid className="h-7 w-7 text-green-500" />
           ) : (

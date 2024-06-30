@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react"
+import React, { useState, useEffect, useCallback, useMemo } from "react"
 import { useRouter } from "next/router"
 import TeabagCard from "@/app/components/business/TeabagCard.jsx"
 import Modal from "@/app/components/common/Modal.jsx"
@@ -19,12 +19,15 @@ const ListTeabags = () => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [toastMessage, setToastMessage] = useState(null)
   const [isSuccessToast, setIsSuccessToast] = useState(true)
+  const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
 
   const fetchTeabags = useCallback(async () => {
     if (!session || !session.id) {
       return
     }
+
+    setIsLoading(true)
 
     try {
       const [error, data] = await getUserTeabags({ userId: session.id })
@@ -39,6 +42,8 @@ const ListTeabags = () => {
       setTeabags(data.result)
     } catch (error) {
       setError(error.message)
+    } finally {
+      setIsLoading(false)
     }
   }, [getUserTeabags, session])
 
@@ -75,11 +80,11 @@ const ListTeabags = () => {
       newTeabag.userCount = numberOfUsers
       setTeabags(prevTeabags => [...prevTeabags, newTeabag])
       await fetchTeabags()
-      setToastMessage("Teabag created with success !")
+      setToastMessage("Teabag created with success!")
       setIsSuccessToast(true)
     } catch (error) {
       setError(error.message)
-      setToastMessage("Teabag cannot be created !")
+      setToastMessage("Teabag cannot be created!")
       setIsSuccessToast(false)
     }
   }
@@ -93,6 +98,8 @@ const ListTeabags = () => {
       return () => clearTimeout(timer)
     }
   }, [toastMessage])
+
+  const filteredTeabags = useMemo(() => teabags.filter(teabag => teabag.isVisible), [teabags])
 
   return (
     <div className="relative flex flex-col items-center w-full">
@@ -108,23 +115,30 @@ const ListTeabags = () => {
             onMouseEnter={() => setIsUserPlusHovered(true)}
             onMouseLeave={() => setIsUserPlusHovered(false)}
             onClick={openModal}
+            aria-label="Add Teabag"
+            role="button"
           />
         </div>
         {isModalOpen && <div className="fixed top-0 left-0 w-full h-full bg-black opacity-50 z-50" />}
         <Modal isOpen={isModalOpen} onClose={closeModal} title={"Add teabag"}>
           <AddTeabagForm
-            onSubmit={teabagData => onSubmitTeabag(teabagData, session)}
+            onSubmit={onSubmitTeabag}
             closeModal={closeModal}
             idUser={session && session.id}
             createTeabagFunction={createUserTeabag}
           />
         </Modal>
-        {teabags.length === 0 && <p>You have no teabags ! You can create your own teabag !</p>}
-        <div className="space-y-4 overflow-y-auto max-h-[70vh]">
-          {teabags.map(teabag => (
-            <TeabagCard key={teabag.id} teabag={teabag} />
-          ))}
-        </div>
+        {isLoading ? (
+          <p>Loading...</p>
+        ) : teabags.length === 0 ? (
+          <p>You have no teabags! You can create your own teabag!</p>
+        ) : (
+          <div className="space-y-4 overflow-y-auto max-h-[70vh]">
+            {filteredTeabags.map(teabag => (
+              <TeabagCard key={teabag.id} teabag={teabag} />
+            ))}
+          </div>
+        )}
       </div>
       {toastMessage && <Toast message={toastMessage} isSuccess={isSuccessToast} />}
     </div>

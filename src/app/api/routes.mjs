@@ -16,7 +16,9 @@ const routes = {
   apiRelation: {
     teabags: {
       userTeabags: idUser => createRouteWithQueryParams(`/teabags/${idUser}`),
-      userCreateTeabag: idUser => createRouteWithQueryParams(`teabags/${idUser}/createTeabag`)
+      userCreateTeabag: idUser => createRouteWithQueryParams(`teabags/${idUser}/createTeabag`),
+      teabagById: teabagId => `/teabag/${teabagId}`,
+      teabagPosts: (teabagId, page) => createRouteWithQueryParams(`/teabag/${teabagId}/posts`, { page })
     }
   },
   apiUser: {
@@ -26,8 +28,8 @@ const routes = {
   },
   apiPost: {
     post: {
-      forYou: (idUser, page) => createRouteWithQueryParams(`/post/for-you/${idUser}?page=${page}`),
-      subscribed: (idUser, page) => createRouteWithQueryParams(`/post/subscribed/${idUser}?page=${page}`),
+      forYou: (idUser, page) => createRouteWithQueryParams(`/post/for-you/${idUser}`, { page }),
+      subscribed: (idUser, page) => createRouteWithQueryParams(`/post/subscribed/${idUser}`, { page }),
       deletePost: (postId, idUser) => createRouteWithQueryParams(`/post/${postId}/${idUser}`),
       createPost: idUser => createRouteWithQueryParams(`/post/${idUser}`)
     },
