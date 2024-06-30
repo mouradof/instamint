@@ -18,11 +18,11 @@ export const up = async knex => {
   })
 
   await knex.schema.createTable("follows", function (table) {
-    table.increments("id").primary();
-    table.integer("followerId").unsigned().references("id").inTable("users").onDelete("CASCADE");
-    table.integer("followedId").unsigned().references("id").inTable("users").onDelete("CASCADE");
-    table.unique(["followerId", "followedId"]);
-  });
+    table.increments("id").primary()
+    table.integer("followerId").unsigned().references("id").inTable("users").onDelete("CASCADE")
+    table.integer("followedId").unsigned().references("id").inTable("users").onDelete("CASCADE")
+    table.unique(["followerId", "followedId"])
+  })
 }
 
 export const down = async knex => {

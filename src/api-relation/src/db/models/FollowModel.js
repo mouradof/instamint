@@ -1,10 +1,10 @@
-import BaseModel from "./BaseModel.js";
+import BaseModel from "./BaseModel.js"
 
 class FollowModel extends BaseModel {
-  static tableName = "follows";
+  static tableName = "follows"
 
   static get relationMappings() {
-    const UserModel = require("./UserModel");
+    const UserModel = require("./UserModel")
 
     return {
       follower: {
@@ -23,8 +23,8 @@ class FollowModel extends BaseModel {
           to: "users.id"
         }
       }
-    };
+    }
   }
 }
 
-export default FollowModel;
+export default FollowModel

@@ -1,7 +1,10 @@
-import FollowModel from "./FollowModel.js";
+import FollowModel from "./FollowModel.js"
+import BaseModel from "./BaseModel.js"
+import GroupMemberModel from "./GroupMemberModel.js"
+import TeabagModel from "./TeabagModel.js"
 
 class UserModel extends BaseModel {
-  static tableName = "users";
+  static tableName = "users"
 
   static get relationMappings() {
     return {
@@ -37,8 +40,8 @@ class UserModel extends BaseModel {
           to: "follows.followerId"
         }
       }
-    };
+    }
   }
 }
 
-export default UserModel;
+export default UserModel

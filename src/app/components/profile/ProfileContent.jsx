@@ -1,43 +1,35 @@
-import React, { useState } from "react";
-import Post from "@/app/components/business/Post.jsx";
-import { useRouter } from "next/router";
-import useAppContext from "@/app/context/AppContext";
+import React, { useState } from "react"
+import Post from "@/app/components/business/Post.jsx"
+import { useRouter } from "next/router"
+import useAppContext from "@/app/context/AppContext"
 
 const formatNumber = num => {
   if (num >= 1000000000) {
-    return (num / 1000000000).toFixed(1) + " B";
+    return (num / 1000000000).toFixed(1) + " B"
   } else if (num >= 1000000) {
-    return (num / 1000000).toFixed(1) + " M";
+    return (num / 1000000).toFixed(1) + " M"
   } else if (num >= 1000) {
-    return (num / 1000).toFixed(1) + " K";
+    return (num / 1000).toFixed(1) + " K"
   }
 
-  return num.toString();
-};
+  return num.toString()
+}
 
 const ProfileContent = ({ user, posts, readOnly }) => {
-  const postsCount = posts.length;
-  const router = useRouter();
-  const { action, state } = useAppContext();
-  const [isFollowing, setIsFollowing] = useState(false); // État pour gérer le suivi
+  const postsCount = posts.length
+  const router = useRouter()
+  const { action } = useAppContext()
+  const [isFollowing, setIsFollowing] = useState(false) // État pour gérer le suivi
 
   const handleFollow = async () => {
-    try {
-      await action.followUser({ userId: user.id });
-      setIsFollowing(true);
-    } catch (error) {
-      console.error("Error following user:", error);
-    }
-  };
+    await action.followUser({ userId: user.id })
+    setIsFollowing(true)
+  }
 
   const handleUnfollow = async () => {
-    try {
-      await action.unfollowUser({ userId: user.id });
-      setIsFollowing(false);
-    } catch (error) {
-      console.error("Error unfollowing user:", error);
-    }
-  };
+    await action.unfollowUser({ userId: user.id })
+    setIsFollowing(false)
+  }
 
   return (
     <div className="mt-4 px-4 flex flex-col items-start" style={{ padding: "10px" }}>
@@ -85,11 +77,19 @@ const ProfileContent = ({ user, posts, readOnly }) => {
           ) : (
             <>
               {isFollowing ? (
-                <button className="text-white py-2 px-4 rounded" style={{ backgroundColor: "#16502d" }} onClick={handleUnfollow}>
+                <button
+                  className="text-white py-2 px-4 rounded"
+                  style={{ backgroundColor: "#16502d" }}
+                  onClick={handleUnfollow}
+                >
                   Unfollow
                 </button>
               ) : (
-                <button className="text-white py-2 px-4 rounded" style={{ backgroundColor: "#16502d" }} onClick={handleFollow}>
+                <button
+                  className="text-white py-2 px-4 rounded"
+                  style={{ backgroundColor: "#16502d" }}
+                  onClick={handleFollow}
+                >
                   Follow
                 </button>
               )}
@@ -113,7 +113,7 @@ const ProfileContent = ({ user, posts, readOnly }) => {
         ))}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default ProfileContent;
+export default ProfileContent
